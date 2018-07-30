@@ -52,7 +52,10 @@ class MyFrame(wx.Frame):
         self.text_ctrl_9 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "", style=wx.TE_CENTRE)
         self.text_ctrl_3 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "", style=wx.TE_READONLY)
         self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, _("log field..\n\n\n\n"), style=wx.TE_MULTILINE | wx.TE_READONLY)
+
         self.notebook_1_pane_2 = wx.Panel(self.notebook_1, wx.ID_ANY)
+        self.button_2 = wx.Button(self.notebook_1_pane_2, wx.ID_ANY, _("Train"))
+        self.tree_ctrl_2 = self.tree_ctrl_1 #wx.TreeCtrl(self.notebook_1_pane_1, wx.ID_ANY, style=wx.TR_HIDE_ROOT)
         self.notebook_1_pane_3 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1_pane_4 = wx.Panel(self.notebook_1, wx.ID_ANY)
 
@@ -116,7 +119,16 @@ class MyFrame(wx.Frame):
         sizer_2.Add(self.text_ctrl_1, 1, wx.EXPAND, 0)
         self.notebook_1_pane_1.SetSizer(sizer_2)
         self.notebook_1.AddPage(self.notebook_1_pane_1, _("Datasets"))
+
+        sizer_Models = wx.BoxSizer(wx.VERTICAL)
+        sizer_Models_Left = wx.BoxSizer(wx.VERTICAL)
+        sizer_Models_Left.Add(self.button_2, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 0)
+#        sizer_Models_Left.Add(self.tree_ctrl_1, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_Models.Add(sizer_Models_Left)
+#        sizer_Models.Add(self.text_ctrl_1, 1, wx.EXPAND, 0)
+        self.notebook_1_pane_2.SetSizer(sizer_Models)
         self.notebook_1.AddPage(self.notebook_1_pane_2, _("Models"))
+
         self.notebook_1.AddPage(self.notebook_1_pane_3, _("Settings"))
         self.notebook_1.AddPage(self.notebook_1_pane_4, _("Etc."))
         sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
@@ -126,8 +138,10 @@ class MyFrame(wx.Frame):
         # end wxGlade
     
     def __bind_events(self):
-        self.Bind(wx.EVT_BUTTON, self.button_1_clicked)
-        self.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.onExpand)
+        self.Bind(wx.EVT_BUTTON, self.button_1_clicked, self.button_1)
+        self.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.onExpand, self.tree_ctrl_1)
+        
+        self.Bind(wx.EVT_BUTTON, self.button_2_clicked, self.button_2)
 
     def button_1_clicked(self, e):
         print('BUTTON 1 CLICKED')
@@ -149,6 +163,10 @@ class MyFrame(wx.Frame):
         dlg.Destroy()
 #        self.Bind(wx.EVT_BUTTON, self.button_2_clicked)
 #        dialog1.Show()
+
+    def button_2_clicked(self, e):
+        print('BUTTON 2 CLICKED')
+
 
     def onExpand(self, e):
         itemID = e.GetItem()
