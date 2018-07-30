@@ -1,0 +1,6 @@
+Data/43671.png	0
+Data/28869.png	7
+Data/54422.png	2
+Data/47914.png	5
+Data/22410.png	8
+Data/39018.png	7

@@ -13,24 +13,34 @@ import gettext
 # begin wxGlade: extracode
 # end wxGlade
 
+import numpy as np
+from PIL import Image
+import os
+import dircache
+
 
 class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         wx.Frame.__init__(self, *args, **kwds)
+        self.CreateStatusBar()
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY)
         self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.button_1 = wx.Button(self.notebook_1_pane_1, wx.ID_ANY, _("New"))
-        #self.tree_ctrl_1 = wx.TreeCtrl(self.notebook_1_pane_1, wx.ID_ANY, style=wx.TR_HIDE_ROOT)
-        self.dir = wx.GenericDirCtrl(self.notebook_1_pane_1, -1, dir='/home/pirl/PycharmProjects/tensorflowGUI/data',
-                                     style=wx.DIRCTRL_DIR_ONLY)
+        self.tree_ctrl_1 = wx.TreeCtrl(self.notebook_1_pane_1, wx.ID_ANY, style=wx.TR_HIDE_ROOT)
+#        self.dir = wx.TreeCtrl(self.notebook_1_pane_1, wx.ID_ANY)#, style=wx.TR_HIDE_ROOT)
+#        self.dir = wx.GenericDirCtrl(self.notebook_1_pane_1, -1, dir='/home/pirl/PycharmProjects/tensorflowGUI/data',
+#        self.dir = wx.GenericDirCtrl(self.notebook_1_pane_1, -1, dir='~/',
+#                                     style=wx.DIRCTRL_DIR_ONLY)
+#        self.dir_tree_ctrl = self.dir.GetTreeCtrl()
+#        print(self.dir_tree_ctrl.SetWindowStyle(wx.TR_HIDE_ROOT))
 
         self.label_1 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("Dataset Spec"))
         self.label_2 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("Path: "), style=wx.ALIGN_CENTER)
         self.text_ctrl_2 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "", style=wx.TE_CENTRE)
-        self.label_3 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("# of Classes: "), style=wx.ALIGN_CENTER)
+        self.label_3 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("# of Train/Test Data: "), style=wx.ALIGN_CENTER)
         self.text_ctrl_4 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "", style=wx.TE_CENTRE)
-        self.label_4 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("# of Images: "), style=wx.ALIGN_CENTER)
+        self.label_4 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("# of Classes: "), style=wx.ALIGN_CENTER)
         self.text_ctrl_5 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "", style=wx.TE_CENTRE)
         self.label_5 = wx.StaticText(self.notebook_1_pane_1, wx.ID_ANY, _("Image Size: "), style=wx.ALIGN_CENTER)
         self.text_ctrl_6 = wx.TextCtrl(self.notebook_1_pane_1, wx.ID_ANY, "", style=wx.TE_CENTRE)
@@ -48,6 +58,7 @@ class MyFrame(wx.Frame):
 
         self.__set_properties()
         self.__do_layout()
+        self.__bind_events()
         # end wxGlade
 
     def __set_properties(self):
@@ -73,7 +84,8 @@ class MyFrame(wx.Frame):
         sizer_7 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_4 = wx.BoxSizer(wx.VERTICAL)
         sizer_4.Add(self.button_1, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 0)
-        sizer_4.Add(self.dir, 1, wx.ALL | wx.EXPAND, 0)
+#        sizer_4.Add(self.dir, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_4.Add(self.tree_ctrl_1, 1, wx.ALL | wx.EXPAND, 0)
         sizer_3.Add(sizer_4, 1, wx.EXPAND, 0)
         sizer_5.Add(self.label_1, 0, 0, 0)
         sizer_7.Add(self.label_2, 1, wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
@@ -112,6 +124,114 @@ class MyFrame(wx.Frame):
         sizer_1.Fit(self)
         self.Layout()
         # end wxGlade
+    
+    def __bind_events(self):
+        self.Bind(wx.EVT_BUTTON, self.button_1_clicked)
+        self.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.onExpand)
+
+    def button_1_clicked(self, e):
+        print('BUTTON 1 CLICKED')
+
+        dlg = wx.DirDialog(self, "Choose Data Directory:",
+            style=wx.DD_DEFAULT_STYLE | wx.DD_NEW_DIR_BUTTON)
+        while dlg.ShowModal() == wx.ID_OK:
+            self.SetStatusText("Chosen: %s\n" % dlg.GetPath())
+            
+            if os.path.isdir(os.path.join(dlg.GetPath(), "Data")) == False:
+                print("It doesn't have Data folder")
+#            if os.direxists(os.path.join(dlg.GetPath())
+                continue
+            elif os.path.exists(os.path.join(dlg.GetPath(), "train.txt")) == False:
+                print("It doesn't have train.txt")
+            else: 
+                self.buildTree(dlg.GetPath())
+                break
+        dlg.Destroy()
+#        self.Bind(wx.EVT_BUTTON, self.button_2_clicked)
+#        dialog1.Show()
+
+    def onExpand(self, e):
+        itemID = e.GetItem()
+
+        old_itemdata = self.tree_ctrl_1.GetItemData(itemID)
+        self.tree_ctrl_1.DeleteChildren(itemID)
+        self.extendTree(itemID)
+        self.tree_ctrl_1.SetItemData(itemID, old_itemdata)
+
+    def buildTree(self, rootdirPath):
+#        self.rootdirID = os.path.basename(rootdirPath)
+#        self.rootID = self.tree_ctrl_1.AddRoot(os.path.basename(rootdirPath))
+        self.rootID = self.tree_ctrl_1.AppendItem(self.tree_ctrl_1.GetRootItem(), (os.path.basename(rootdirPath)))
+        self.tree_ctrl_1.SetItemData(self.rootID, rootdirPath)
+        self.extendTree(self.rootID)
+        print(self.rootID)
+#        self.tree_ctrl_1.Expand(self.rootID)
+    
+        self.getStatistics(rootdirPath)
+
+    def extendTree(self, parentID):
+        parentPath = self.tree_ctrl_1.GetItemData(parentID)
+
+        subdirs = dircache.listdir(parentPath)
+        subdirs.sort()
+        for child in subdirs:
+            print(child)
+            childPath = os.path.join(parentPath, child)
+            if os.path.isdir(childPath) and not os.path.islink(child):
+                childID = self.tree_ctrl_1.AppendItem(parentID, child)
+                self.tree_ctrl_1.SetItemData(childID, childPath)
+
+                grandsubdirs = dircache.listdir(childPath)
+                grandsubdirs.sort()
+                for grandchild in grandsubdirs:
+                    grandchildPath = os.path.join(childPath, grandchild)
+                    if os.path.isdir(grandchildPath) and not os.path.islink(grandchild):
+                        grandchildID = self.tree_ctrl_1.AppendItem(childID, grandchild)
+                        self.tree_ctrl_1.SetItemData(grandchildID, grandchildPath)
+   
+    def getStatistics(self, rootdirPath):
+        # dir info
+        self.text_ctrl_2.write(rootdirPath)
+
+        # data info
+        datadirPath = os.path.join(rootdirPath, 'Data/')
+        file_list = os.listdir(datadirPath)
+#        data_check = True
+#        for file in file_list:
+#            fname, ext = os.path.splitext(file)
+#            
+#            if ext == '.png' or ext == '.jpg':
+#                print(file)
+#            else:
+#                print("Unexpected file type '%s'"%(file))
+#                data_check = False
+#                break
+#        if not data_check:
+#            return
+#
+#        data = np.array([np.array(Image.open(datadirPath+file)) for file in file_list]) 
+
+        # train data
+        trainTxt = open(rootdirPath+'/train.txt', 'r')
+        x_train = np.array([np.array(Image.open(rootdirPath+'/'+line.split()[0])) for line in trainTxt])
+        trainTxt.close()
+        trainTxt = open(rootdirPath+'/train.txt', 'r')
+        y_train = np.array([line.split()[1] for line in trainTxt])
+        print(x_train.shape, y_train.shape)
+
+        # test data
+        testTxt = open(rootdirPath+'/test.txt', 'r')
+        x_test = np.array([np.array(Image.open(rootdirPath+'/'+line.split()[0])) for line in testTxt])
+        testTxt.close()
+        testTxt = open(rootdirPath+'/test.txt', 'r')
+        y_test = np.array([line.split()[1] for line in testTxt])
+        print(x_test.shape, y_test.shape)           
+#        self.text_ctrl_4.write(str(len(os.walk(datadirPath).next()[2])))
+        self.text_ctrl_4.write(str(len(x_train)) + ' / ' + str(len(x_test)))
+
+        # label count
+        self.text_ctrl_5.write(str(len(np.unique(np.concatenate((y_train, y_test), axis=0)))))
+
 
 # end of class MyFrame
 
@@ -152,131 +272,171 @@ class MyDialog(wx.Dialog):
 
 class MyDialog1(wx.Dialog):
     def __init__(self, *args, **kwds):
-        # begin wxGlade: MyDialog1.__init__
         wx.Dialog.__init__(self, *args, **kwds)
-        self.label_10 = wx.StaticText(self, wx.ID_ANY, _("Image Type"))
-        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=[_("Grayscale"), _("Color")], style=wx.CB_DROPDOWN)
-        self.label_11 = wx.StaticText(self, wx.ID_ANY, _("Image Size"))
-        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_CENTRE)
-        self.label_12 = wx.StaticText(self, wx.ID_ANY, _(" x "), style=wx.ALIGN_CENTER)
-        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.label_13 = wx.StaticText(self, wx.ID_ANY, _("Resize Transformation"))
-        self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=[_("Crop"), _("Squash")], style=wx.CB_DROPDOWN)
-        self.button_2 = wx.Button(self, wx.ID_ANY, _("See example"))
-        self.label_14 = wx.StaticText(self, wx.ID_ANY, _("DB backend"))
-        self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=[_("LMDB"), _("Sth else...")], style=wx.CB_DROPDOWN)
-        self.label_15 = wx.StaticText(self, wx.ID_ANY, _("Image Encoding"))
-        self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=[_("png"), _("jpg"), _("....")], style=wx.CB_DROPDOWN)
-        self.label_16 = wx.StaticText(self, wx.ID_ANY, _("Dataset name"))
-        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.button_3 = wx.Button(self, wx.ID_ANY, _("create"))
-        self.label_17 = wx.StaticText(self, wx.ID_ANY, _("Training Images"))
-        self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.label_18 = wx.StaticText(self, wx.ID_ANY, _("Minimum samples per class"))
-        self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.label_19 = wx.StaticText(self, wx.ID_ANY, _("% for validation"))
-        self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.label_20 = wx.StaticText(self, wx.ID_ANY, _("Maximum Samples per Class"))
-        self.text_ctrl_17 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.label_21 = wx.StaticText(self, wx.ID_ANY, _("% for testing"))
-        self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.tree_ctrl_1 = wx.TreeCtrl(self, wx.ID_ANY, style=wx.TR_HIDE_ROOT)
+#        self.tree_ctrl_1.AddRoot(os.path.dirname(os.path.abspath(__file__)))
+        self.dir = wx.GenericDirCtrl(self, wx.ID_ANY, dir=os.path.dirname(os.path.abspath(__file__)),
+                                     style=wx.DIRCTRL_DIR_ONLY)
 
+        self.button_1 = wx.Button(self, wx.ID_ANY, _("Select Folder"))
+        
         self.__set_properties()
         self.__do_layout()
-        # end wxGlade
+        self.__bind_events()
 
     def __set_properties(self):
-        # begin wxGlade: MyDialog1.__set_properties
-        self.SetTitle(_("Create New Image Dataset"))
-        self.combo_box_1.SetBackgroundColour(wx.Colour(255, 255, 255))
-        self.combo_box_1.SetSelection(1)
-        self.combo_box_2.SetSelection(-1)
-        self.combo_box_3.SetSelection(0)
-        self.combo_box_4.SetSelection(-1)
-        # end wxGlade
+        self.SetTitle(_("MyDialog1"))
 
     def __do_layout(self):
-        # begin wxGlade: MyDialog1.__do_layout
-        sizer_16 = wx.BoxSizer(wx.VERTICAL)
-        sizer_18 = wx.BoxSizer(wx.VERTICAL)
-        sizer_19 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_21 = wx.BoxSizer(wx.VERTICAL)
-        sizer_35 = wx.BoxSizer(wx.VERTICAL)
-        sizer_34 = wx.BoxSizer(wx.VERTICAL)
-        sizer_20 = wx.BoxSizer(wx.VERTICAL)
-        sizer_33 = wx.BoxSizer(wx.VERTICAL)
-        sizer_32 = wx.BoxSizer(wx.VERTICAL)
-        sizer_31 = wx.BoxSizer(wx.VERTICAL)
-        sizer_17 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_23 = wx.BoxSizer(wx.VERTICAL)
-        sizer_30 = wx.BoxSizer(wx.VERTICAL)
-        sizer_29 = wx.BoxSizer(wx.VERTICAL)
-        sizer_28 = wx.BoxSizer(wx.VERTICAL)
-        sizer_22 = wx.BoxSizer(wx.VERTICAL)
-        sizer_27 = wx.BoxSizer(wx.VERTICAL)
-        sizer_25 = wx.BoxSizer(wx.VERTICAL)
-        sizer_26 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_24 = wx.BoxSizer(wx.VERTICAL)
-        sizer_24.Add(self.label_10, 0, wx.EXPAND, 0)
-        sizer_24.Add(self.combo_box_1, 0, wx.EXPAND, 0)
-        sizer_22.Add(sizer_24, 1, 0, 0)
-        sizer_25.Add(self.label_11, 0, 0, 0)
-        sizer_26.Add(self.text_ctrl_12, 1, wx.ALIGN_CENTER, 0)
-        sizer_26.Add(self.label_12, 0, wx.ALIGN_CENTER, 0)
-        sizer_26.Add(self.text_ctrl_11, 1, wx.ALIGN_CENTER, 0)
-        sizer_25.Add(sizer_26, 1, 0, 0)
-        sizer_22.Add(sizer_25, 1, 0, 0)
-        sizer_27.Add(self.label_13, 0, 0, 0)
-        sizer_27.Add(self.combo_box_2, 0, wx.EXPAND, 0)
-        sizer_22.Add(sizer_27, 1, 0, 0)
-        sizer_22.Add(self.button_2, 0, 0, 0)
-        sizer_17.Add(sizer_22, 1, 0, 0)
-        sizer_28.Add(self.label_14, 0, 0, 0)
-        sizer_28.Add(self.combo_box_3, 0, wx.EXPAND, 0)
-        sizer_23.Add(sizer_28, 1, 0, 0)
-        sizer_29.Add(self.label_15, 0, 0, 0)
-        sizer_29.Add(self.combo_box_4, 0, wx.EXPAND, 0)
-        sizer_23.Add(sizer_29, 1, 0, 0)
-        sizer_30.Add(self.label_16, 0, 0, 0)
-        sizer_30.Add(self.text_ctrl_13, 0, wx.EXPAND, 0)
-        sizer_23.Add(sizer_30, 1, 0, 0)
-        sizer_23.Add(self.button_3, 0, 0, 0)
-        sizer_17.Add(sizer_23, 1, 0, 0)
-        sizer_16.Add(sizer_17, 1, 0, 0)
-        sizer_31.Add(self.label_17, 0, 0, 0)
-        sizer_31.Add(self.text_ctrl_14, 0, wx.EXPAND, 0)
-        sizer_18.Add(sizer_31, 1, 0, 0)
-        sizer_32.Add(self.label_18, 0, 0, 0)
-        sizer_32.Add(self.text_ctrl_15, 0, wx.EXPAND, 0)
-        sizer_20.Add(sizer_32, 1, 0, 0)
-        sizer_33.Add(self.label_19, 0, 0, 0)
-        sizer_33.Add(self.text_ctrl_16, 0, wx.EXPAND, 0)
-        sizer_20.Add(sizer_33, 1, 0, 0)
-        sizer_19.Add(sizer_20, 1, 0, 0)
-        sizer_34.Add(self.label_20, 0, 0, 0)
-        sizer_34.Add(self.text_ctrl_17, 0, wx.EXPAND, 0)
-        sizer_21.Add(sizer_34, 1, 0, 0)
-        sizer_35.Add(self.label_21, 0, 0, 0)
-        sizer_35.Add(self.text_ctrl_18, 0, wx.EXPAND, 0)
-        sizer_21.Add(sizer_35, 1, 0, 0)
-        sizer_19.Add(sizer_21, 1, 0, 0)
-        sizer_18.Add(sizer_19, 1, 0, 0)
-        sizer_16.Add(sizer_18, 1, 0, 0)
-        self.SetSizer(sizer_16)
-        sizer_16.Fit(self)
+        sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1.Add(self.dir, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_1.Add(self.button_1, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 0)
+        
+#        sizer_1.Add(self.dir, 1, 0, 0)
+#        sizer_1.Add(self.button_1, 1, 0, 0)
+        self.SetSizer(sizer_1)
+#        sizer_1.Fit(self)
         self.Layout()
-        # end wxGlade
+    
+    def __bind_events(self):
+        self.Bind(wx.EVT_BUTTON, self.button_2_clicked)
+
+    def button_2_clicked(self, e):
+        print('BUTTON 2 CLICKED')
+        print(self.dir.GetPath())
+        e.Skip()
+#        self.Destroy()
+
+
+
+#class MyDialog1(wx.Dialog):
+#    def __init__(self, *args, **kwds):
+#        # begin wxGlade: MyDialog1.__init__
+#        wx.Dialog.__init__(self, *args, **kwds)
+#        self.label_10 = wx.StaticText(self, wx.ID_ANY, _("Image Type"))
+#        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=[_("Grayscale"), _("Color")], style=wx.CB_DROPDOWN)
+#        self.label_11 = wx.StaticText(self, wx.ID_ANY, _("Image Size"))
+#        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_CENTRE)
+#        self.label_12 = wx.StaticText(self, wx.ID_ANY, _(" x "), style=wx.ALIGN_CENTER)
+#        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.label_13 = wx.StaticText(self, wx.ID_ANY, _("Resize Transformation"))
+#        self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=[_("Crop"), _("Squash")], style=wx.CB_DROPDOWN)
+#        self.button_2 = wx.Button(self, wx.ID_ANY, _("See example"))
+#        self.label_14 = wx.StaticText(self, wx.ID_ANY, _("DB backend"))
+#        self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=[_("LMDB"), _("Sth else...")], style=wx.CB_DROPDOWN)
+#        self.label_15 = wx.StaticText(self, wx.ID_ANY, _("Image Encoding"))
+#        self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=[_("png"), _("jpg"), _("....")], style=wx.CB_DROPDOWN)
+#        self.label_16 = wx.StaticText(self, wx.ID_ANY, _("Dataset name"))
+#        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.button_3 = wx.Button(self, wx.ID_ANY, _("create"))
+#        self.label_17 = wx.StaticText(self, wx.ID_ANY, _("Training Images"))
+#        self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.label_18 = wx.StaticText(self, wx.ID_ANY, _("Minimum samples per class"))
+#        self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.label_19 = wx.StaticText(self, wx.ID_ANY, _("% for validation"))
+#        self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.label_20 = wx.StaticText(self, wx.ID_ANY, _("Maximum Samples per Class"))
+#        self.text_ctrl_17 = wx.TextCtrl(self, wx.ID_ANY, "")
+#        self.label_21 = wx.StaticText(self, wx.ID_ANY, _("% for testing"))
+#        self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, "")
+#
+#        self.__set_properties()
+#        self.__do_layout()
+#        # end wxGlade
+#
+#    def __set_properties(self):
+#        # begin wxGlade: MyDialog1.__set_properties
+#        self.SetTitle(_("MyDialog1"))
+#        self.combo_box_1.SetBackgroundColour(wx.Colour(255, 255, 255))
+#        self.combo_box_1.SetSelection(1)
+#        self.combo_box_2.SetSelection(-1)
+#        self.combo_box_3.SetSelection(0)
+#        self.combo_box_4.SetSelection(-1)
+#        # end wxGlade
+#
+#    def __do_layout(self):
+#        # begin wxGlade: MyDialog1.__do_layout
+#        sizer_16 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_18 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_19 = wx.BoxSizer(wx.HORIZONTAL)
+#        sizer_21 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_35 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_34 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_20 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_33 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_32 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_31 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_17 = wx.BoxSizer(wx.HORIZONTAL)
+#        sizer_23 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_30 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_29 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_28 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_22 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_27 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_25 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_26 = wx.BoxSizer(wx.HORIZONTAL)
+#        sizer_24 = wx.BoxSizer(wx.VERTICAL)
+#        sizer_24.Add(self.label_10, 0, wx.EXPAND, 0)
+#        sizer_24.Add(self.combo_box_1, 0, wx.EXPAND, 0)
+#        sizer_22.Add(sizer_24, 1, 0, 0)
+#        sizer_25.Add(self.label_11, 0, 0, 0)
+#        sizer_26.Add(self.text_ctrl_12, 1, wx.ALIGN_CENTER, 0)
+#        sizer_26.Add(self.label_12, 0, wx.ALIGN_CENTER, 0)
+#        sizer_26.Add(self.text_ctrl_11, 1, wx.ALIGN_CENTER, 0)
+#        sizer_25.Add(sizer_26, 1, 0, 0)
+#        sizer_22.Add(sizer_25, 1, 0, 0)
+#        sizer_27.Add(self.label_13, 0, 0, 0)
+#        sizer_27.Add(self.combo_box_2, 0, wx.EXPAND, 0)
+#        sizer_22.Add(sizer_27, 1, 0, 0)
+#        sizer_22.Add(self.button_2, 0, 0, 0)
+#        sizer_17.Add(sizer_22, 1, 0, 0)
+#        sizer_28.Add(self.label_14, 0, 0, 0)
+#        sizer_28.Add(self.combo_box_3, 0, wx.EXPAND, 0)
+#        sizer_23.Add(sizer_28, 1, 0, 0)
+#        sizer_29.Add(self.label_15, 0, 0, 0)
+#        sizer_29.Add(self.combo_box_4, 0, wx.EXPAND, 0)
+#        sizer_23.Add(sizer_29, 1, 0, 0)
+#        sizer_30.Add(self.label_16, 0, 0, 0)
+#        sizer_30.Add(self.text_ctrl_13, 0, wx.EXPAND, 0)
+#        sizer_23.Add(sizer_30, 1, 0, 0)
+#        sizer_23.Add(self.button_3, 0, 0, 0)
+#        sizer_17.Add(sizer_23, 1, 0, 0)
+#        sizer_16.Add(sizer_17, 1, 0, 0)
+#        sizer_31.Add(self.label_17, 0, 0, 0)
+#        sizer_31.Add(self.text_ctrl_14, 0, wx.EXPAND, 0)
+#        sizer_18.Add(sizer_31, 1, 0, 0)
+#        sizer_32.Add(self.label_18, 0, 0, 0)
+#        sizer_32.Add(self.text_ctrl_15, 0, wx.EXPAND, 0)
+#        sizer_20.Add(sizer_32, 1, 0, 0)
+#        sizer_33.Add(self.label_19, 0, 0, 0)
+#        sizer_33.Add(self.text_ctrl_16, 0, wx.EXPAND, 0)
+#        sizer_20.Add(sizer_33, 1, 0, 0)
+#        sizer_19.Add(sizer_20, 1, 0, 0)
+#        sizer_34.Add(self.label_20, 0, 0, 0)
+#        sizer_34.Add(self.text_ctrl_17, 0, wx.EXPAND, 0)
+#        sizer_21.Add(sizer_34, 1, 0, 0)
+#        sizer_35.Add(self.label_21, 0, 0, 0)
+#        sizer_35.Add(self.text_ctrl_18, 0, wx.EXPAND, 0)
+#        sizer_21.Add(sizer_35, 1, 0, 0)
+#        sizer_19.Add(sizer_21, 1, 0, 0)
+#        sizer_18.Add(sizer_19, 1, 0, 0)
+#        sizer_16.Add(sizer_18, 1, 0, 0)
+#        self.SetSizer(sizer_16)
+#        sizer_16.Fit(self)
+#        self.Layout()
+#        # end wxGlade
 
 # end of class MyDialog1
+
 class MyApp(wx.App):
     def OnInit(self):
         frame_1 = MyFrame(None, wx.ID_ANY, "")
         self.SetTopWindow(frame_1)
         frame_1.Show()
-        dialog = MyDialog(None, wx.ID_ANY, "")
-        dialog.Show()
-        dialog1 = MyDialog1(None, wx.ID_ANY, "")
-        dialog1.Show()
+#        dialog = MyDialog(None, wx.ID_ANY, "")
+#        dialog.Show()
+#        dialog1 = MyDialog1(None, wx.ID_ANY, "")
+#        dialog1.Show()
         return True
 
 # end of class MyApp

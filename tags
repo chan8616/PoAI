@@ -1,0 +1,23 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+MyApp	gui.py	/^class MyApp(wx.App):$/;"	c
+MyDialog	gui.py	/^class MyDialog(wx.Dialog):$/;"	c
+MyDialog1	gui.py	/^class MyDialog1(wx.Dialog):$/;"	c
+MyFrame	gui.py	/^class MyFrame(wx.Frame):$/;"	c
+OnInit	gui.py	/^    def OnInit(self):$/;"	m	class:MyApp
+__bind_events	gui.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
+__do_layout	gui.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
+__do_layout	gui.py	/^    def __do_layout(self):$/;"	m	class:MyDialog1	file:
+__do_layout	gui.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
+__init__	gui.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog
+__init__	gui.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog1
+__init__	gui.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
+__set_properteis	gui.py	/^    def __set_properteis(self):$/;"	m	class:MyDialog1	file:
+__set_properties	gui.py	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
+__set_properties	gui.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
+app	gui.py	/^    app = MyApp(0)$/;"	v	class:MyApp
+button_1_clicked	gui.py	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
