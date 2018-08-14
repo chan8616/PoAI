@@ -10,7 +10,6 @@ import wx
 # begin wxGlade: extracode
 # end wxGlade
 import os
-import dircache
 
 wildcard = "Python source (*.py)|*.py|" \
             "All files (*.*)|*.*"
@@ -277,9 +276,9 @@ class MyFrame(wx.Frame):
 
         if dlg.ShowModal() == wx.ID_OK:
             paths = dlg.GetPaths()
-            print "You chose the following file(s):"
+            print ("You chose the following file(s):")
             for path in paths:
-                print path
+                print (path)
         dlg.Destroy()
 
     def onDir(self, event):
@@ -292,7 +291,8 @@ class MyFrame(wx.Frame):
                            #| wx.DD_CHANGE_DIR
                            )
         if dlg.ShowModal() == wx.ID_OK:
-            print "You chose %s" % dlg.GetPath()
+            print ("You chose %s" % dlg.GetPath())
+
         dlg.Destroy()
 
 # end of class MyFrame
