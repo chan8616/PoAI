@@ -25,10 +25,11 @@ class MyFrame(wx.Frame):
         self.data_left = wx.Panel(self.data, wx.ID_ANY, style=wx.BORDER_SUNKEN)
         #self.data_list = wx.Panel(self.data_left, wx.ID_ANY)
         self.data_dir = wx.GenericDirCtrl(self.data_left, -1, dir=self.currentDirectory)
+        self.data_tree = wx.TreeCtrl(self.data_left, wx.ID_ANY, style=wx.TR_HIDE_ROOT)
         self.data_new = wx.Button(self.data_left, wx.ID_ANY, _("New"))
-        self.data_new.Bind(wx.EVT_BUTTON, self.onDir)
+        #self.data_new.Bind(wx.EVT_BUTTON, self.onDir)
         self.data_load = wx.Button(self.data_left, wx.ID_ANY, _("Load"))
-        self.data_load.Bind(wx.EVT_BUTTON, self.onDir)
+        self.data_load.Bind(wx.EVT_BUTTON, self.data_load_clicked)  #self.onDir)
         self.data_save = wx.Button(self.data_left, wx.ID_ANY, _("Save"))
         self.data_right = wx.Notebook(self.data, wx.ID_ANY, style=0)
         self.data_spec = wx.Panel(self.data_right, wx.ID_ANY)
@@ -90,6 +91,11 @@ class MyFrame(wx.Frame):
         self.model_log.SetBackgroundColour(wx.Colour(235, 235, 235))
         # end wxGlade
 
+
+        # Create, Save delete
+        self.data_new.SetBackgroundColour(wx.Colour(235, 235, 235))
+        self.data_save.SetBackgroundColour(wx.Colour(235, 235, 235))
+
     def __do_layout(self):
         # begin wxGlade: MyFrame.__do_layout
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
@@ -109,7 +115,8 @@ class MyFrame(wx.Frame):
         sizer_4 = wx.BoxSizer(wx.VERTICAL)
         sizer_6 = wx.BoxSizer(wx.HORIZONTAL)
         #sizer_4.Add(self.data_list, 10, 0, 0)
-        sizer_4.Add(self.data_dir, 10, wx.ALL | wx.EXPAND, 0)
+        #sizer_4.Add(self.data_dir, 10, wx.ALL | wx.EXPAND, 0)
+        sizer_4.Add(self.data_tree, 10, wx.ALL | wx.EXPAND, 0)
         sizer_6.Add(self.data_new, 1, wx.ALIGN_CENTER, 0)
         sizer_6.Add(self.data_load, 1, wx.ALIGN_CENTER, 0)
         sizer_6.Add(self.data_save, 1, wx.ALIGN_CENTER, 0)
@@ -260,8 +267,9 @@ class MyFrame(wx.Frame):
         sizer_1.Fit(self)
         self.Layout()
         # end wxGlade
-
-
+    
+        
+   
 
     def onOpenFile(self, event):
         """
@@ -292,7 +300,41 @@ class MyFrame(wx.Frame):
                            #| wx.DD_CHANGE_DIR
                            )
         if dlg.ShowModal() == wx.ID_OK:
-            print "You chose %s" % dlg.GetPath()
+            path = dlg.GetPath()
+            print("You chose %s" % path)
         dlg.Destroy()
+        return path
+
+    def data_load_clicked(self, event):
+        path = self.onDir(event)
+        
+        def buildTree(rootdirPath):
+           rootID = self.data_tree.AppendItem(self.data_tree.GetRootItem(), (os.path.basename(rootdirPath)))
+           self.data_tree.SetItemData(rootID, rootdirPath)
+           print(rootID)
+           extendTree(rootID)
+
+        def extendTree(parentID):
+            parentPath = self.data_tree.GetItemData(parentID)
+
+            subdirs = os.listdir(parentPath)
+            subdirs.sort()
+            for child in subdirs:
+                childPath = os.path.join(parentPath, child)
+                if os.path.isdir(childPath) and not os.path.islink(child):
+                    childID = self.data_tree.AppendItem(parentID, child)
+                    self.data_tree.SetItemData(childID, childPath)
+
+                    grandsubdirs = os.listdir(childPath)
+                    grandsubdirs.sort()
+                    for grandchild in grandsubdirs:
+                        grandchildPath = os.path.join(childPath, grandchild)
+                        if os.path.isdir(grandchildPath) and not os.path.islink(grandchildPath):
+                            grandchildID = self.data_tree.AppendItem(grandchildID, grandchild)
+                            self.data_tree.SetItemData(grandchildID, grandchildPath)
+                    
+        buildTree(path)
+
+        
 
 # end of class MyFrame
