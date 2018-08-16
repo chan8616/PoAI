@@ -10,6 +10,7 @@ import wx
 # begin wxGlade: extracode
 # end wxGlade
 import os
+from MyDialog import MyDialog
 
 # import dircache # dircache is not supported on python 3.x
 
@@ -36,13 +37,14 @@ class MyFrame(wx.Frame):
         self.data_list = wx.Panel(self.data_left, wx.ID_ANY)
         #self.data_dir = wx.GenericDirCtrl(self.data_left, -1, dir=self.currentDirectory)
         self.data_tree = wx.TreeCtrl(self.data_left, wx.ID_ANY)#, style=wx.TR_HIDE_ROOT)
+        self.data_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.data_tree_OnActivated)
         #self.data_tree.AddRoot("Registered Datasets")
         self.buildTree(self.data_tree, os.path.join(self.currentDirectory, "dataset"))
-#        self.data_tree.Bind()
+        self.data_tree.Expand(self.data_tree.GetRootItem())
         self.data_new = wx.Button(self.data_left, wx.ID_ANY, _("New"))
         #self.data_new.Bind(wx.EVT_BUTTON, self.onDir)
-        self.data_load = wx.Button(self.data_left, wx.ID_ANY, _("Load"))
-        self.data_load.Bind(wx.EVT_BUTTON, self.data_load_clicked)  #self.onDir)
+        self.data_load_button = wx.Button(self.data_left, wx.ID_ANY, _("Load"))
+        self.data_load_button.Bind(wx.EVT_BUTTON, self.data_load_button_clicked)  #self.onDir)
         self.data_save = wx.Button(self.data_left, wx.ID_ANY, _("Save"))
         self.data_right = wx.Notebook(self.data, wx.ID_ANY, style=0)
         self.data_spec = wx.Panel(self.data_right, wx.ID_ANY)
@@ -54,7 +56,8 @@ class MyFrame(wx.Frame):
         self.combo_box_2 = wx.ComboBox(self.data_spec, wx.ID_ANY, choices=[], style=wx.CB_DROPDOWN)
         self.text_ctrl_15 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "text_ctrl_15")
         self.text_ctrl_16 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "text_ctrl_16")
-        self.button_9 = wx.Button(self.data_spec, wx.ID_ANY, _("Select"))
+        self.data_select = wx.Button(self.data_spec, wx.ID_ANY, _("Select"))
+        self.data_select.Bind(wx.EVT_BUTTON, self.data_select_button_clicked)  #self.onDir)
         #self.data_log = wx.TextCtrl(self.data, wx.ID_ANY, _("data_log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
         self.models = wx.Panel(self.main_tab, wx.ID_ANY)
         self.model_left = wx.Panel(self.models, wx.ID_ANY, style=wx.BORDER_SUNKEN)
@@ -63,7 +66,9 @@ class MyFrame(wx.Frame):
         self.model_tree = wx.TreeCtrl(self.model_left, wx.ID_ANY)#, style=wx.TR_HIDE_ROOT)
         #self.model_tree.AddRoot("Pretrained Models")
         self.buildTree(self.model_tree, os.path.join(os.getcwd(), "model"))
-        self.model_make = wx.Button(self.model_left, wx.ID_ANY, _("Make Pretrained Model"))
+        self.model_tree.Expand(self.model_tree.GetRootItem())
+        self.model_make_button = wx.Button(self.model_left, wx.ID_ANY, _("Make Pretrained Model"))
+        self.model_make_button.Bind(wx.EVT_BUTTON, self.model_make_button_clicked) # = wx.Button(self.model_left, wx.ID_ANY, _("Make Pretrained Model"))
         self.model_right = wx.Notebook(self.models, wx.ID_ANY, style=0)
         self.model_test_single = wx.Panel(self.model_right, wx.ID_ANY)
         self.button_1 = wx.Button(self.model_test_single, wx.ID_ANY, _("Browse"))
@@ -73,11 +78,12 @@ class MyFrame(wx.Frame):
         self.model_test_folder = wx.Panel(self.model_right, wx.ID_ANY)
         self.button_4 = wx.Button(self.model_test_folder, wx.ID_ANY, _("Browse"))
         self.button_4.Bind(wx.EVT_BUTTON, self.onDir)
-        self.text_ctrl_2 = wx.TextCtrl(self.model_test_folder, wx.ID_ANY, "text_ctrl_2")
+        self.text_ctrl_2 = wx.TextCtrl(self.model_test_folder, wx.ID_ANY, "text_ctrl_2", style=wx.TE_READONLY)
         self.text_ctrl_3 = wx.TextCtrl(self.model_test_folder, wx.ID_ANY, "text_ctrl_3")
         self.text_ctrl_4 = wx.TextCtrl(self.model_test_folder, wx.ID_ANY, "text_ctrl_4")
         self.button_6 = wx.Button(self.model_test_folder, wx.ID_ANY, _("Classify Many"))
         self.button_5 = wx.Button(self.model_test_folder, wx.ID_ANY, _("Top N predictions per Category"))
+
         self.model_pretrained_data = wx.Panel(self.model_right, wx.ID_ANY)
         self.model_pretrained_data_list = wx.ListBox(self.model_pretrained_data, wx.ID_ANY, choices=[_("MNIST"), _("CIFAR-10"), _("CIFAR-100")], style=wx.LB_ALWAYS_SB | wx.LB_SINGLE)
         self.panel_1 = wx.Panel(self.model_pretrained_data, wx.ID_ANY)
@@ -93,6 +99,7 @@ class MyFrame(wx.Frame):
         self.text_ctrl_14 = wx.TextCtrl(self.model_pretrained_option, wx.ID_ANY, "text_ctrl_14")
         self.button_10 = wx.Button(self.model_pretrained_option, wx.ID_ANY, _("Advanced Options"))
         self.button_11 = wx.Button(self.model_pretrained_option, wx.ID_ANY, _("Train"))
+
         #self.model_log = wx.TextCtrl(self.models, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.log = wx.TextCtrl(self, wx.ID_ANY, _("log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
@@ -142,7 +149,7 @@ class MyFrame(wx.Frame):
         #sizer_4.Add(self.data_dir, 10, wx.ALL | wx.EXPAND, 0)
         sizer_4.Add(self.data_tree, 10, wx.ALL | wx.EXPAND, 0)
         sizer_6.Add(self.data_new, 1, wx.ALIGN_CENTER, 0)
-        sizer_6.Add(self.data_load, 1, wx.ALIGN_CENTER, 0)
+        sizer_6.Add(self.data_load_button, 1, wx.ALIGN_CENTER, 0)
         sizer_6.Add(self.data_save, 1, wx.ALIGN_CENTER, 0)
         sizer_4.Add(sizer_6, 1, wx.ALIGN_CENTER, 0)
         self.data_left.SetSizer(sizer_4)
@@ -178,7 +185,7 @@ class MyFrame(wx.Frame):
         label_16.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_16, (7, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL | wx.ALL, 1)
         grid_sizer_2.Add(self.text_ctrl_16, (7, 7), (1, 27), wx.EXPAND, 0)
-        grid_sizer_2.Add(self.button_9, (18, 35), (1, 4), 0, 0)
+        grid_sizer_2.Add(self.data_select, (18, 35), (1, 4), 0, 0)
         self.data_spec.SetSizer(grid_sizer_2)
         grid_sizer_2.AddGrowableRow(17)
         grid_sizer_2.AddGrowableCol(7)
@@ -192,7 +199,7 @@ class MyFrame(wx.Frame):
         #sizer_11.Add(self.model_list, 10, 0, 0)
         #sizer_11.Add(self.model_dir, 10, wx.ALL | wx.EXPAND, 0)
         sizer_11.Add(self.model_tree, 10, wx.ALL | wx.EXPAND, 0)
-        sizer_11.Add(self.model_make, 0, wx.ALIGN_CENTER, 0)
+        sizer_11.Add(self.model_make_button, 0, wx.ALIGN_CENTER, 0)
         self.model_left.SetSizer(sizer_11)
         sizer_9.Add(self.model_left, 1, wx.EXPAND, 0)
         label_1 = wx.StaticText(self.model_test_single, wx.ID_ANY, _("Upload image"))
@@ -231,6 +238,7 @@ class MyFrame(wx.Frame):
         grid_sizer_3.AddGrowableRow(15)
         grid_sizer_3.AddGrowableCol(16)
         grid_sizer_3.AddGrowableCol(17)
+
         sizer_7.Add(self.model_pretrained_data_list, 1, wx.ALL | wx.EXPAND, 0)
         sizer_7.Add(self.panel_1, 2, wx.EXPAND, 0)
         self.model_pretrained_data.SetSizer(sizer_7)
@@ -318,7 +326,8 @@ class MyFrame(wx.Frame):
         Show the DirDialog and print the user's choice to stdout
         """
         dlg = wx.DirDialog(self, "Choose a directory:",
-                           style=wx.DD_DEFAULT_STYLE
+                           defaultPath=os.path.join(self.currentDirectory, "dataset"),
+                           style=wx.DD_DEFAULT_STYLE 
                            #| wx.DD_DIR_MUST_EXIST
                            #| wx.DD_CHANGE_DIR
                            )
@@ -328,23 +337,63 @@ class MyFrame(wx.Frame):
         dlg.Destroy()
         return path
 
-    def data_load_clicked(self, event):
+    def data_load_button_clicked(self, event):
         path = self.onDir(event)
-        
         self.buildTree(self.data_tree, path)
+   
+    def data_tree_OnActivated(self, event):
+        item = self.data_tree.GetFocusedItem()
+ #     self.getStatistics(self.data_tree.GetItemData(item))
+ #     def getStatistics(self, rootdirPath):
+        dirPath = self.data_tree.GetItemData(item)
+        self.text_ctrl_9.SetValue("")
+        self.text_ctrl_9.write(dirPath)
+        self.text_ctrl_10.SetValue("")
+        self.text_ctrl_10.write("Not Implemented")
+        self.text_ctrl_11.SetValue("")
+        self.text_ctrl_11.write("Not Implemented")
+        self.text_ctrl_12.SetValue("")
+        self.text_ctrl_12.write("Not Implemented")
+        self.text_ctrl_13.SetValue("")
+        self.text_ctrl_13.write("Not Implemented")
+        self.text_ctrl_15.SetValue("")
+        self.text_ctrl_15.write("10")
+        self.text_ctrl_16.SetValue("")
+        self.text_ctrl_16.write("0")
+        #datadirPath = os.path.join(rootdirPath, 'Data/')
+        #file_list = os.listdir(datadirPath)
 
-    def getStatistics(self, rootdirPath):
-        self.text_ctrl_9.write(rootdirPath)
-        datadirPath = os.path.join(rootdirPath, 'Data/')
-        file_list = os.listdir(datadirPath)
 
-        
+    def data_select_button_clicked(self, event):
+        self.datasetID = datasetID = self.data_tree.GetFocusedItem()
+        datasetName = self.data_tree.GetItemText(datasetID)
+        parentID = self.data_tree.GetItemParent(datasetID)
+        if parentID == self.data_tree.GetRootItem():
+            print("Dataset '%s' is Selected!"%datasetName)
+
+        # access to selected dataset path with this code
+        datasetPath = self.data_tree.GetItemData(self.datasetID)
+
+    def model_make_button_clicked(self, event):
+        dlg = MyDialog(self, wx.ID_ANY, "")
+        dlg.Show()
+
+
     def buildTree(self, tree, rootdirPath):
-        print(rootdirPath)
-        rootID = tree.AppendItem(tree.GetRootItem(), (os.path.basename(rootdirPath)))
-        tree.SetItemData(rootID, rootdirPath)
-        print(rootID)
-        self.extendTree(tree, rootID)
+        def itemExist(tree, data, rootID):
+            item, cookie = tree.GetFirstChild(rootID)
+            while item.IsOk():
+                if tree.GetItemData(item) == data:
+                    return True
+                item, cookie = tree.GetNextChild(rootID, cookie)
+            return False
+
+        if tree.IsEmpty() or not itemExist(tree, rootdirPath, tree.GetRootItem()):
+            rootID = tree.AppendItem(tree.GetRootItem(), (os.path.basename(rootdirPath)))
+            tree.SetItemData(rootID, rootdirPath)
+            self.extendTree(tree, rootID)
+        else:
+            print("Dataset is already exist!")
 
     def extendTree(self, tree, parentID):
         parentPath = tree.GetItemData(parentID)
@@ -365,5 +414,4 @@ class MyFrame(wx.Frame):
                         grandchildID = tree.AppendItem(childID, grandchild)
                         tree.SetItemData(grandchildID, grandchildPath)
                     
-
 # end of class MyFrame
