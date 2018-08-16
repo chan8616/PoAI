@@ -16,9 +16,9 @@ import gettext
 import os
 
 class MyDialog(wx.Dialog):
-    def __init__(self, *args, **kwds):
+    def __init__(self, parent, id, title):
         # begin wxGlade: MyDialog.__init__
-        wx.Dialog.__init__(self, *args, **kwds)
+        wx.Dialog.__init__(self, parent, id, title)
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_1")
         self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_2")
         self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_3")
@@ -28,7 +28,9 @@ class MyDialog(wx.Dialog):
         self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_7")
         self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_8")
         self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_9", style=wx.TE_MULTILINE)
-        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_10")
+        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_10" 
+                if parent.datasetID is None else parent.datasetName, style=wx.TE_READONLY)
+#        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_10")
         self.button_1 = wx.Button(self, wx.ID_ANY, "Advanced Options")
         self.button_1.Bind(wx.EVT_BUTTON, self.OnButton_1)
         self.button_2 = wx.Button(self, wx.ID_OK, "Train")

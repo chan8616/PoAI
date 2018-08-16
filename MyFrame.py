@@ -41,6 +41,7 @@ class MyFrame(wx.Frame):
         #self.data_tree.AddRoot("Registered Datasets")
         self.buildTree(self.data_tree, os.path.join(self.currentDirectory, "dataset"))
         self.data_tree.Expand(self.data_tree.GetRootItem())
+        self.datasetID = None
         self.data_new = wx.Button(self.data_left, wx.ID_ANY, _("New"))
         #self.data_new.Bind(wx.EVT_BUTTON, self.onDir)
         self.data_load_button = wx.Button(self.data_left, wx.ID_ANY, _("Load"))
@@ -83,7 +84,7 @@ class MyFrame(wx.Frame):
         self.text_ctrl_4 = wx.TextCtrl(self.model_test_folder, wx.ID_ANY, "text_ctrl_4")
         self.button_6 = wx.Button(self.model_test_folder, wx.ID_ANY, _("Classify Many"))
         self.button_5 = wx.Button(self.model_test_folder, wx.ID_ANY, _("Top N predictions per Category"))
-
+        """
         self.model_pretrained_data = wx.Panel(self.model_right, wx.ID_ANY)
         self.model_pretrained_data_list = wx.ListBox(self.model_pretrained_data, wx.ID_ANY, choices=[_("MNIST"), _("CIFAR-10"), _("CIFAR-100")], style=wx.LB_ALWAYS_SB | wx.LB_SINGLE)
         self.panel_1 = wx.Panel(self.model_pretrained_data, wx.ID_ANY)
@@ -99,7 +100,7 @@ class MyFrame(wx.Frame):
         self.text_ctrl_14 = wx.TextCtrl(self.model_pretrained_option, wx.ID_ANY, "text_ctrl_14")
         self.button_10 = wx.Button(self.model_pretrained_option, wx.ID_ANY, _("Advanced Options"))
         self.button_11 = wx.Button(self.model_pretrained_option, wx.ID_ANY, _("Train"))
-
+        """
         #self.model_log = wx.TextCtrl(self.models, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.log = wx.TextCtrl(self, wx.ID_ANY, _("log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
@@ -117,7 +118,7 @@ class MyFrame(wx.Frame):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle(_("Tensorflow GUI"))
         #self.data_log.SetBackgroundColour(wx.Colour(235, 235, 235))
-        self.model_pretrained_data_list.SetSelection(0)
+        #self.model_pretrained_data_list.SetSelection(0)
         #self.model_log.SetBackgroundColour(wx.Colour(235, 235, 235))
         self.log.SetBackgroundColour(wx.Colour(235, 235, 235))
         # end wxGlade
@@ -238,7 +239,7 @@ class MyFrame(wx.Frame):
         grid_sizer_3.AddGrowableRow(15)
         grid_sizer_3.AddGrowableCol(16)
         grid_sizer_3.AddGrowableCol(17)
-
+        """
         sizer_7.Add(self.model_pretrained_data_list, 1, wx.ALL | wx.EXPAND, 0)
         sizer_7.Add(self.panel_1, 2, wx.EXPAND, 0)
         self.model_pretrained_data.SetSizer(sizer_7)
@@ -284,10 +285,11 @@ class MyFrame(wx.Frame):
         grid_sizer_4.AddGrowableRow(17)
         grid_sizer_4.AddGrowableCol(17)
         grid_sizer_4.AddGrowableCol(35)
+        """
         self.model_right.AddPage(self.model_test_single, _("Test (Single Image)"))
         self.model_right.AddPage(self.model_test_folder, _("Test (Image Folder)"))
-        self.model_right.AddPage(self.model_pretrained_data, _("Select Dataset"))
-        self.model_right.AddPage(self.model_pretrained_option, _("Options"))
+        #self.model_right.AddPage(self.model_pretrained_data, _("Select Dataset"))
+        #self.model_right.AddPage(self.model_pretrained_option, _("Options"))
         sizer_10.Add(self.model_right, 1, wx.ALIGN_CENTER | wx.EXPAND, 0)
         sizer_9.Add(sizer_10, 3, wx.EXPAND, 0)
         sizer_8.Add(sizer_9, 2, wx.EXPAND, 0)
@@ -366,7 +368,7 @@ class MyFrame(wx.Frame):
 
     def data_select_button_clicked(self, event):
         self.datasetID = datasetID = self.data_tree.GetFocusedItem()
-        datasetName = self.data_tree.GetItemText(datasetID)
+        self.datasetName = datasetName = self.data_tree.GetItemText(datasetID)
         parentID = self.data_tree.GetItemParent(datasetID)
         if parentID == self.data_tree.GetRootItem():
             print("Dataset '%s' is Selected!"%datasetName)
