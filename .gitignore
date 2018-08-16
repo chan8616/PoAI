@@ -2,7 +2,7 @@
 
 ### Python ###
 __pycache__/
-
+*.pyc
 
 ### checkpoint ###
 checkpoint/
