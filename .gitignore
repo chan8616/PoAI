@@ -12,7 +12,6 @@ checkpoint/
 *.pickle
 
 ### dataset ###
-dataset/
 MNIST/
 test/
 CIFAR-10/*.py
