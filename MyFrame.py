@@ -10,7 +10,16 @@ import wx
 # begin wxGlade: extracode
 # end wxGlade
 import os
-import dircache
+# import dircache # dircache is not supported on python 3.x
+
+import sys
+
+VERSION_2 = True if sys.version[0] == '2' else False
+
+if VERSION_2:
+    import dircache
+
+from utils.util import pprint, aassert
 
 wildcard = "Python source (*.py)|*.py|" \
             "All files (*.*)|*.*"
@@ -185,7 +194,7 @@ class MyFrame(wx.Frame):
         label_3.SetFont(wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, ""))
         grid_sizer_3.Add(label_3, (5, 1), (1, 8), 0, 0)
         grid_sizer_3.Add(self.text_ctrl_3, (6, 1), (1, 24), wx.EXPAND, 0)
-        label_4 = wx.StaticText(self.model_test_folder, wx.ID_ANY, _("Leave blacnk to use all"))
+        label_4 = wx.StaticText(self.model_test_folder, wx.ID_ANY, _("Leave blank to use all"))
         label_4.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.LIGHT, 0, ""))
         grid_sizer_3.Add(label_4, (7, 1), (1, 4), 0, 0)
         label_5 = wx.StaticText(self.model_test_folder, wx.ID_ANY, _("Number of images to show per category"))
@@ -277,9 +286,9 @@ class MyFrame(wx.Frame):
 
         if dlg.ShowModal() == wx.ID_OK:
             paths = dlg.GetPaths()
-            print "You chose the following file(s):"
+            pprint("You chose the following file(s):")
             for path in paths:
-                print path
+                pprint(path)
         dlg.Destroy()
 
     def onDir(self, event):
@@ -292,7 +301,7 @@ class MyFrame(wx.Frame):
                            #| wx.DD_CHANGE_DIR
                            )
         if dlg.ShowModal() == wx.ID_OK:
-            print "You chose %s" % dlg.GetPath()
+            pprint("You chose %s" % dlg.GetPath())
         dlg.Destroy()
 
 # end of class MyFrame
