@@ -37,7 +37,7 @@ class MyFrame(wx.Frame):
         #self.data_dir = wx.GenericDirCtrl(self.data_left, -1, dir=self.currentDirectory)
         self.data_tree = wx.TreeCtrl(self.data_left, wx.ID_ANY)#, style=wx.TR_HIDE_ROOT)
         #self.data_tree.AddRoot("Registered Datasets")
-        self.buildTree(self.data_tree, os.path.join(os.getcwd(), "dataset"))
+        self.buildTree(self.data_tree, os.path.join(self.currentDirectory, "dataset"))
 #        self.data_tree.Bind()
         self.data_new = wx.Button(self.data_left, wx.ID_ANY, _("New"))
         #self.data_new.Bind(wx.EVT_BUTTON, self.onDir)
@@ -55,7 +55,7 @@ class MyFrame(wx.Frame):
         self.text_ctrl_15 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "text_ctrl_15")
         self.text_ctrl_16 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "text_ctrl_16")
         self.button_9 = wx.Button(self.data_spec, wx.ID_ANY, _("Select"))
-        self.data_log = wx.TextCtrl(self.data, wx.ID_ANY, _("data_log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
+        #self.data_log = wx.TextCtrl(self.data, wx.ID_ANY, _("data_log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
         self.models = wx.Panel(self.main_tab, wx.ID_ANY)
         self.model_left = wx.Panel(self.models, wx.ID_ANY, style=wx.BORDER_SUNKEN)
         #self.model_list = wx.Panel(self.model_left, wx.ID_ANY)
@@ -93,23 +93,26 @@ class MyFrame(wx.Frame):
         self.text_ctrl_14 = wx.TextCtrl(self.model_pretrained_option, wx.ID_ANY, "text_ctrl_14")
         self.button_10 = wx.Button(self.model_pretrained_option, wx.ID_ANY, _("Advanced Options"))
         self.button_11 = wx.Button(self.model_pretrained_option, wx.ID_ANY, _("Train"))
-        self.model_log = wx.TextCtrl(self.models, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
+        #self.model_log = wx.TextCtrl(self.models, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.log = wx.TextCtrl(self, wx.ID_ANY, _("log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
 
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
 
         # Redirect stdout to data_log
-        self.redir = Redirection(self.data_log)
+        #self.redir = Redirection(self.data_log)
+        self.redir = Redirection(self.log)
         sys.stdout = self.redir
 
 
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
         self.SetTitle(_("Tensorflow GUI"))
-        self.data_log.SetBackgroundColour(wx.Colour(235, 235, 235))
+        #self.data_log.SetBackgroundColour(wx.Colour(235, 235, 235))
         self.model_pretrained_data_list.SetSelection(0)
-        self.model_log.SetBackgroundColour(wx.Colour(235, 235, 235))
+        #self.model_log.SetBackgroundColour(wx.Colour(235, 235, 235))
+        self.log.SetBackgroundColour(wx.Colour(235, 235, 235))
         # end wxGlade
 
 
@@ -184,7 +187,7 @@ class MyFrame(wx.Frame):
         sizer_5.Add(self.data_right, 1, wx.ALIGN_CENTER | wx.EXPAND, 0)
         sizer_3.Add(sizer_5, 3, wx.EXPAND, 0)
         sizer_2.Add(sizer_3, 2, wx.EXPAND, 0)
-        sizer_2.Add(self.data_log, 1, wx.EXPAND, 0)
+        #sizer_2.Add(self.data_log, 1, wx.EXPAND, 0)
         self.data.SetSizer(sizer_2)
         #sizer_11.Add(self.model_list, 10, 0, 0)
         #sizer_11.Add(self.model_dir, 10, wx.ALL | wx.EXPAND, 0)
@@ -280,11 +283,12 @@ class MyFrame(wx.Frame):
         sizer_10.Add(self.model_right, 1, wx.ALIGN_CENTER | wx.EXPAND, 0)
         sizer_9.Add(sizer_10, 3, wx.EXPAND, 0)
         sizer_8.Add(sizer_9, 2, wx.EXPAND, 0)
-        sizer_8.Add(self.model_log, 1, wx.EXPAND, 0)
+        #sizer_8.Add(self.model_log, 1, wx.EXPAND, 0)
         self.models.SetSizer(sizer_8)
         self.main_tab.AddPage(self.data, _("Datasets"))
         self.main_tab.AddPage(self.models, _("Models"))
-        sizer_1.Add(self.main_tab, 1, wx.EXPAND, 0)
+        sizer_1.Add(self.main_tab, 2, wx.EXPAND, 0)
+        sizer_1.Add(self.log, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()
