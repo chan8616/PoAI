@@ -20,7 +20,7 @@ VERSION_2 = True if sys.version[0] == '2' else False
 if VERSION_2:
     import dircache
 
-from utils.util import pprint, aassert
+from utils.util import Redirection
 
 wildcard = "Python source (*.py)|*.py|" \
             "All files (*.*)|*.*"
@@ -51,7 +51,7 @@ class MyFrame(wx.Frame):
         self.text_ctrl_15 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "")
         self.text_ctrl_16 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "")
         self.button_9 = wx.Button(self.data_spec, wx.ID_ANY, _("Create"))
-        self.data_log = wx.TextCtrl(self.data, wx.ID_ANY, _("log field..\n\n\n\n"), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.data_log = wx.TextCtrl(self.data, wx.ID_ANY, _(""), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
         self.models = wx.Panel(self.main_tab, wx.ID_ANY)
         self.model_left = wx.Panel(self.models, wx.ID_ANY, style=wx.BORDER_SUNKEN)
         #self.model_list = wx.Panel(self.model_left, wx.ID_ANY)
@@ -91,6 +91,11 @@ class MyFrame(wx.Frame):
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
+
+        # Redirect stdout to data_log
+        self.redir = Redirection(self.data_log)
+        sys.stdout = self.redir
+
 
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
@@ -285,9 +290,9 @@ class MyFrame(wx.Frame):
 
         if dlg.ShowModal() == wx.ID_OK:
             paths = dlg.GetPaths()
-            pprint("You chose the following file(s):")
+            print("You chose the following file(s):")
             for path in paths:
-                pprint(path)
+                print(path)
         dlg.Destroy()
 
     def onDir(self, event):
@@ -300,7 +305,7 @@ class MyFrame(wx.Frame):
                            #| wx.DD_CHANGE_DIR
                            )
         if dlg.ShowModal() == wx.ID_OK:
-            pprint("You chose %s" % dlg.GetPath())
+            print("You chose %s" % dlg.GetPath())
         dlg.Destroy()
 
 # end of class MyFrame

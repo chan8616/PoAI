@@ -147,23 +147,23 @@ class LOGISTIC(object):
 
     def load(self, checkpoint_dir, name=None):
         import re
-        pprint(" [*] Reading checkpoints....")
+        print(" [*] Reading checkpoints....")
         self.model_name = name if name else self._model_name
         checkpoint_dir = os.path.join(checkpoint_dir, self.model_name)
         if os.path.exists(checkpoint_dir):
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
             if ckpt and ckpt.model_checkpoint_path:
                 ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-                pprint(" [!] checkpoint name is {}".format(ckpt_name))
+                print(" [!] checkpoint name is {}".format(ckpt_name))
                 self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
                 counter = int(next(re.finditer("(\d+)(?!.*\d)",ckpt_name)).group(0)) if not name else 0 # TODO
-                pprint(" [*] Success to read {}".format(ckpt_name))
+                print(" [*] Success to read {}".format(ckpt_name))
                 return True, counter+1
             else:
-                pprint(" [@] Failed to read the checkpoint.")
+                print(" [@] Failed to read the checkpoint.")
                 aassert(False)
         else:
-            pprint(" [@] Failed to find the checkpoint.")
+            print(" [@] Failed to find the checkpoint.")
             self.sess.run(tf.global_variables_initializer())
             return False, 0
 
@@ -178,7 +178,7 @@ class LOGISTIC(object):
 
     def train(self, epoch_trained, checkpoint_dir, checkpoint_name, epoch_interval=None, step_interval=None,
               train_data = None, train_label = None):
-        pprint(" [*] Train data preprocessing...")
+        print(" [*] Train data preprocessing...")
         if self.dataset in open_data.keys():
             self.train_data, self.train_label, self.test_data, self.test_label = open_data[self.dataset]()
             real_shape = list(self.train_data.shape[1:])
@@ -191,23 +191,23 @@ class LOGISTIC(object):
             self.N = self.train_label.shape[0]
             self.train_data_path, self.test_data_path = None, None
         else:
-            # pprint(type(train_data), type(train_label))
+            # print(type(train_data), type(train_label))
             self.train_data, self.train_data_path, self.train_label, real_shape = data_input(train_data,True, train_label)
-            # pprint(self.train_label)
+            # print(self.train_label)
             aassert(self.image_size == real_shape, "unmatch {} vs {}".format(self.image_size, real_shape)) # TODO : cropping
             aassert(self.classes == int(self.train_label.shape[-1]),
                      " [!] Invalid classes {} vs {}, {}".format(type(self.classes), type(self.train_label), self.train_label.shape[-1]))
             self.N = self.train_data.shape[0] if self.train_data else len(self.train_data_path)
-        pprint(" [!] Train data preprocessing... is done.")
+        print(" [!] Train data preprocessing... is done.")
 
         self.no_batch = int(np.ceil(self.N/self.batch_size))
 
         global_step = 0
-        # pprint(self.epochs, epoch_trained)
+        # print(self.epochs, epoch_trained)
         if self.epochs <= epoch_trained:
-            pprint(" [!] Training is already done.")
+            print(" [!] Training is already done.")
             return
-        pprint(" [*] Training start...")
+        print(" [*] Training start...")
         plt.ion()
         fig=plt.figure('{}_training '.format(self.model_name))
         for epoch in range(self.epochs-epoch_trained):
@@ -218,14 +218,14 @@ class LOGISTIC(object):
                 self.sess.run(self.optim, feed_dict=feed_dict)
                 if step_interval and np.mod(global_step, step_interval) == 0:
                     loss = self.sess.run(self.loss, feed_dict=feed_dict)
-                    pprint("[{}] iter, loss : {}".format(global_step, loss))
+                    print("[{}] iter, loss : {}".format(global_step, loss))
                     report_plot(loss, global_step-step_interval, self.model_name)
             if epoch_interval and np.mod(epoch, epoch_interval)==0:
                 loss = self.sess.run(self.loss, feed_dict=feed_dict)
                 report_plot(loss, epoch, self.model_name)
-                pprint("[{}] epoch, loss : {}".format(epoch, loss))
+                print("[{}] epoch, loss : {}".format(epoch, loss))
             self.save(checkpoint_dir, epoch, checkpoint_name)
-        pprint(" [!] Trainining is done.")
+        print(" [!] Trainining is done.")
 
 
     def test(self, test_data = None, test_label=None):
@@ -240,9 +240,9 @@ class LOGISTIC(object):
         if self.dataset not in open_data.keys():
             self.test_data, self.test_data_path, self.test_label, image_size = data_input(test_data,False, test_label)
         N = self.test_data.shape[0] if self.test_data is not None else len(self.test_data_path)
-        # pprint(len(self.test_label), N)
+        # print(len(self.test_label), N)
 
-        pprint(" [*] Test start...")
+        print(" [*] Test start...")
         with open(self.model_name, 'w') as f:
             correct = 0.
             for ith in range(N):
@@ -253,7 +253,7 @@ class LOGISTIC(object):
                     image = image_load(self.test_data_path[ith])
                     pred = self.sess.run(self.prediction, feed_dict={self.X:image[np.newaxis]})
                 if self.test_label is not None:
-                    # pprint(ith)
+                    # print(ith)
                     w.append(int(np.argmax(self.test_label[ith])))
                 w.append(pred) # TODO : multi-label
                 if self.test_label is not None:
@@ -267,7 +267,7 @@ class LOGISTIC(object):
             if self.test_label is not None:
                 result += ", Accuracy : [{}]".format(correct/float(N))
             f.write(result)
-        pprint(" [!] Test is done.")
+        print(" [!] Test is done.")
 
     @property
     def _model_name(self):
