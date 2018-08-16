@@ -10,6 +10,7 @@ import wx
 # begin wxGlade: extracode
 # end wxGlade
 import os
+
 # import dircache # dircache is not supported on python 3.x
 
 import sys
@@ -269,8 +270,6 @@ class MyFrame(wx.Frame):
         sizer_1.Fit(self)
         self.Layout()
         # end wxGlade
-
-
 
     def onOpenFile(self, event):
         """
