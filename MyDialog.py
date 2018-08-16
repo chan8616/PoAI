@@ -30,7 +30,8 @@ class MyDialog(wx.Dialog):
         self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_9", style=wx.TE_MULTILINE)
         self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_10")
         self.button_1 = wx.Button(self, wx.ID_ANY, "Advanced Options")
-        self.button_2 = wx.Button(self, wx.ID_ANY, "Train")
+        self.button_1.Bind(wx.EVT_BUTTON, self.OnButton_1)
+        self.button_2 = wx.Button(self, wx.ID_OK, "Train")
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
@@ -79,6 +80,21 @@ class MyDialog(wx.Dialog):
         grid_sizer_1.Fit(self)
         self.Layout()
         # end wxGlade
+    
+    def OnButton_1(self, event):
+        pass
+
+    def GetInfo(self):
+        return [self.text_ctrl_1.GetLineText(0),
+                self.text_ctrl_2.GetLineText(0),
+                self.text_ctrl_3.GetLineText(0),
+                self.text_ctrl_4.GetLineText(0),
+                self.text_ctrl_5.GetLineText(0),
+                self.text_ctrl_6.GetLineText(0),
+                self.text_ctrl_7.GetLineText(0),
+                self.text_ctrl_8.GetLineText(0),
+                self.text_ctrl_9.GetLineText(0),
+                self.text_ctrl_10.GetLineText(0)] 
 
 # end of class MyDialog
 

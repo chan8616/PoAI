@@ -376,7 +376,10 @@ class MyFrame(wx.Frame):
 
     def model_make_button_clicked(self, event):
         dlg = MyDialog(self, wx.ID_ANY, "")
-        dlg.Show()
+        if dlg.ShowModal() == wx.ID_OK:
+            TrainingInfo = dlg.GetInfo()
+            print(TrainingInfo)
+        dlg.Destroy()
 
 
     def buildTree(self, tree, rootdirPath):
