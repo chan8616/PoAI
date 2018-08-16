@@ -9,6 +9,15 @@ import os
 from PIL import Image
 import matplotlib.pyplot as plt
 
+import wx
+
+class Redirection(object):
+    def __init__(self, log_area):
+        self.out = log_area
+
+    def write(self, string):
+        self.out.WriteText(string+'\n')
+
 def shuffle(x, y):
     from random import shuffle as sf
     d = list(zip(x,y))
@@ -27,9 +36,6 @@ def pickle_load(file_name):
 
 def image_load(file_path):            # load image as float numpy array
     return np.array(Image.open(file_path)).astype(float)/255.
-
-def pprint(*message): # TODO : Print message to log section
-    print(*message)
 
 def aassert(statement, message=''): #TODO
     if not statement:
