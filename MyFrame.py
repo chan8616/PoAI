@@ -30,7 +30,9 @@ class MyFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: MyFrame.__init__
         wx.Frame.__init__(self, *args, **kwds)
+        self.Info = {}
         self.currentDirectory = os.getcwd()
+
         self.main_tab = wx.Notebook(self, wx.ID_ANY, style=0)
         self.data = wx.Panel(self.main_tab, wx.ID_ANY)
         self.data_left = wx.Panel(self.data, wx.ID_ANY, style=wx.BORDER_SUNKEN)
@@ -41,7 +43,6 @@ class MyFrame(wx.Frame):
         #self.data_tree.AddRoot("Registered Datasets")
         self.buildTree(self.data_tree, os.path.join(self.currentDirectory, "dataset"))
         self.data_tree.Expand(self.data_tree.GetRootItem())
-        self.datasetID = None
         self.data_new = wx.Button(self.data_left, wx.ID_ANY, _("New"))
         #self.data_new.Bind(wx.EVT_BUTTON, self.onDir)
         self.data_load_button = wx.Button(self.data_left, wx.ID_ANY, _("Load"))
@@ -58,16 +59,19 @@ class MyFrame(wx.Frame):
         self.text_ctrl_15 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "text_ctrl_15")
         self.text_ctrl_16 = wx.TextCtrl(self.data_spec, wx.ID_ANY, "text_ctrl_16")
         self.data_select = wx.Button(self.data_spec, wx.ID_ANY, _("Select"))
-        self.data_select.Bind(wx.EVT_BUTTON, self.data_select_button_clicked)  #self.onDir)
+        self.data_select.Bind(wx.EVT_BUTTON, self.data_select_button_clicked)
         #self.data_log = wx.TextCtrl(self.data, wx.ID_ANY, _("data_log\n"), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
         self.models = wx.Panel(self.main_tab, wx.ID_ANY)
         self.model_left = wx.Panel(self.models, wx.ID_ANY, style=wx.BORDER_SUNKEN)
         #self.model_list = wx.Panel(self.model_left, wx.ID_ANY)
         #self.model_dir = wx.GenericDirCtrl(self.model_left, -1, dir=self.currentDirectory)
-        self.model_tree = wx.TreeCtrl(self.model_left, wx.ID_ANY)#, style=wx.TR_HIDE_ROOT)
-        #self.model_tree.AddRoot("Pretrained Models")
-        self.buildTree(self.model_tree, os.path.join(os.getcwd(), "model"))
-        self.model_tree.Expand(self.model_tree.GetRootItem())
+        self.model_tree = wx.TreeCtrl(self.model_left, wx.ID_ANY, style=wx.TR_HIDE_ROOT | wx.TR_DEFAULT_STYLE | wx.TR_LINES_AT_ROOT) #wx.TR_NO_LINES)
+        self.model_tree.AddRoot("root")
+        self.buildTree(self.model_tree, os.path.join(os.getcwd(), "modules"))
+#        self.model_tree.AppendItem(self.model_tree.GetRootItem(), "Modules")
+        self.buildTree(self.model_tree, os.path.join(os.getcwd(), "checkpoint"))
+#        self.model_tree.AppendItem(self.model_tree.GetRootItem(), "Pretrained (checkpoint)")
+#        self.buildTree(self.model_tree, os.path.join(os.getcwd(), "checkpoint"), self.model_tree.GetLastChild(self.model_tree.GetRootItem()))
         self.model_make_button = wx.Button(self.model_left, wx.ID_ANY, _("Make Pretrained Model"))
         self.model_make_button.Bind(wx.EVT_BUTTON, self.model_make_button_clicked) # = wx.Button(self.model_left, wx.ID_ANY, _("Make Pretrained Model"))
         self.model_right = wx.Notebook(self.models, wx.ID_ANY, style=0)
@@ -310,7 +314,7 @@ class MyFrame(wx.Frame):
         """
         dlg = wx.FileDialog(
             self, message="Choose a file",
-            defaultDir=self.currentDirectory,
+            defaultDir=os.path.join(self.currentDirectory, "dataset"),
             defaultFile="",
             wildcard=wildcard,
             style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_CHANGE_DIR
@@ -318,9 +322,12 @@ class MyFrame(wx.Frame):
 
         if dlg.ShowModal() == wx.ID_OK:
             paths = dlg.GetPaths()
-            print("You chose the following file(s):")
+            print("You chose the following file(s): %s" % paths)
+            self.test_data = []
+            self.text_ctrl_1.SetValue("")
             for path in paths:
-                print(path)
+                self.test_data.append(path)
+                self.text_ctrl_1.write(path + ";")
         dlg.Destroy()
 
     def onDir(self, event):
@@ -367,24 +374,63 @@ class MyFrame(wx.Frame):
 
 
     def data_select_button_clicked(self, event):
-        self.datasetID = datasetID = self.data_tree.GetFocusedItem()
-        self.datasetName = datasetName = self.data_tree.GetItemText(datasetID)
+        datasetID = self.data_tree.GetFocusedItem()
+        datasetName = datasetName = self.data_tree.GetItemText(datasetID)
         parentID = self.data_tree.GetItemParent(datasetID)
         if parentID == self.data_tree.GetRootItem():
             print("Dataset '%s' is Selected!"%datasetName)
 
-        # access to selected dataset path with this code
-        datasetPath = self.data_tree.GetItemData(self.datasetID)
+            self.Info['datasetID'] = datasetID
+            self.Info['dataset'] = datasetName
+            self.Info['datasetPath'] = self.data_tree.GetItemData(datasetID)
 
     def model_make_button_clicked(self, event):
         dlg = MyDialog(self, wx.ID_ANY, "")
         if dlg.ShowModal() == wx.ID_OK:
-            TrainingInfo = dlg.GetInfo()
-            print(TrainingInfo)
+            self.Info = dlg.GetInfo(self.Info)
+            print(self.Info)
+            self.doTrain()
         dlg.Destroy()
+    
+    def doTrain(self):    
+        if 'datasetID' not in self.Info:
+            print('Dataset is Not selected')
+            print('Dataset MNIST will be used')
 
+            from model import simple
+            import tensorflow as tf
+            tf.reset_default_graph()
+            with tf.Session() as sess:
+                simple.load_model(sess,
+                           dataset='mnist',
+                           classes=10,
+                           step_interval = 100,
+                           image_size = [28,28,1],
+                           train=True,
+                           test=True,
+                           epochs=10)
+        else:
+            print('Dataset %s is selected' % self.Info['dataset'])
+            from model import simple
+            import tensorflow as tf
+            tf.reset_default_graph()
+            with tf.Session() as sess:
+                simple.load_model(sess,
+                           dataset='CIFAR-10',
+                           train_data = 'CIFAR-10',
+                           # train_label = self.y_train,
+                           test_data = 'CIFAR-10',
+                           # test_label = self.y_test,
+                           classes=5,
+                           epoch_interval = 1,
+                           image_size = [32,32,3],
+                           train=True,
+                           test=True,
+                           epochs=20)
 
-    def buildTree(self, tree, rootdirPath):
+    def buildTree(self, tree, rootdirPath, treeRoot=None):
+        if treeRoot is None: treeRoot = tree.GetRootItem()
+
         def itemExist(tree, data, rootID):
             item, cookie = tree.GetFirstChild(rootID)
             while item.IsOk():
@@ -393,8 +439,8 @@ class MyFrame(wx.Frame):
                 item, cookie = tree.GetNextChild(rootID, cookie)
             return False
 
-        if tree.IsEmpty() or not itemExist(tree, rootdirPath, tree.GetRootItem()):
-            rootID = tree.AppendItem(tree.GetRootItem(), (os.path.basename(rootdirPath)))
+        if tree.IsEmpty() or not itemExist(tree, rootdirPath, treeRoot):
+            rootID = tree.AppendItem(treeRoot, (os.path.basename(rootdirPath)))
             tree.SetItemData(rootID, rootdirPath)
             self.extendTree(tree, rootID)
         else:

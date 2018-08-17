@@ -99,7 +99,7 @@ def dir2label(dataset, istrain, file_format=FILE_FORMAT):
 
     if len(classes) == 0: # data is aggregated.
         txt_path = os.path.join(directory, '{}.txt'.format(mode))
-        aassert (os.path.exists(txt_path), " [@] {}.txt doesn't exist".format(mode))
+        aassert (os.path.exists(txt_path), " [@] %s.txt doesn't exist in %s"%(mode, txt_path))
         return txt2label(txt_path, istrain)
 
     else:

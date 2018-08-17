@@ -29,7 +29,7 @@ class MyDialog(wx.Dialog):
         self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_8")
         self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_9", style=wx.TE_MULTILINE)
         self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_10" 
-                if parent.datasetID is None else parent.datasetName, style=wx.TE_READONLY)
+                if 'datasetID' not in parent.Info else parent.Info['dataset'], style=wx.TE_READONLY)
 #        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "text_ctrl_10")
         self.button_1 = wx.Button(self, wx.ID_ANY, "Advanced Options")
         self.button_1.Bind(wx.EVT_BUTTON, self.OnButton_1)
@@ -86,17 +86,26 @@ class MyDialog(wx.Dialog):
     def OnButton_1(self, event):
         pass
 
-    def GetInfo(self):
-        return [self.text_ctrl_1.GetLineText(0),
-                self.text_ctrl_2.GetLineText(0),
-                self.text_ctrl_3.GetLineText(0),
-                self.text_ctrl_4.GetLineText(0),
-                self.text_ctrl_5.GetLineText(0),
-                self.text_ctrl_6.GetLineText(0),
-                self.text_ctrl_7.GetLineText(0),
-                self.text_ctrl_8.GetLineText(0),
-                self.text_ctrl_9.GetLineText(0),
-                self.text_ctrl_10.GetLineText(0)] 
+    def GetInfo(self, Info):
+        try:
+            Info['epochs'] = int(self.text_ctrl_1.GetLineText(0))
+            Info['random_seed'] = int(self.text_ctrl_5.GetLineText(0))
+            Info['batch_size'] = int(self.text_ctrl_8.GetLineText(0))
+            Info['learning_rate'] = int(self.text_ctrl_8.GetLineText(0))
+            Info['gpu'] = int(self.text_ctrl_9.GetLineText(0))
+        except ValueError:
+            print("error")
+        return Info
+#        return [self.text_ctrl_1.GetLineText(0),
+#                self.text_ctrl_2.GetLineText(0),
+#                self.text_ctrl_3.GetLineText(0),
+#                self.text_ctrl_4.GetLineText(0),
+#                self.text_ctrl_5.GetLineText(0),
+#                self.text_ctrl_6.GetLineText(0),
+#                self.text_ctrl_7.GetLineText(0),
+#                self.text_ctrl_8.GetLineText(0),
+#                self.text_ctrl_9.GetLineText(0),
+#                self.text_ctrl_10.GetLineText(0)] 
 
 # end of class MyDialog
 
