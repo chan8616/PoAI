@@ -32,7 +32,10 @@ def data_input(data, istrain, label=None):
     """
 
     if type(data) == str: # directory
+        print("dir2label")
         file_path, label = dir2label(data, istrain)
+        print('filepath:', file_path)
+        print('cwd:', os.getcwd())
         data = None
         image_size = list(image_load(file_path[0]).shape)
     elif type(data) == np.ndarray:
@@ -70,7 +73,9 @@ def txt2label(file_path, istrain):
             aassert (len(label[line]) == len(label[line-1]), "inconsistency detected on {}th line.".format(line))
             line += 1
     # line = len(label[0])
-    classes_path = os.path.join(*file_path.split('/')[:-1], 'classes')
+    print("label", label)
+    print(file_path)
+    classes_path = os.path.join('/', *file_path.split('/')[:-1], 'classes')
     if istrain:
         # classes = sorted(list(set([lb[i] for lb in label ]) for i in range(line)))
         classes = sorted(list(set([lb[1] for lb in label])))
@@ -94,15 +99,17 @@ def dir2label(dataset, istrain, file_format=FILE_FORMAT):
         - [file_name], [class]
     """
     mode = 'train' if istrain else 'test'
-    directory = os.path.join(os.getcwd(),'dataset', dataset, 'Data')
+    directory = os.path.join(os.getcwd(),'dataset', dataset)#, 'Data')
     classes = sorted([dir for dir in os.listdir(directory) if len(dir.split('.'))==1])
 
-    if len(classes) == 0: # data is aggregated.
+    if len(classes) == 1:#0: # data is aggregated.
         txt_path = os.path.join(directory, '{}.txt'.format(mode))
         aassert (os.path.exists(txt_path), " [@] %s.txt doesn't exist in %s"%(mode, txt_path))
+        print("txt2label")
         return txt2label(txt_path, istrain)
 
     else:
+        print("class", classes)
         classes_path = os.path.join(directory, 'classes')
         if istrain:
             classes = sorted([dir for dir in os.listdir(directory) if len(dir.split('.'))==1])
