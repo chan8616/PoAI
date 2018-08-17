@@ -349,12 +349,19 @@ class MyFrame(wx.Frame):
     def data_load_button_clicked(self, event):
         path = self.onDir(event)
         self.buildTree(self.data_tree, path)
+
+    def IsDataset(self, item):
+        return self.data_tree.GetItemParent(item) == \
+            self.data_tree.GetRootItem()
    
     def data_tree_OnActivated(self, event):
         item = self.data_tree.GetFocusedItem()
- #     self.getStatistics(self.data_tree.GetItemData(item))
- #     def getStatistics(self, rootdirPath):
-        dirPath = self.data_tree.GetItemData(item)
+        if self.IsDataset(item):
+            self.SetDataset(item)
+            dirPath = self.data_tree.GetItemData(item)
+            self.getStatistics(dirPath)
+
+    def getStatistics(self, dirPath):
         self.text_ctrl_9.SetValue("")
         self.text_ctrl_9.write(dirPath)
         self.text_ctrl_10.SetValue("")
@@ -372,17 +379,23 @@ class MyFrame(wx.Frame):
         #datadirPath = os.path.join(rootdirPath, 'Data/')
         #file_list = os.listdir(datadirPath)
 
-
-    def data_select_button_clicked(self, event):
-        datasetID = self.data_tree.GetFocusedItem()
-        datasetName = datasetName = self.data_tree.GetItemText(datasetID)
-        parentID = self.data_tree.GetItemParent(datasetID)
-        if parentID == self.data_tree.GetRootItem():
+    def SetDataset(self, treeItem):
+        datasetID = treeItem
+        if self.IsDataset(datasetID): 
+            datasetName = datasetName = self.data_tree.GetItemText(treeItem)
             print("Dataset '%s' is Selected!"%datasetName)
 
             self.Info['datasetID'] = datasetID
             self.Info['dataset'] = datasetName
             self.Info['datasetPath'] = self.data_tree.GetItemData(datasetID)
+
+
+    def data_select_button_clicked(self, event):
+        item = self.data_tree.GetFocusedItem()
+        if self.IsDataset(item):
+            self.SetDataset(item)
+            dirPath = self.data_tree.GetItemData(item)
+            self.getStatistics(dirPath)
 
     def model_make_button_clicked(self, event):
         dlg = MyDialog(self, wx.ID_ANY, "")

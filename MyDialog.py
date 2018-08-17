@@ -34,6 +34,7 @@ class MyDialog(wx.Dialog):
         self.button_1 = wx.Button(self, wx.ID_ANY, "Advanced Options")
         self.button_1.Bind(wx.EVT_BUTTON, self.OnButton_1)
         self.button_2 = wx.Button(self, wx.ID_OK, "Train")
+#        self.button_2 = wx.Button(self, wx.ID_OK, "Train")
         self.__set_properties()
         self.__do_layout()
         # end wxGlade
@@ -86,15 +87,38 @@ class MyDialog(wx.Dialog):
     def OnButton_1(self, event):
         pass
 
-    def GetInfo(self, Info):
+    def CheckInfo(self):
+        Info = {}
         try:
             Info['epochs'] = int(self.text_ctrl_1.GetLineText(0))
             Info['random_seed'] = int(self.text_ctrl_5.GetLineText(0))
             Info['batch_size'] = int(self.text_ctrl_8.GetLineText(0))
             Info['learning_rate'] = int(self.text_ctrl_8.GetLineText(0))
             Info['gpu'] = int(self.text_ctrl_9.GetLineText(0))
+#            int(self.text_ctrl_1.GetLineText(0))
+#            int(self.text_ctrl_5.GetLineText(0))
+#            int(self.text_ctrl_8.GetLineText(0))
+#            int(self.text_ctrl_8.GetLineText(0))
+#            int(self.text_ctrl_9.GetLineText(0))
+            return True
         except ValueError:
             print("error")
+            Info['epochs'] = 20
+            Info['random_seed'] = 0
+            Info['batch_size'] = 1
+            Info['learning_rate'] = 1e-3
+            Info['gpu'] = None
+            return False
+
+        
+    def GetInfo(self, Info):
+        print(self.CheckInfo())
+        Info['epochs'] = 20
+        Info['random_seed'] = 0
+        Info['batch_size'] = 1
+        Info['learning_rate'] = 1e-3
+        Info['gpu'] = None
+        
         return Info
 #        return [self.text_ctrl_1.GetLineText(0),
 #                self.text_ctrl_2.GetLineText(0),

@@ -27,6 +27,8 @@ def shuffle(x, y):
 
 
 def pickle_save(d, file_name):
+    #    with open("test.pickle", 'wb') as f:
+    print(file_name)
     with open("{}.pickle".format(file_name), 'wb') as f:
         pickle.dump(d, f)
 
