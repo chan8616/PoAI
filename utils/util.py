@@ -16,7 +16,7 @@ class Redirection(object):
         self.out = log_area
 
     def write(self, string):
-        self.out.WriteText(string+'\n')
+        self.out.WriteText(string)
 
 def shuffle(x, y):
     from random import shuffle as sf
@@ -39,7 +39,7 @@ def image_load(file_path):            # load image as float numpy array
 
 def aassert(statement, message=''): #TODO
     if not statement:
-        pprint(message)
+        print(message)
         assert False, message
 
 def report_plot(data, i, model_name, log='./log'):
