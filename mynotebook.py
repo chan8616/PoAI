@@ -140,13 +140,15 @@ class TrainSpecPage(wx.Panel):
     def __init__(self, parent, id, dict):
         super(TrainSpecPage, self).__init__(parent, id)
 
-        self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "14")
+        #self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "14")
+        self.combo_box_model = self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["15"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, str(dict['validation interval']) if 'validation interval' in dict else "19")
         self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
         self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, dict['optimizer'] if 'optimizer' in dict else "20")
         self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, str(dict['max_iter']) if 'max_iter' in dict else "26")
         self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, str(dict['lr']) if 'lr' in dict else "21")
-        self.text_ctrl_17 = wx.TextCtrl(self, wx.ID_ANY, "17")
+        #self.text_ctrl_17 = wx.TextCtrl(self, wx.ID_ANY, "17")
+        self.combo_box_data = self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=dict['dataset_names'] if 'dataset_names' in dict else ["17"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, str(dict['seed']) if 'seed' in dict else "22")
         self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, str(dict['batch_size']) if 'batch_size' in dict else "18")
         self.text_ctrl_23 = wx.TextCtrl(self, wx.ID_ANY, "23")
@@ -161,7 +163,8 @@ class TrainSpecPage(wx.Panel):
         label_19 = wx.StaticText(self, wx.ID_ANY, _("Sanpshot interval(in epochs)"))
         label_19.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_19, (1, 21), (1, 10), 0, 0)
-        grid_sizer_3.Add(self.text_ctrl_14, (2, 1), (1, 18), wx.EXPAND, 0)
+        #grid_sizer_3.Add(self.text_ctrl_14, (2, 1), (1, 18), wx.EXPAND, 0)
+        grid_sizer_3.Add(self.combo_box_model, (2, 1), (1, 18), wx.EXPAND, 0)
         grid_sizer_3.Add(self.text_ctrl_19, (2, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30) 
         label_15 = wx.StaticText(self, wx.ID_ANY, _("Checkpoint name"))
         label_15.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
@@ -179,13 +182,14 @@ class TrainSpecPage(wx.Panel):
         grid_sizer_3.Add(label_21, (7, 21), (1, 10), 0, 0)
         grid_sizer_3.Add(self.text_ctrl_16, (8, 1), (1, 18), wx.EXPAND, 0)
         grid_sizer_3.Add(self.text_ctrl_21, (8, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30) 
-        label_17 = wx.StaticText(self, wx.ID_ANY, _("Dataset name"))
+        label_17 = wx.StaticText(self, wx.ID_ANY, _("Dataset select"))
         label_17.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_17, (10, 1), (1, 10), 0, 0)
         label_22 = wx.StaticText(self, wx.ID_ANY, _("Random seed"))
         label_22.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_22, (10, 21), (1, 10), 0, 0)
-        grid_sizer_3.Add(self.text_ctrl_17, (11, 1), (1, 18), wx.EXPAND, 0)
+        #grid_sizer_3.Add(self.text_ctrl_17, (11, 1), (1, 18), wx.EXPAND, 0)
+        grid_sizer_3.Add(self.combo_box_data, (11, 1), (1, 18), wx.EXPAND, 0)
         grid_sizer_3.Add(self.text_ctrl_22, (11, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30) 
         label_18 = wx.StaticText(self, wx.ID_ANY, _("Batch size"))
         label_18.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
@@ -262,7 +266,6 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         self.Layout()
 
     def createTrainSpecPanel(self, parent, id, dict):
-        print('createTrainSpecPanel')
         self.train_spec_count += 1
         train_spec_panel = TrainSpecPage(parent, id, dict)
         print(train_spec_panel)
@@ -280,7 +283,10 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         data_spec_panel = DataSpecPage(parent, id, dict)
         self.AddPage(data_spec_panel, _("Data Spec %d"%self.data_spec_count), select=True)
         return data_spec_panel
-
+    
+    def isOnTrainSpec(self):
+        page = self.GetPage(self.GetSelection())
+        return isinstance(page, TrainSpecPage)
 
     def OnTabClicked(self, event):
         super(MyNotebook, self).OnTabClicked(event)
