@@ -6,13 +6,14 @@
 import wx
 import wx.aui
 import os
+import sys
 # begin wxGlade: dependencies
 # end wxGlade
 
 # begin wxGlade: extracode
 # end wxGlade
 from mynotebook import MyNotebook
-
+from utils.util import Redirection
 
 os.environ["UBUNTU_MENUPROXY"] = "0"
 
@@ -22,6 +23,8 @@ class MyFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((1194, 922))
+
+        self.cwd = os.getcwd()
         
         # Menu Bar
         self.frame_menubar = wx.MenuBar()
@@ -52,23 +55,53 @@ class MyFrame(wx.Frame):
         self.tool_bar.AddSeparator()
         self.tool_test = self.tool_bar.AddTool(6, _("Classify one"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Classify one"), "")
         self.tool_bar.AddTool(wx.ID_ANY, _("Classify many"), wx.Bitmap("./icons/image.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Classify many"), "")
+        self.tool_bar.EnableTool(self.tool_train_start.GetId(), False)
         # Tool Bar end
 
         # TreeCtrl
-        self.tree_ctrl_1 = wx.TreeCtrl(self, wx.ID_ANY)#, style=wx.BORDER_SUNKEN | wx.TR_HAS_BUTTONS)
-        self.tree_ctrl_2 = wx.TreeCtrl(self, wx.ID_ANY)#, style=wx.BORDER_SUNKEN | wx.TR_HAS_BUTTONS)
+        self.data_tree = self.tree_ctrl_1 = wx.TreeCtrl(self, wx.ID_ANY)#, style=wx.BORDER_SUNKEN | wx.TR_HAS_BUTTONS)
+        self.model_tree = self.tree_ctrl_2 = wx.TreeCtrl(self, wx.ID_ANY)#, style=wx.BORDER_SUNKEN | wx.TR_HAS_BUTTONS)
+        self.item_to_page = dict()
+
+        # load dataset tree
+        self.datasetDir = os.path.join(self.cwd, "Dataset")
+        if not os.path.exists(self.datasetDir):
+            os.makedirs(self.datasetDir)
+        self.buildTree(self.data_tree, self.datasetDir)
+        self.data_tree.Expand(self.data_tree.GetRootItem())
+    
+        # load model tree (in Modules folder)
+        self.modelDir= os.path.join(self.cwd, "Modules")
+        if not os.path.exists(self.modelDir):
+            os.makedirs(self.modelDir)
+        self.buildTree(self.model_tree, self.modelDir)
+        self.model_tree.Expand(self.model_tree.GetRootItem())
+
+        # load pretrained model tree (in checkpoint folder)
+        self.pretrainedModelDir= os.path.join(self.cwd, "checkpoint")
+        if os.path.exists(self.pretrainedModelDir):
+            for pretrainedModel in os.listdir(self.pretrainedModelDir):
+                pretrainedModelPath = os.path.join(self.pretrainedModelDir, pretrainedModel)
+                self.buildTree(self.model_tree, pretrainedModelPath)
+       
+        # toList
+        self.datasets = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
+        self.models= self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
         # TreeCtrl end
 
         # AuiNotebook
-        self.notebook_1 = MyNotebook(self, wx.ID_ANY)
+        self.notebook = self.notebook_1 = MyNotebook(self, wx.ID_ANY)
         # AuiNotebook end
 
         # log window
-        self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "log\n", style=wx.HSCROLL | wx.TE_LEFT | wx.TE_MULTILINE | wx.TE_READONLY)
+        self.text_log = self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "log\n", style=wx.HSCROLL | wx.TE_LEFT | wx.TE_MULTILINE | wx.TE_READONLY)
+        self.redir = Redirection(self.text_log)
+        sys.stdout = self.redir
         # log window end
 
         self.__set_properties()
         self.__do_layout()
+        self.__do_binds()
         # end wxGlade
 
 
@@ -94,5 +127,163 @@ class MyFrame(wx.Frame):
         self.Layout()
         # end wxGlade
 
+    def __do_binds(self):
+        # tool bar
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnNew, id=self.tool_new.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainSpec, id=self.tool_train_spec.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainStart, id=self.tool_train_start.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnTest, id=self.tool_test.GetId())
+
+        # trees
+        self.data_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.dataTreeOnActivated)
+        self.model_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.modelTreeOnActivated)
+
+        # notebook
+        self.notebook.Bind(wx.lib.agw.aui.auibook.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
+
+    def OnClosed(self, event):
+        print('closed')
+    def OnPageChanged(self, event):
+        if self.notebook.isOnTrainSpec():
+            self.tool_bar.EnableTool(self.tool_train_start.GetId(), True)
+        else:
+            self.tool_bar.EnableTool(self.tool_train_start.GetId(), False)
+        #print('page changed', event, event.GetNotifyEvent())
+#        if self.notebook.is_train_page():
+
+
+#        idx = self.notebook.GetSelection()
+#        page = self.notebook.GetPage(idx)
+#        print(page)
+#        if isinstance(page, TrainSpecPage):
+#            print('train spec page')
+
+    def OnToolBar(self, event):
+        print(event)
+        print(event.GetInt())
+    def OnNew(self, event):
+        pass
+    def OnLoad(self, event):
+        pass
+    def OnSave(self, event):
+        pass
+    def OnTest(self, event):
+        pass
+    def OnTrainSpec(self, event):
+        dict = self.setTrainSpec()
+        print(dict)
+        self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY, dict)
+
+    def OnTrainStart(self, event):
+        pass
+
+    def OnDataSpec(self, item):
+        dict = self.getDataSpec(item)
+        page = self.notebook.createDataSpecPanel(self.notebook, wx.ID_ANY, dict)
+        self.item_to_page[item] = page
+
+    def OnModelSpec(self, item):
+        dict = self.getModelSpec(item)
+        page = self.notebook.createModelSpecPanel(self.notebook, wx.ID_ANY, dict)
+        self.item_to_page[item] = page
+
+    def isDataset(self, item):
+        return self.data_tree.GetItemParent(item) == \
+                self.data_tree.GetRootItem()
+
+    def treeOnActivated(self, tree, OnSpecFun):
+        item = tree.GetFocusedItem()
+
+        if self.isDataset(item):
+            if item not in self.item_to_page:
+                OnSpecFun(item)
+            else:
+                _, idx = self.notebook.FindTab(self.item_to_page[item])
+                if idx == -1:
+                    OnSpecFun(item)
+                else:
+                    self.notebook.SetSelection(idx)
+
+    def dataTreeOnActivated(self, event):
+        self.treeOnActivated(self.data_tree, self.OnDataSpec)
+
+    def modelTreeOnActivated(self, event):
+        self.treeOnActivated(self.model_tree, self.OnModelSpec)
+
+    def getDataSpec(self, dataID):
+        res = dict()
+        name = self.data_tree.GetItemText(dataID)
+        res['name'] = name
+        path = self.data_tree.GetItemData(dataID)
+        res['path'] = path
+
+        return res
+
+    def getModelSpec(self, modelID):
+        res = dict()
+        return res
+
+    def setTrainSpec(self):
+        train_spec = {'max_iter': 10000, 'lr':1e-3, 'optimizer':'Adam', 'seed':0, 'batch_size':32, 'checkpoint interval':1000, 'validation interval':1000}
+        train_spec['datasets'] = self.datasets
+        train_spec['models'] = self.models
+        
+        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
+        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+        return train_spec
+
+    def getTrainSpec(self):
+        pass
+
+    def childrenToList(self, tree, item):
+        list = []
+        child, cookie = tree.GetFirstChild(item)
+        
+        while child.IsOk():
+            list.append(child)
+            child, cookie = tree.GetNextChild(item, cookie)
+        return list
+
+
+    def buildTree(self, tree, rootDir, treeRoot=None):
+        if treeRoot is None: treeRoot = tree.GetRootItem()
+
+        def itemExist(tree, data, rootID):
+            item, cookie = tree.GetFirstChild(rootID)
+            while item.IsOk():
+                if tree.GetItemData(item) == data:
+                    return True
+                item, cookie = tree.GetNextChild(rootID, cookie)
+            return False
+
+        if tree.IsEmpty() or not itemExist(tree, rootDir, treeRoot):
+            rootID = tree.AppendItem(treeRoot, (os.path.basename(rootDir)))
+            tree.SetItemData(rootID, rootDir)
+            self.extendTree(tree, rootID)
+        else:
+            print("Dataset is already exist!")
+
+    def extendTree(self, tree, parentID):
+        parentPath = tree.GetItemData(parentID)
+
+        subdirs = os.listdir(parentPath)
+        subdirs.sort()
+        for child in subdirs:
+            childPath = os.path.join(parentPath, child)
+            if os.path.isdir(childPath) and not os.path.islink(child):
+                childID = tree.AppendItem(parentID, child)
+                tree.SetItemData(childID, childPath)
+
+                grandsubdirs = os.listdir(childPath)
+                grandsubdirs.sort()
+                for grandchild in grandsubdirs:
+                    grandchildPath = os.path.join(childPath, grandchild)
+                    if os.path.isdir(grandchildPath) and not os.path.islink(grandchildPath):
+                        grandchildID = tree.AppendItem(childID, grandchild)
+                        tree.SetItemData(grandchildID, grandchildPath)
+
+ 
 
 # end of class MyFrame
