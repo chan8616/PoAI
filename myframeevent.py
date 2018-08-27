@@ -56,11 +56,14 @@ class MyFrameEvent(MyFrame):
         #self.notebook.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
         self.notebook.Bind(wx.lib.agw.aui.auibook.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
         # panels
-        self.dataSpec_panel_list = self.notebook_1.panel_1_list
+        #self.dataSpec_panel_list = self.notebook.dat
+        #self.modelSpec_panel_list = self.notebook.panel_2_list
+        #self.trainSpec_panel_list = self.notebook.panel_3_list
+        #self.dataSpec_panel_list = self.notebook_1.panel_1_list
         #self.createDataSpecPanel(self.notebook_1, dict())
-        self.modelSpec_panel_list = self.notebook_1.panel_2_list
+        #self.modelSpec_panel_list = self.notebook_1.panel_2_list
         #self.createModelSpecPanel(self.notebook_1, dict())
-        self.trainSpec_panel_list = self.notebook_1.panel_3_list
+        #self.trainSpec_panel_list = self.notebook_1.panel_3_list
         #self.createTrainSpecPanel(self.notebook_1, dict())
 
         # train spec default
@@ -81,6 +84,7 @@ class MyFrameEvent(MyFrame):
         idx = self.notebook.GetSelection()
         page = self.notebook.GetPage(idx) 
         print(page)
+#        if isinstance(page, self.notebook.
 
     def OnToolBar(self, event):
         print(event)
@@ -94,18 +98,20 @@ class MyFrameEvent(MyFrame):
     def OnTest(self, event):
         pass
     def OnTrainSpec(self, event):
-        self.createTrainSpecPanel(self.notebook_1, self.train_spec)
+        print('OnTrainSpec')
+        self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY, self.train_spec)
+
     def OnTrainStart(self, event):
         pass
 
     def OnDataSpec(self, item):
-        dict = self.setDataSpec(item)
-        page = self.createDataSpecPanel(self.notebook_1, dict)
+        dict = self.getDataSpec(item)
+        page = self.notebook.createDataSpecPanel(self.notebook, wx.ID_ANY, dict)
         self.item_to_page[item] = page
 
     def OnModelSpec(self, item):
-        dict = self.setModelSpec(item)
-        page = self.createModelSpecPanel(self.notebook_1, dict)
+        dict = self.getModelSpec(item)
+        page = self.notebook.createModelSpecPanel(self.notebook, wx.ID_ANY, dict)
         self.item_to_page[item] = page
 
     def treeOnActivated(self, tree, OnSpecFun):
@@ -128,7 +134,7 @@ class MyFrameEvent(MyFrame):
     def modelTreeOnActivated(self, event):
         self.treeOnActivated(self.model_tree, self.OnModelSpec)
 
-    def setDataSpec(self, dataID):
+    def getDataSpec(self, dataID):
         res = dict()
         name = self.data_tree.GetItemText(dataID)
         res['name'] = name
@@ -138,7 +144,7 @@ class MyFrameEvent(MyFrame):
 
         return res
 
-    def setModelSpec(self, modelID):
+    def getModelSpec(self, modelID):
         res = dict()
         return res
         
