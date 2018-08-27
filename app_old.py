@@ -9,7 +9,7 @@
 
 import wx
 import gettext
-from MyFrame import MyFrame
+from MyFrame_old import MyFrame
 
 
 class MyApp(wx.App):

@@ -9,12 +9,14 @@
 
 import wx
 import gettext
-from MyFrame import MyFrame
+from myframe import MyFrame
+from myframeevent import MyFrameEvent
 
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(None, wx.ID_ANY, "")
+        frame = MyFrame(None, wx.ID_ANY, "")
+        self.frame = MyFrameEvent(frame)
         self.SetTopWindow(self.frame)
         self.frame.Show()
         return True
