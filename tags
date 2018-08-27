@@ -4,55 +4,61 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CheckInfo	MyDialog_old.py	/^    def CheckInfo(self):$/;"	m	class:MyDialog
+CreateDataSpec	myframeevent.py	/^    def CreateDataSpec(self, event, spec):$/;"	m	class:MyFrameEvent
 FILE_FORMAT	model/ops.py	/^FILE_FORMAT = ['jpg', 'jpeg', 'png', 'bmp']$/;"	v
-GetInfo	MyDialog.py	/^    def GetInfo(self, Info):$/;"	m	class:MyDialog
+GetInfo	MyDialog_old.py	/^    def GetInfo(self, Info):$/;"	m	class:MyDialog
+IsDataset	MyFrame_old.py	/^    def IsDataset(self, item):$/;"	m	class:MyFrame
 LOGISTIC	model/simple.py	/^class LOGISTIC(object):$/;"	c
-MyApp	MyDialog.py	/^class MyApp(wx.App):$/;"	c
+MyApp	MyDialog_old.py	/^class MyApp(wx.App):$/;"	c
 MyApp	app.py	/^class MyApp(wx.App):$/;"	c
-MyApp	gui.backup	/^class MyApp(wx.App):$/;"	c
+MyApp	app_old.py	/^class MyApp(wx.App):$/;"	c
 MyApp	gui_old.py	/^class MyApp(wx.App):$/;"	c
 MyApp	gui_old_old.py	/^class MyApp(wx.App):$/;"	c
-MyDialog	MyDialog.py	/^class MyDialog(wx.Dialog):$/;"	c
-MyDialog	gui.backup	/^class MyDialog(wx.Dialog):$/;"	c
+MyApp	test.py	/^class MyApp(wx.App):$/;"	c
+MyDialog	MyDialog_old.py	/^class MyDialog(wx.Dialog):$/;"	c
 MyDialog	gui_old.py	/^class MyDialog(wx.Dialog):$/;"	c
 MyDialog	gui_old_old.py	/^class MyDialog(wx.Dialog):$/;"	c
-MyDialog1	gui.backup	/^class MyDialog1(wx.Dialog):$/;"	c
 MyDialog1	gui_old.py	/^class MyDialog1(wx.Dialog):$/;"	c
 MyDialog1	gui_old_old.py	/^class MyDialog1(wx.Dialog):$/;"	c
-MyFrame	MyFrame.py	/^class MyFrame(wx.Frame):$/;"	c
-MyFrame	gui.backup	/^class MyFrame(wx.Frame):$/;"	c
+MyFrame	MyFrame_old.py	/^class MyFrame(wx.Frame):$/;"	c
 MyFrame	gui_old.py	/^class MyFrame(wx.Frame):$/;"	c
 MyFrame	gui_old_old.py	/^class MyFrame(wx.Frame):$/;"	c
+MyFrame	myframe.py	/^class MyFrame(wx.Frame):$/;"	c
+MyFrame	test.py	/^class MyFrame(wx.Frame):$/;"	c
+MyFrameEvent	myframeevent.py	/^class MyFrameEvent(MyFrame):$/;"	c
+MyFrameEvent	test.py	/^class MyFrameEvent(MyFrame):$/;"	c
 OPTIMIZER	model/ops.py	/^OPTIMIZER = {'adam':tf.train.AdamOptimizer,$/;"	v
-OnButton_1	MyDialog.py	/^    def OnButton_1(self, event):$/;"	m	class:MyDialog
-OnInit	MyDialog.py	/^    def OnInit(self):$/;"	m	class:MyApp
+OnButton_1	MyDialog_old.py	/^    def OnButton_1(self, event):$/;"	m	class:MyDialog
+OnClose	myframeevent.py	/^    def OnClose(self, event):$/;"	m	class:MyFrameEvent
+OnClose	test.py	/^    def OnClose(self, event):$/;"	m	class:MyFrameEvent
+OnCloseFloatingPage	myframeevent.py	/^    def OnCloseFloatingPage(self, event):$/;"	m	class:MyFrameEvent
+OnClosed	myframeevent.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrameEvent
+OnInit	MyDialog_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	app.py	/^    def OnInit(self):$/;"	m	class:MyApp
-OnInit	gui.backup	/^    def OnInit(self):$/;"	m	class:MyApp
+OnInit	app_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	gui_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	gui_old_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
+OnInit	test.py	/^    def OnInit(self):$/;"	m	class:MyApp
+OnModelSpec	myframeevent.py	/^    def OnModelSpec(self, event, spec):$/;"	m	class:MyFrameEvent
+OnTrainSpec	myframeevent.py	/^    def OnTrainSpec(self, event):$/;"	m	class:MyFrameEvent
 Redirection	utils/util.py	/^class Redirection(object):$/;"	c
-__bind_events	gui.backup	/^    def __bind_events(self):$/;"	m	class:MyDialog1	file:
-__bind_events	gui.backup	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
+SetDataset	MyFrame_old.py	/^    def SetDataset(self, treeItem):$/;"	m	class:MyFrame
 __bind_events	gui_old.py	/^    def __bind_events(self):$/;"	m	class:MyDialog1	file:
 __bind_events	gui_old.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
 __bind_events	gui_old_old.py	/^    def __bind_events(self):$/;"	m	class:MyDialog1	file:
 __bind_events	gui_old_old.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
-__do_layout	MyDialog.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
-__do_layout	MyFrame.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
-__do_layout	gui.backup	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
-__do_layout	gui.backup	/^    def __do_layout(self):$/;"	m	class:MyDialog1	file:
-__do_layout	gui.backup	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
+__do_layout	MyDialog_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
+__do_layout	MyFrame_old.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
 __do_layout	gui_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
 __do_layout	gui_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog1	file:
 __do_layout	gui_old.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
 __do_layout	gui_old_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
 __do_layout	gui_old_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog1	file:
 __do_layout	gui_old_old.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
-__init__	MyDialog.py	/^    def __init__(self, parent, id, title):$/;"	m	class:MyDialog
-__init__	MyFrame.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
-__init__	gui.backup	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog
-__init__	gui.backup	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog1
-__init__	gui.backup	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
+__do_layout	myframe.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
+__init__	MyDialog_old.py	/^    def __init__(self, parent, id, title):$/;"	m	class:MyDialog
+__init__	MyFrame_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	gui_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog
 __init__	gui_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog1
 __init__	gui_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
@@ -60,116 +66,89 @@ __init__	gui_old_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyD
 __init__	gui_old_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog1
 __init__	gui_old_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	model/simple.py	/^    def __init__(self,$/;"	m	class:LOGISTIC
+__init__	myframe.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
+__init__	myframeevent.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrameEvent
+__init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
+__init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrameEvent
 __init__	utils/string.py	/^    def __init__(self, country_code=1):$/;"	m	class:string
 __init__	utils/util.py	/^    def __init__(self, log_area):$/;"	m	class:Redirection
-__set_properties	MyDialog.py	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
-__set_properties	MyFrame.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
-__set_properties	gui.backup	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
-__set_properties	gui.backup	/^    def __set_properties(self):$/;"	m	class:MyDialog1	file:
-__set_properties	gui.backup	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
+__set_properties	MyDialog_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
+__set_properties	MyFrame_old.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
 __set_properties	gui_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
 __set_properties	gui_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog1	file:
 __set_properties	gui_old.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
 __set_properties	gui_old_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
 __set_properties	gui_old_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog1	file:
 __set_properties	gui_old_old.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
+__set_properties	myframe.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
 _model_name	model/simple.py	/^    def _model_name(self):$/;"	m	class:LOGISTIC
 aassert	utils/util.py	/^def aassert(statement, message=''): #TODO$/;"	f
-accuracy	CIFAR-10/test_model.py	/^accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))$/;"	v
-app	MyDialog.py	/^    app = MyApp(0)$/;"	v	class:MyApp
-app	app.py	/^    app = MyApp(0)$/;"	v
-app	gui.backup	/^    app = MyApp(0)$/;"	v	class:MyApp
+app	MyDialog_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
+app	app.py	/^    app = MyApp(0)$/;"	v	class:MyApp
+app	app_old.py	/^    app = MyApp(0)$/;"	v
 app	gui_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	gui_old_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
-batch	CIFAR-10/test_model.py	/^    batch = next_batch(128, x_train, y_train_one_hot.eval())$/;"	v
-buildTree	MyFrame.py	/^    def buildTree(self, tree, rootdirPath, treeRoot=None):$/;"	m	class:MyFrame
-buildTree	gui.backup	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
+app	test.py	/^    app = MyApp(0)$/;"	v	class:MyApp
+buildTree	MyFrame_old.py	/^    def buildTree(self, tree, rootdirPath, treeRoot=None):$/;"	m	class:MyFrame
 buildTree	gui_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
 buildTree	gui_old_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
-build_CNN_classifier	CIFAR-10/test_model.py	/^def build_CNN_classifier(x):$/;"	f
+buildTree	myframeevent.py	/^    def buildTree(self, tree, rootDir, treeRoot=None):$/;"	m	class:MyFrameEvent
 build_model	model/simple.py	/^    def build_model(self):$/;"	m	class:LOGISTIC
-button_1_clicked	gui.backup	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
 button_1_clicked	gui_old.py	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
 button_1_clicked	gui_old_old.py	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
-button_2_clicked	gui.backup	/^    def button_2_clicked(self, e):$/;"	m	class:MyDialog1
-button_2_clicked	gui.backup	/^    def button_2_clicked(self, e):$/;"	m	class:MyFrame
 button_2_clicked	gui_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyDialog1
 button_2_clicked	gui_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyFrame
 button_2_clicked	gui_old_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyDialog1
 button_2_clicked	gui_old_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyFrame
 call_mnist	utils/data.py	/^def call_mnist(one_hot=True):$/;"	f
 classifier	model/simple.py	/^    def classifier(self, reuse=False):$/;"	m	class:LOGISTIC
-correct_prediction	CIFAR-10/test_model.py	/^correct_prediction = tf.equal(tf.argmax(y_pred, 1), tf.argmax(y, 1))$/;"	v
+close	test.py	/^    def close(self,event):$/;"	m	class:MyFrameEvent
+createDataSpecPanel	myframe.py	/^    def createDataSpecPanel(self, parent, id=wx.ID_ANY, select=False):$/;"	m	class:MyFrame
+createModelSpecPanel	myframe.py	/^    def createModelSpecPanel(self, parent, id=wx.ID_ANY):$/;"	m	class:MyFrame
+createTrainSpecPanel	myframe.py	/^    def createTrainSpecPanel(self, parent, id=wx.ID_ANY):$/;"	m	class:MyFrame
 cross_entropy	model/ops.py	/^def cross_entropy(y_true, y_pred):$/;"	f
-data	CIFAR-10/getImage.py	/^    data = np.array([np.array(Image.open(dirPath+fname)) $/;"	v
-data	CIFAR-10/get_images.py	/^data = np.concatenate((x_train, x_test), axis=0)$/;"	v
-data_check	CIFAR-10/getImage.py	/^        data_check = False$/;"	v
-data_check	CIFAR-10/getImage.py	/^data_check = True$/;"	v
+dataTreeOnActivated	myframeevent.py	/^    def dataTreeOnActivated(self, event): $/;"	m	class:MyFrameEvent
 data_input	model/ops.py	/^def data_input(data, istrain, label=None):$/;"	f
-data_load_button_clicked	MyFrame.py	/^    def data_load_button_clicked(self, event):$/;"	m	class:MyFrame
-data_select_button_clicked	MyFrame.py	/^    def data_select_button_clicked(self, event):$/;"	m	class:MyFrame
-data_tree_OnActivated	MyFrame.py	/^    def data_tree_OnActivated(self, event):$/;"	m	class:MyFrame
-datadirPath	CIFAR-10/getData.py	/^datadirPath = '.\/Data\/'$/;"	v
+data_load_button_clicked	MyFrame_old.py	/^    def data_load_button_clicked(self, event):$/;"	m	class:MyFrame
+data_select_button_clicked	MyFrame_old.py	/^    def data_select_button_clicked(self, event):$/;"	m	class:MyFrame
+data_tree_OnActivated	MyFrame_old.py	/^    def data_tree_OnActivated(self, event):$/;"	m	class:MyFrame
 dir2label	model/ops.py	/^def dir2label(dataset, istrain, file_format=FILE_FORMAT):$/;"	f
-dirPath	CIFAR-10/getImage.py	/^dirPath = '.\/Data\/'$/;"	v
-doTrain	MyFrame.py	/^    def doTrain(self):    $/;"	m	class:MyFrame
-extendTree	MyFrame.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:MyFrame
-extendTree	gui.backup	/^    def extendTree(self, parentID):$/;"	m	class:MyFrame
+doTrain	MyFrame_old.py	/^    def doTrain(self):    $/;"	m	class:MyFrame
+extendTree	MyFrame_old.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:MyFrame
 extendTree	gui_old.py	/^    def extendTree(self, parentID):$/;"	m	class:MyFrame
 extendTree	gui_old_old.py	/^    def extendTree(self, parentID):$/;"	m	class:MyFrame
-file_list	CIFAR-10/getData.py	/^file_list = os.listdir(datadirPath)$/;"	v
-file_list	CIFAR-10/getImage.py	/^file_list = os.listdir(dirPath)$/;"	v
-getStatistics	gui.backup	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
+extendTree	myframeevent.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:MyFrameEvent
+getStatistics	MyFrame_old.py	/^    def getStatistics(self, dirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 get_accuracy	model/ops.py	/^def get_accuracy(y_true, y_pred):$/;"	f
 get_batch	model/simple.py	/^    def get_batch(self, data, label, i, data_file=None, batch_size = None):$/;"	m	class:LOGISTIC
 image_load	utils/util.py	/^def image_load(file_path):            # load image as float numpy array$/;"	f
-img	CIFAR-10/getImage.py	/^        img = Image.open(dirPath+file)$/;"	v
-img	CIFAR-10/getImage.py	/^        img = np.asarray(img)$/;"	v
-img	CIFAR-10/get_images.py	/^    img = Image.fromarray(data)$/;"	v
-itemExist	MyFrame.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrame.buildTree
-keep_prob	CIFAR-10/test_model.py	/^keep_prob = tf.placeholder(tf.float32)$/;"	v
-label	CIFAR-10/get_images.py	/^label = np.concatenate((y_train, y_test), axis=0)$/;"	v
+itemExist	MyFrame_old.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrame.buildTree
+itemExist	myframeevent.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrameEvent.buildTree
 label2txt	model/ops.py	/^def label2txt(label, txt_name, dataset, file_name=None):$/;"	f
 linear	model/ops.py	/^def linear(x, out_dim, name, stddev=0.02):$/;"	f
 load	model/simple.py	/^    def load(self, checkpoint_dir, name=None):$/;"	m	class:LOGISTIC
 load_model	model/simple.py	/^def load_model(sess,               # tf.Session()$/;"	f
-loss	CIFAR-10/test_model.py	/^loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits))$/;"	v
-loss_print	CIFAR-10/test_model.py	/^      loss_print = loss.eval(feed_dict={x: batch[0], y: batch[1], keep_prob: 1.0})$/;"	v
-model_make_button_clicked	MyFrame.py	/^    def model_make_button_clicked(self, event):$/;"	m	class:MyFrame
-n	CIFAR-10/get_images.py	/^    n = randIdx[i]$/;"	v
-n	CIFAR-10/get_images.py	/^    n = randIdx[len(x_train)+i]$/;"	v
-next_batch	CIFAR-10/test_model.py	/^def next_batch(num, data, labels):$/;"	f
-onDir	MyFrame.py	/^    def onDir(self, event):$/;"	m	class:MyFrame
-onExpand	gui.backup	/^    def onExpand(self, e):$/;"	m	class:MyFrame
+modelTreeOnActivated	myframeevent.py	/^    def modelTreeOnActivated(self, e):$/;"	m	class:MyFrameEvent
+model_make_button_clicked	MyFrame_old.py	/^    def model_make_button_clicked(self, event):$/;"	m	class:MyFrame
+new_panel	test.py	/^    def new_panel(self, event):$/;"	m	class:MyFrame
+onDir	MyFrame_old.py	/^    def onDir(self, event):$/;"	m	class:MyFrame
 onExpand	gui_old.py	/^    def onExpand(self, e):$/;"	m	class:MyFrame
 onExpand	gui_old_old.py	/^    def onExpand(self, e):$/;"	m	class:MyFrame
-onOpenFile	MyFrame.py	/^    def onOpenFile(self, event):$/;"	m	class:MyFrame
+onOpenFile	MyFrame_old.py	/^    def onOpenFile(self, event):$/;"	m	class:MyFrame
 one_hot_coding	model/ops.py	/^def one_hot_coding(y):$/;"	f
 open_data	model/simple.py	/^open_data = {'mnist':call_mnist}$/;"	v
 pickle_load	utils/util.py	/^def pickle_load(file_name):$/;"	f
 pickle_save	utils/util.py	/^def pickle_save(d, file_name):$/;"	f
-randIdx	CIFAR-10/get_images.py	/^randIdx = np.random.permutation(len(data))$/;"	v
 report_plot	utils/util.py	/^def report_plot(data, i, model_name, log='.\/log'):$/;"	f
 save	model/simple.py	/^    def save(self, checkpoint_dir, epoch, name=None):$/;"	m	class:LOGISTIC
-save_path	CIFAR-10/test_model.py	/^  save_path = saver.save(sess, "..\/model\/test_model.ckpt")$/;"	v
-saver	CIFAR-10/test_model.py	/^saver = tf.train.Saver()$/;"	v
-saver	CIFAR-10/test_model_load.py	/^saver = tf.train.Saver()$/;"	v
+setDataSpec	myframeevent.py	/^    def setDataSpec(self, dataID):$/;"	m	class:MyFrameEvent
+setModelSpec	myframeevent.py	/^    def setModelSpec():$/;"	m	class:MyFrameEvent
 shuffle	utils/util.py	/^def shuffle(x, y):$/;"	f
 string	utils/string.py	/^class string:$/;"	c
-test	CIFAR-10/get_images.py	/^test = open('test.txt', 'w')$/;"	v
 test	model/simple.py	/^    def test(self, test_data = None, test_label=None):$/;"	m	class:LOGISTIC
-test_batch	CIFAR-10/test_model.py	/^  test_batch = next_batch(10000, x_test, y_test_one_hot.eval())$/;"	v
-train	CIFAR-10/get_images.py	/^train = open('train.txt', 'w')$/;"	v
 train	model/simple.py	/^    def train(self, epoch_trained, checkpoint_dir, checkpoint_name, epoch_interval=None, step_interval=None,$/;"	m	class:LOGISTIC
-train_accuracy	CIFAR-10/test_model.py	/^      train_accuracy = accuracy.eval(feed_dict={x: batch[0], y: batch[1], keep_prob: 1.0})$/;"	v
-train_step	CIFAR-10/test_model.py	/^train_step = tf.train.RMSPropOptimizer(1e-3).minimize(loss)$/;"	v
-train_txt	CIFAR-10/getData.py	/^train_txt = open('train.txt', 'r')$/;"	v
 txt2label	model/ops.py	/^def txt2label(file_path, istrain):$/;"	f
-wildcard	MyFrame.py	/^            "All files (*.*)|*.*"$/;"	v
+wildcard	MyFrame_old.py	/^            "All files (*.*)|*.*"$/;"	v
 write	utils/util.py	/^    def write(self, string):$/;"	m	class:Redirection
-x	CIFAR-10/test_model.py	/^x = tf.placeholder(tf.float32, shape=[None, 32, 32, 3])$/;"	v
-y	CIFAR-10/test_model.py	/^y = tf.placeholder(tf.float32, shape=[None, 10])$/;"	v
-y_test_one_hot	CIFAR-10/test_model.py	/^y_test_one_hot = tf.squeeze(tf.one_hot(y_test, 10),axis=1)$/;"	v
-y_train_one_hot	CIFAR-10/test_model.py	/^y_train_one_hot = tf.squeeze(tf.one_hot(y_train, 10),axis=1)$/;"	v

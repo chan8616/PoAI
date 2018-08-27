@@ -10,7 +10,7 @@ import wx
 # begin wxGlade: extracode
 # end wxGlade
 import os
-from MyDialog import MyDialog
+from MyDialog_old import MyDialog
 
 # import dircache # dircache is not supported on python 3.x
 
@@ -41,6 +41,8 @@ class MyFrame(wx.Frame):
         self.data_tree = wx.TreeCtrl(self.data_left, wx.ID_ANY)#, style=wx.TR_HIDE_ROOT)
         self.data_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.data_tree_OnActivated)
         #self.data_tree.AddRoot("Registered Datasets")
+        if not os.path.exists(os.path.join(os.getcwd(), "dataset")):
+                os.makedirs(os.path.join(os.getcwd(), "dataset"))
         self.buildTree(self.data_tree, os.path.join(self.currentDirectory, "dataset"))
         self.data_tree.Expand(self.data_tree.GetRootItem())
         self.data_new = wx.Button(self.data_left, wx.ID_ANY, _("New"))
@@ -67,8 +69,12 @@ class MyFrame(wx.Frame):
         #self.model_dir = wx.GenericDirCtrl(self.model_left, -1, dir=self.currentDirectory)
         self.model_tree = wx.TreeCtrl(self.model_left, wx.ID_ANY, style=wx.TR_HIDE_ROOT | wx.TR_DEFAULT_STYLE | wx.TR_LINES_AT_ROOT) #wx.TR_NO_LINES)
         self.model_tree.AddRoot("root")
+        if not os.path.exists(os.path.join(os.getcwd(), "modules")):
+                os.makedirs(os.path.join(os.getcwd(), "modules"))
         self.buildTree(self.model_tree, os.path.join(os.getcwd(), "modules"))
 #        self.model_tree.AppendItem(self.model_tree.GetRootItem(), "Modules")
+        if not os.path.exists(os.path.join(os.getcwd(), "checkpoint")):
+                os.makedirs(os.path.join(os.getcwd(), "checkpoint"))
         self.buildTree(self.model_tree, os.path.join(os.getcwd(), "checkpoint"))
 #        self.model_tree.AppendItem(self.model_tree.GetRootItem(), "Pretrained (checkpoint)")
 #        self.buildTree(self.model_tree, os.path.join(os.getcwd(), "checkpoint"), self.model_tree.GetLastChild(self.model_tree.GetRootItem()))
