@@ -1,3 +1,4 @@
+
 import tensorflow as tf
 import numpy as np
 import os
@@ -44,7 +45,6 @@ def load_model(sess,               # tf.Session()
     if test:
         aassert(train or load, " [@] Train model first.")
         net.test(test_data, test_label)
-
 
 
 class LOGISTIC(object):
