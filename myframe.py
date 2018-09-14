@@ -15,6 +15,8 @@ import sys
 from mynotebook import MyNotebook
 from utils.util import Redirection
 
+from run import Run
+
 os.environ["UBUNTU_MENUPROXY"] = "0"
 
 class MyFrame(wx.Frame):
@@ -37,8 +39,9 @@ class MyFrame(wx.Frame):
         wxglade_tmp_menu.Append(wx.ID_ANY, _("Load"), "")
         self.frame_menubar.Append(wxglade_tmp_menu, _("Datasets"))
         wxglade_tmp_menu = wx.Menu()
-        wxglade_tmp_menu.Append(wx.ID_ANY, _("Test single"), "")
-        wxglade_tmp_menu.Append(wx.ID_ANY, _("Test a folder"), "")
+        wxglade_tmp_menu.Append(wx.ID_ANY, _("Train Spec"), "")
+        wxglade_tmp_menu.Append(wx.ID_ANY, _("Test Spec"), "")
+        #wxglade_tmp_menu.Append(wx.ID_ANY, _("Run"), "")
         self.frame_menubar.Append(wxglade_tmp_menu, _("Models"))
         self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
@@ -46,16 +49,15 @@ class MyFrame(wx.Frame):
         # Tool Bar
         self.tool_bar = wx.ToolBar(self, wx.ID_ANY)
         self.SetToolBar(self.tool_bar)
-        self.tool_new = self.tool_bar.AddTool(1, _("New"), wx.Bitmap("./icons/add.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Add"), "")
+        self.tool_new = self.tool_bar.AddTool(1, _("New"), wx.Bitmap("./icons/add.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("New"), "")
         self.tool_load = self.tool_bar.AddTool(2, _("Load"), wx.Bitmap("./icons/upload.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Load"), "")
         self.tool_save = self.tool_bar.AddTool(3, _("Save"), wx.Bitmap("./icons/diskette(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
         self.tool_bar.AddSeparator()
-        self.tool_train_spec = self.tool_bar.AddTool(4, _("Make a pretrained model"), wx.Bitmap("./icons/3d-modeling.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Make a model"), "")
-        self.tool_train_start = self.tool_bar.AddTool(5, _("Train"), wx.Bitmap("./icons/play(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Train"), "")
+        self.tool_train_spec = self.tool_bar.AddTool(4, _("Train Spec"), wx.Bitmap("./icons/3d-modeling.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
+        self.tool_run = self.tool_bar.AddTool(5, _("Run"), wx.Bitmap("./icons/play(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
         self.tool_bar.AddSeparator()
-        self.tool_test = self.tool_bar.AddTool(6, _("Classify one"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Classify one"), "")
-        self.tool_bar.AddTool(wx.ID_ANY, _("Classify many"), wx.Bitmap("./icons/image.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Classify many"), "")
-        self.tool_bar.EnableTool(self.tool_train_start.GetId(), False)
+        self.tool_test = self.tool_bar.AddTool(6, _("Test"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
+        self.tool_bar.EnableTool(self.tool_run.GetId(), False)
         # Tool Bar end
 
         # TreeCtrl
@@ -133,7 +135,7 @@ class MyFrame(wx.Frame):
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainSpec, id=self.tool_train_spec.GetId())
-        self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainStart, id=self.tool_train_start.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnRun, id=self.tool_run.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTest, id=self.tool_test.GetId())
 
         # trees
@@ -146,19 +148,11 @@ class MyFrame(wx.Frame):
     def OnClosed(self, event):
         print('closed')
     def OnPageChanged(self, event):
-        if self.notebook.isOnTrainSpec():
-            self.tool_bar.EnableTool(self.tool_train_start.GetId(), True)
+        print('OnPageChanged')
+        if self.notebook.isOnTrainSpec() or self.notebook.isOnTestSpec():
+            self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         else:
-            self.tool_bar.EnableTool(self.tool_train_start.GetId(), False)
-        #print('page changed', event, event.GetNotifyEvent())
-#        if self.notebook.is_train_page():
-
-
-#        idx = self.notebook.GetSelection()
-#        page = self.notebook.GetPage(idx)
-#        print(page)
-#        if isinstance(page, TrainSpecPage):
-#            print('train spec page')
+            self.tool_bar.EnableTool(self.tool_run.GetId(), False)
 
     def OnToolBar(self, event):
         print(event)
@@ -170,14 +164,22 @@ class MyFrame(wx.Frame):
     def OnSave(self, event):
         pass
     def OnTest(self, event):
-        pass
+        dict = {}
+        dict['models'] = self.models
+        dict['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+        self.notebook.createTestSpecPanel(self.notebook, wx.ID_ANY, dict)
+
     def OnTrainSpec(self, event):
         dict = self.setTrainSpec()
         print(dict)
         self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY, dict)
 
-    def OnTrainStart(self, event):
-        pass
+    def OnRun(self, event):
+        spec = self.notebook.getSpec()
+        if not spec: 
+            #self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+            return None
+        return Run(spec)
 
     def OnDataSpec(self, item):
         dict = self.getDataSpec(item)
@@ -194,9 +196,10 @@ class MyFrame(wx.Frame):
                 self.data_tree.GetRootItem()
 
     def treeOnActivated(self, tree, OnSpecFun):
+        print('TreeOnActivated')
         item = tree.GetFocusedItem()
 
-        if self.isDataset(item):
+        if tree.GetItemParent(item) == tree.GetRootItem():
             if item not in self.item_to_page:
                 OnSpecFun(item)
             else:
@@ -210,6 +213,7 @@ class MyFrame(wx.Frame):
         self.treeOnActivated(self.data_tree, self.OnDataSpec)
 
     def modelTreeOnActivated(self, event):
+        print('modelTreeOnActivated')
         self.treeOnActivated(self.model_tree, self.OnModelSpec)
 
     def getDataSpec(self, dataID):
