@@ -136,7 +136,7 @@ class MyFrame(wx.Frame):
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainSpec, id=self.tool_train_spec.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnRun, id=self.tool_run.GetId())
-        self.tool_bar.Bind(wx.EVT_TOOL, self.OnTest, id=self.tool_test.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnTestSpec, id=self.tool_test.GetId())
 
         # trees
         self.data_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.dataTreeOnActivated)
@@ -163,32 +163,35 @@ class MyFrame(wx.Frame):
         pass
     def OnSave(self, event):
         pass
-    def OnTest(self, event):
-        dict = {}
-        dict['models'] = self.models
-        dict['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
-        self.notebook.createTestSpecPanel(self.notebook, wx.ID_ANY, dict)
+    def OnTestSpec(self, event):
+        test_spec = self.getTestSpec()
+        page = self.notebook.createTestSpecPanel(self.notebook, wx.ID_ANY)
+        page.setTestSpec(test_spec)
 
     def OnTrainSpec(self, event):
-        dict = self.setTrainSpec()
-        print(dict)
-        self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY, dict)
+        train_spec = self.getTrainSpec()
+        page = self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY)
+        page.setTrainSpec(train_spec)
 
     def OnRun(self, event):
         spec = self.notebook.getSpec()
         if not spec: 
-            #self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+            # self.tool_bar.EnableTool(self.tool_run.GetId(), False)
             return None
         return Run(spec)
 
     def OnDataSpec(self, item):
-        dict = self.getDataSpec(item)
-        page = self.notebook.createDataSpecPanel(self.notebook, wx.ID_ANY, dict)
+        data_spec = self.getDataSpec(item)
+        page = self.notebook.createDataSpecPanel(self.notebook, wx.ID_ANY)
+        page.setDataSpec(data_spec)
+        
         self.item_to_page[item] = page
 
     def OnModelSpec(self, item):
-        dict = self.getModelSpec(item)
-        page = self.notebook.createModelSpecPanel(self.notebook, wx.ID_ANY, dict)
+        model_spec = self.getModelSpec(item)
+        page = self.notebook.createModelSpecPanel(self.notebook, wx.ID_ANY)
+        page.setModelSpec(model_spec)
+
         self.item_to_page[item] = page
 
     def isDataset(self, item):
@@ -217,6 +220,51 @@ class MyFrame(wx.Frame):
         self.treeOnActivated(self.model_tree, self.OnModelSpec)
 
     def getDataSpec(self, dataID):
+        # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
+        data_spec = dict()
+        data_spec['name'] = self.data_tree.GetItemText(dataID)
+        data_spec['path'] = self.data_tree.GetItemData(dataID)
+        
+        return data_spec
+
+#    def setDataSpec(self, page):
+
+        
+
+
+    def getModelSpec(self, modelID):
+        return {'type':'None',
+                'n_layer':'None',
+                'input_size':'None',
+                'output_size':'None'}
+#    def setModelSpec(self):
+#        pass
+
+    def getTrainSpec(self):
+        train_spec = {'max_iter': '10000', 'learning_rate':'1e-3', 'optimizer':'Adam', 'seed':'0', 'batch_size':'32', 'interval':'1000'}
+        train_spec['lr'] = train_spec['learning_rate']
+
+        train_spec['datasets'] = self.datasets
+        train_spec['models'] = self.models
+        
+        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
+        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+        train_spec['checkpoint_name'] = "modelname_dataname"
+
+        train_spec['gpus'] = ['Not Yet Implemented']
+
+        return train_spec
+
+    def getTestSpec(self):
+        test_spec = {}
+        test_spec['models'] = self.models
+        test_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+        return test_spec
+
+#    def setTrainSpec(self):
+#        pass
+
+    def getDataSpec_(self, dataID):
         res = dict()
         name = self.data_tree.GetItemText(dataID)
         res['name'] = name
@@ -225,11 +273,11 @@ class MyFrame(wx.Frame):
 
         return res
 
-    def getModelSpec(self, modelID):
+    def getModelSpec_(self, modelID):
         res = dict()
         return res
 
-    def setTrainSpec(self):
+    def setTrainSpec_(self):
         train_spec = {'max_iter': 10000, 'lr':1e-3, 'optimizer':'Adam', 'seed':0, 'batch_size':32, 'checkpoint interval':1000, 'validation interval':1000}
         train_spec['datasets'] = self.datasets
         train_spec['models'] = self.models
@@ -238,7 +286,7 @@ class MyFrame(wx.Frame):
         train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
         return train_spec
 
-    def getTrainSpec(self):
+    def getTrainSpec_(self):
         pass
 
     def childrenToList(self, tree, item):

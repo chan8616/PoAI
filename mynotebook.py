@@ -9,26 +9,32 @@ class DataSpecPage(wx.Panel):
         self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, "3", style=wx.TE_READONLY)
         self.text_ctrl_4 = wx.TextCtrl(self, wx.ID_ANY, "4", style=wx.TE_READONLY)
         self.text_ctrl_5 = wx.TextCtrl(self, wx.ID_ANY, "5", style=wx.TE_READONLY)
-        self.text_ctrl_6 = wx.TextCtrl(self, wx.ID_ANY, "6", style=wx.TE_READONLY)
+#        self.text_ctrl_6 = wx.TextCtrl(self, wx.ID_ANY, "6", style=wx.TE_READONLY)
         self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=["combo_box_1"], style=wx.CB_DROPDOWN)
         self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "8")
         self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "7")
 
         self.__do_layout()
 
-    def __init__(self, parent, id, dict):
-        super(DataSpecPage, self).__init__(parent, id)
+    def setDataSpec(self, data_spec):
+        self.text_ctrl_2.SetValue("")
+        self.text_ctrl_2.write(data_spec['path'])
+#        self.text_ctrl_2.SetValue("")
+#        self.text_ctrl_2.write(data_spec['path'])
 
-        self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, dict['path'] if 'path' in dict else "2", style=wx.TE_READONLY)
-        self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, "3", style=wx.TE_READONLY)
-        self.text_ctrl_4 = wx.TextCtrl(self, wx.ID_ANY, "4", style=wx.TE_READONLY)
-        self.text_ctrl_5 = wx.TextCtrl(self, wx.ID_ANY, "5", style=wx.TE_READONLY)
-        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=["combo_box_1"], style=wx.CB_DROPDOWN)
-        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "8")
-        self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "7")
-
-        self.__do_layout()
-
+#    def __init__(self, parent, id, dict):
+#        super(DataSpecPage, self).__init__(parent, id)
+#
+#        self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, dict['path'] if 'path' in dict else "2", style=wx.TE_READONLY)
+#        self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, "3", style=wx.TE_READONLY)
+#        self.text_ctrl_4 = wx.TextCtrl(self, wx.ID_ANY, "4", style=wx.TE_READONLY)
+#        self.text_ctrl_5 = wx.TextCtrl(self, wx.ID_ANY, "5", style=wx.TE_READONLY)
+#        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=["combo_box_1"], style=wx.CB_DROPDOWN)
+#        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "8")
+#        self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "7")
+#
+#        self.__do_layout()
+#
     def __do_layout(self):
         grid_sizer_1 = wx.GridBagSizer(5, 5)
 
@@ -79,43 +85,61 @@ class ModelSpecPage(wx.Panel):
         self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, "9")
         self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, "10")
         self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, "11")
-        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, "13")
+#        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, "13")
         self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, "12")
 
         self.__do_layout()
+    
+    def setModelSpec(self, model_spec):
+        self.text_ctrl_9.SetValue("")
+        self.text_ctrl_9.write(model_spec['type'])
+        self.text_ctrl_10.SetValue("")
+        self.text_ctrl_10.write(model_spec['n_layer'])
+        self.text_ctrl_11.SetValue("")
+        self.text_ctrl_11.write(model_spec['input_size'])
+        self.text_ctrl_12.SetValue("")
+        self.text_ctrl_12.write(model_spec['output_size'])
+#        self.text_ctrl_13.SetValue("")
+#        self.text_ctrl_13.write(model_spec['type'])
 
-    def __init__(self, parent, id, dict):
-        super(ModelSpecPage, self).__init__(parent, id)
-
-        self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, dict['type'] if 'type' in dict else "9")
-        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, dict['n_layer'] if 'n_layer' in dict else "10")
-        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, dict['input_size'] if 'image_size' in dict else "11")
-        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, "13")
-        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, dict['output_size'] if 'output_size' in dict else "12")
-
-        self.__do_layout()
+#    def __init__(self, parent, id, dict):
+#        super(ModelSpecPage, self).__init__(parent, id)
+#
+#        self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, dict['type'] if 'type' in dict else "9")
+#        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, dict['n_layer'] if 'n_layer' in dict else "10")
+#        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, dict['input_size'] if 'image_size' in dict else "11")
+#        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, "13")
+#        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, dict['output_size'] if 'output_size' in dict else "12")
+#
+#        self.__do_layout()
     
     def __do_layout(self):
         grid_sizer_2 = wx.GridBagSizer(5, 5)
+
         label_9 = wx.StaticText(self, wx.ID_ANY, _("Network Type"), style=wx.ALIGN_LEFT)
         label_9.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_9, (1, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_2.Add(self.text_ctrl_9, (1, 8), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+
         label_10 = wx.StaticText(self, wx.ID_ANY, _("Number of Layers"), style=wx.ALIGN_LEFT)
         label_10.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_10, (2, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_2.Add(self.text_ctrl_10, (2, 8), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+
         label_11 = wx.StaticText(self, wx.ID_ANY, _("Image Size (Input)"), style=wx.ALIGN_LEFT)
         label_11.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
-        grid_sizer_2.Add(label_11, (3, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_2.Add(self.text_ctrl_11, (3, 8), (1, 13), wx.EXPAND, 0)
-        label_13 = wx.StaticText(self, wx.ID_ANY, _("X"), style=wx.ALIGN_CENTER)
-        grid_sizer_2.Add(label_13, (3, 21), (1, 1), wx.ALIGN_CENTER, 0)
-        grid_sizer_2.Add(self.text_ctrl_13, (3, 22), (1, 13), wx.EXPAND | wx.RIGHT, 20)
+        grid_sizer_2.Add(label_11, (3, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 20)
+        grid_sizer_2.Add(self.text_ctrl_11, (3, 8), (1, 27), wx.EXPAND, 0)
+
+#        label_13 = wx.StaticText(self, wx.ID_ANY, _("X"), style=wx.ALIGN_CENTER)
+#        grid_sizer_2.Add(label_13, (3, 21), (1, 1), wx.ALIGN_CENTER, 0)
+#        grid_sizer_2.Add(self.text_ctrl_13, (3, 22), (1, 13), wx.EXPAND | wx.RIGHT, 20)
+
         label_12 = wx.StaticText(self, wx.ID_ANY, _("Number of Classes / Demension (Output)"))
         label_12.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_12, (4, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_2.Add(self.text_ctrl_12, (4, 8), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+
         self.SetSizer(grid_sizer_2)
 #        grid_sizer_2.AddGrowableRow(18)
 #        grid_sizer_2.AddGrowableCol(8)
@@ -125,36 +149,61 @@ class TrainSpecPage(wx.Panel):
     def __init__(self, parent, id):
         super(TrainSpecPage, self).__init__(parent, id)
 
-        self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "14")
-        self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, "19")
+        self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=["2"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=["4"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
-        self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, "20")
         self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, "26")
-        self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, "21")
-        self.text_ctrl_17 = wx.TextCtrl(self, wx.ID_ANY, "17")
-        self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, "22")
+
         self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, "18")
-        self.text_ctrl_23 = wx.TextCtrl(self, wx.ID_ANY, "23")
+        self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, "19")
+        self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, "20")
+        self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, "21")
+        self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, "22")
 
         self.__do_layout()
-    
-    def __init__(self, parent, id, dict):
-        super(TrainSpecPage, self).__init__(parent, id)
 
-        #self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "14")
-        self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["2"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-        self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=dict['dataset_names'] if 'dataset_names' in dict else ["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-        self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
-
-        self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, str(dict['max_iter']) if 'max_iter' in dict else "26")
-        self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, str(dict['batch_size']) if 'batch_size' in dict else "18")
-        self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, dict['optimizer'] if 'optimizer' in dict else "20")
-        self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, str(dict['lr']) if 'lr' in dict else "21")
-        self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, str(dict['validation interval']) if 'validation interval' in dict else "19")
-        self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, str(dict['seed']) if 'seed' in dict else "22")
-        self.text_ctrl_23 = wx.TextCtrl(self, wx.ID_ANY, "23")
-        
-        self.__do_layout()
+    def setTrainSpec(self, train_spec):
+        self.combo_box_2.Delete(0)
+        for i, model_name in enumerate(train_spec['model_names']):
+            self.combo_box_2.Insert(model_name, 0)
+        self.combo_box_3.Delete(0)
+        for i, dataset_name in enumerate(train_spec['dataset_names']):
+            self.combo_box_3.Insert(dataset_name, 0)
+        self.combo_box_4.Delete(0)
+        for i, gpu in enumerate(train_spec['gpus']):
+            self.combo_box_4.Insert(gpu, 0)
+        self.text_ctrl_15.SetValue("")
+        self.text_ctrl_15.write(train_spec['checkpoint_name'])
+        self.text_ctrl_16.SetValue("")
+        self.text_ctrl_16.write(train_spec['max_iter'])
+        self.text_ctrl_18.SetValue("")
+        self.text_ctrl_18.write(train_spec['batch_size'])
+        self.text_ctrl_20.SetValue("")
+        self.text_ctrl_20.write(train_spec['optimizer'])
+        self.text_ctrl_21.SetValue("")
+        self.text_ctrl_21.write(train_spec['learning_rate'])
+        self.text_ctrl_19.SetValue("")
+        self.text_ctrl_19.write(train_spec['interval'])
+        self.text_ctrl_22.SetValue("")
+        self.text_ctrl_22.write(train_spec['seed'])
+#   
+#    def __init__(self, parent, id, dict):
+#        super(TrainSpecPage, self).__init__(parent, id)
+#
+#        #self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "14")
+#        self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["2"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+#        self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=dict['dataset_names'] if 'dataset_names' in dict else ["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+#        self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
+#        self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, str(dict['max_iter']) if 'max_iter' in dict else "26")
+#        self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, str(dict['batch_size']) if 'batch_size' in dict else "18")
+#        self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, dict['optimizer'] if 'optimizer' in dict else "20")
+#        self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, str(dict['lr']) if 'lr' in dict else "21")
+#        self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, str(dict['validation interval']) if 'validation interval' in dict else "19")
+#        self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, str(dict['seed']) if 'seed' in dict else "22")
+#        self.text_ctrl_23 = wx.TextCtrl(self, wx.ID_ANY, "23")
+#        
+#        self.__do_layout()
 
     def __do_layout(self):
         grid_sizer_3 = wx.GridBagSizer(0, 0)
@@ -209,12 +258,26 @@ class TrainSpecPage(wx.Panel):
         label_23.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_23, (13, 21), (1, 10), 0, 0)
         grid_sizer_3.Add(self.text_ctrl_18, (14, 1), (1, 18), wx.EXPAND, 0)
-        grid_sizer_3.Add(self.text_ctrl_23, (14, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
+        #grid_sizer_3.Add(self.text_ctrl_23, (14, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
+        grid_sizer_3.Add(self.combo_box_4, (14, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
 
         self.SetSizer(grid_sizer_3)
 
 class TestSpecPage(wx.Panel):
-    def __init__(self, parent, id, dict):
+    #    def __init__(self, parent, id, dict):
+#        super(TestSpecPage, self).__init__(parent, id)
+#
+#        self.button_1 = wx.Button(self, wx.ID_ANY, _("Browse"))
+#        self.text_ctrl_24 = wx.TextCtrl(self, wx.ID_ANY, "24")
+#        self.button_2 = wx.Button(self, wx.ID_ANY, _("Browse"))
+#        self.text_ctrl_25 = wx.TextCtrl(self, wx.ID_ANY, "25")
+#        self.text_ctrl_26 = wx.TextCtrl(self, wx.ID_ANY, "26")
+#        self.text_ctrl_27 = wx.TextCtrl(self, wx.ID_ANY, "27")
+#        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+#
+#        self.__do_layout()
+
+    def __init__(self, parent, id):
         super(TestSpecPage, self).__init__(parent, id)
 
         self.button_1 = wx.Button(self, wx.ID_ANY, _("Browse"))
@@ -223,9 +286,16 @@ class TestSpecPage(wx.Panel):
         self.text_ctrl_25 = wx.TextCtrl(self, wx.ID_ANY, "25")
         self.text_ctrl_26 = wx.TextCtrl(self, wx.ID_ANY, "26")
         self.text_ctrl_27 = wx.TextCtrl(self, wx.ID_ANY, "27")
-        self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
 
         self.__do_layout()
+
+    def setTestSpec(self, test_spec):
+        self.combo_box_5.Delete(0)
+        for i, model_name in enumerate(test_spec['model_names']):
+            self.combo_box_5.Insert(model_name, 0)
+        #self.text_ctrl_24.SetValue("")
+        #self.text_ctrl_25.SetValue("")
 
     def __do_layout(self):
         grid_sizer_4 = wx.GridBagSizer(0, 0)
@@ -233,7 +303,7 @@ class TestSpecPage(wx.Panel):
         label_14 = wx.StaticText(self, wx.ID_ANY, _("Model select"))
         label_14.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_4.Add(label_14, (1, 1), (1, 10), 0, 0)
-        grid_sizer_4.Add(self.combo_box_4, (2, 1), (1, 21), wx.EXPAND, 0)
+        grid_sizer_4.Add(self.combo_box_5, (2, 1), (1, 21), wx.EXPAND, 0)
 
         label_24 = wx.StaticText(self, wx.ID_ANY, _("Upload image"))
         label_24.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
@@ -286,32 +356,55 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
 #        self.AddPage(self.Testmodelimagefolder, _("Test model(image folder)")) 
         self.Layout()
 
-    def createTestSpecPanel(self, parent, id, dict):
+    #def createTestSpecPanel(self, parent, id, dict):
+    def createTestSpecPanel(self, parent, id):
         self.test_spec_count += 1
-        test_spec_panel = TestSpecPage(parent, id, dict)
+        test_spec_panel = TestSpecPage(parent, id)
         print(test_spec_panel, dict)
         self.AddPage(test_spec_panel, _("Test Spec %d"%self.test_spec_count), select=True)
         return test_spec_panel
 
-    def createTrainSpecPanel(self, parent, id, dict):
+    #def createTrainSpecPanel(self, parent, id, dict):
+    def createTrainSpecPanel(self, parent, id):
         self.train_spec_count += 1
-        train_spec_panel = TrainSpecPage(parent, id, dict)
+        train_spec_panel = TrainSpecPage(parent, id)
         print(train_spec_panel)
         self.AddPage(train_spec_panel, _("Train Spec %d"%self.train_spec_count), select=True)
         return train_spec_panel
 
-    def createModelSpecPanel(self, parent, id, dict):
+    #def createModelSpecPanel(self, parent, id, dict):
+    def createModelSpecPanel(self, parent, id):
         self.model_spec_count += 1
-        model_spec_panel = ModelSpecPage(parent, id, dict)
+        model_spec_panel = ModelSpecPage(parent, id)
         self.AddPage(model_spec_panel, _("Model Spec %d"%self.model_spec_count), select=True)
         return model_spec_panel
 
-    def createDataSpecPanel(self, parent, id, dict):
+    #def createDataSpecPanel(self, parent, id, dict):
+    def createDataSpecPanel(self, parent, id):
         self.data_spec_count += 1
-        data_spec_panel = DataSpecPage(parent, id, dict)
+        data_spec_panel = DataSpecPage(parent, id)
         self.AddPage(data_spec_panel, _("Data Spec %d"%self.data_spec_count), select=True)
         return data_spec_panel
-    
+
+#    def getDataSpec(self):
+#        pass
+    def setDataSpec(self, data_spec):
+        # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
+        data_spec = dict()
+        data_spec['name'] = self.data_tree.GetItemText(dataID)
+        data_spec['path'] = self.data_tree.GetItemData(dataID)
+        
+        return data_spec
+
+    def getTrainSpec(self):
+        pass
+    def setTrainSpec(self):
+        pass
+    def getModelSpec(self):
+        pass
+#    def setModelSpec(self):
+#        pass
+   
     def getSpec(self):
         page = self.GetPage(self.GetSelection())
         if isinstance(page, TrainSpecPage):
@@ -327,6 +420,11 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
                 print("select combo box 3")
             else:
                 spec += [page.combo_box_3.GetStringSelection()]
+            idx = page.combo_box_4.GetSelection()
+            if idx == wx.NOT_FOUND:
+                print("select combo box 4")
+            else:
+                spec += [page.combo_box_4.GetStringSelection()]
             spec += [page.text_ctrl_15.GetLineText(0)]
             spec += [page.text_ctrl_16.GetLineText(0)]
             spec += [page.text_ctrl_18.GetLineText(0)]
@@ -339,11 +437,11 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
             return spec
         elif isinstance(page, TestSpecPage):
             spec = ['test']
-            idx = page.combo_box_4.GetSelection()
+            idx = page.combo_box_5.GetSelection()
             if idx == wx.NOT_FOUND:
-                print("select combo box 4")
+                print("select combo box 5")
             else:
-                spec += [page.combo_box_4.GetStringSelection()]
+                spec += [page.combo_box_5.GetStringSelection()]
              
 #            spec['model'] = 
 #            spec['data'] = 
