@@ -56,8 +56,8 @@ OnRun	myframe.py	/^    def OnRun(self, event):$/;"	m	class:MyFrame
 OnSave	myframe.py	/^    def OnSave(self, event):$/;"	m	class:MyFrame
 OnSave	myframeevent.py	/^    def OnSave(self, event):$/;"	m	class:MyFrameEvent
 OnTabClicked	mynotebook.py	/^    def OnTabClicked(self, event):$/;"	m	class:MyNotebook
-OnTest	myframe.py	/^    def OnTest(self, event):$/;"	m	class:MyFrame
 OnTest	myframeevent.py	/^    def OnTest(self, event):$/;"	m	class:MyFrameEvent
+OnTestSpec	myframe.py	/^    def OnTestSpec(self, event):$/;"	m	class:MyFrame
 OnToolBar	myframe.py	/^    def OnToolBar(self, event):$/;"	m	class:MyFrame
 OnToolBar	myframeevent.py	/^    def OnToolBar(self, event):$/;"	m	class:MyFrameEvent
 OnTrainSpec	myframe.py	/^    def OnTrainSpec(self, event):$/;"	m	class:MyFrame
@@ -102,10 +102,7 @@ __init__	mynotebook.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyNo
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:DataSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:ModelSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:TrainSpecPage
-__init__	mynotebook.py	/^    def __init__(self, parent, id, dict):$/;"	m	class:DataSpecPage
-__init__	mynotebook.py	/^    def __init__(self, parent, id, dict):$/;"	m	class:ModelSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id, dict):$/;"	m	class:TestSpecPage
-__init__	mynotebook.py	/^    def __init__(self, parent, id, dict):$/;"	m	class:TrainSpecPage
 __init__	run.py	/^    def __init__(self, spec):$/;"	m	class:Run
 __init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrameEvent
@@ -144,10 +141,10 @@ call_mnist	utils/data.py	/^def call_mnist(one_hot=True):$/;"	f
 childrenToList	myframe.py	/^    def childrenToList(self, tree, item):$/;"	m	class:MyFrame
 classifier	model/simple.py	/^    def classifier(self, reuse=False):$/;"	m	class:LOGISTIC
 close	test.py	/^    def close(self,event):$/;"	m	class:MyFrameEvent
-createDataSpecPanel	mynotebook.py	/^    def createDataSpecPanel(self, parent, id, dict):$/;"	m	class:MyNotebook
-createModelSpecPanel	mynotebook.py	/^    def createModelSpecPanel(self, parent, id, dict):$/;"	m	class:MyNotebook
-createTestSpecPanel	mynotebook.py	/^    def createTestSpecPanel(self, parent, id, dict):$/;"	m	class:MyNotebook
-createTrainSpecPanel	mynotebook.py	/^    def createTrainSpecPanel(self, parent, id, dict):$/;"	m	class:MyNotebook
+createDataSpecPanel	mynotebook.py	/^    def createDataSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
+createModelSpecPanel	mynotebook.py	/^    def createModelSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
+createTestSpecPanel	mynotebook.py	/^    def createTestSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
+createTrainSpecPanel	mynotebook.py	/^    def createTrainSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
 cross_entropy	model/ops.py	/^def cross_entropy(y_true, y_pred):$/;"	f
 dataTreeOnActivated	myframe.py	/^    def dataTreeOnActivated(self, event):$/;"	m	class:MyFrame
 dataTreeOnActivated	myframeevent.py	/^    def dataTreeOnActivated(self, event): $/;"	m	class:MyFrameEvent
@@ -164,13 +161,19 @@ extendTree	myframe.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:My
 extendTree	myframeevent.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:MyFrameEvent
 getDataSpec	myframe.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyFrame
 getDataSpec	myframeevent.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyFrameEvent
+getDataSpec_	myframe.py	/^    def getDataSpec_(self, dataID):$/;"	m	class:MyFrame
 getModelSpec	myframe.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrame
 getModelSpec	myframeevent.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrameEvent
+getModelSpec	mynotebook.py	/^    def getModelSpec(self):$/;"	m	class:MyNotebook
+getModelSpec_	myframe.py	/^    def getModelSpec_(self, modelID):$/;"	m	class:MyFrame
 getSpec	mynotebook.py	/^    def getSpec(self):$/;"	m	class:MyNotebook
 getStatistics	MyFrame_old.py	/^    def getStatistics(self, dirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
+getTestSpec	myframe.py	/^    def getTestSpec(self):$/;"	m	class:MyFrame
 getTrainSpec	myframe.py	/^    def getTrainSpec(self):$/;"	m	class:MyFrame
+getTrainSpec	mynotebook.py	/^    def getTrainSpec(self):$/;"	m	class:MyNotebook
+getTrainSpec_	myframe.py	/^    def getTrainSpec_(self):$/;"	m	class:MyFrame
 get_accuracy	model/ops.py	/^def get_accuracy(y_true, y_pred):$/;"	f
 get_batch	model/simple.py	/^    def get_batch(self, data, label, i, data_file=None, batch_size = None):$/;"	m	class:LOGISTIC
 image_load	utils/util.py	/^def image_load(file_path):            # load image as float numpy array$/;"	f
@@ -184,6 +187,7 @@ label2txt	model/ops.py	/^def label2txt(label, txt_name, dataset, file_name=None)
 linear	model/ops.py	/^def linear(x, out_dim, name, stddev=0.02):$/;"	f
 load	model/simple.py	/^    def load(self, checkpoint_dir, name=None):$/;"	m	class:LOGISTIC
 load_model	model/simple.py	/^def load_model(sess,               # tf.Session()$/;"	f
+logistic	run.py	/^    def logistic(self):$/;"	m	class:Run
 modelTreeOnActivated	myframe.py	/^    def modelTreeOnActivated(self, event):$/;"	m	class:MyFrame
 modelTreeOnActivated	myframeevent.py	/^    def modelTreeOnActivated(self, event):$/;"	m	class:MyFrameEvent
 model_make_button_clicked	MyFrame_old.py	/^    def model_make_button_clicked(self, event):$/;"	m	class:MyFrame
@@ -198,9 +202,16 @@ pickle_load	utils/util.py	/^def pickle_load(file_name):$/;"	f
 pickle_save	utils/util.py	/^def pickle_save(d, file_name):$/;"	f
 report_plot	utils/util.py	/^def report_plot(data, i, model_name, log='.\/log'):$/;"	f
 save	model/simple.py	/^    def save(self, checkpoint_dir, epoch, name=None):$/;"	m	class:LOGISTIC
-setTrainSpec	myframe.py	/^    def setTrainSpec(self):$/;"	m	class:MyFrame
+setDataSpec	mynotebook.py	/^    def setDataSpec(self, data_spec):$/;"	m	class:DataSpecPage
+setDataSpec	mynotebook.py	/^    def setDataSpec(self, data_spec):$/;"	m	class:MyNotebook
+setModelSpec	mynotebook.py	/^    def setModelSpec(self, model_spec):$/;"	m	class:ModelSpecPage
+setTestSpec	mynotebook.py	/^    def setTestSpec(self, test_spec):$/;"	m	class:TestSpecPage
+setTrainSpec	mynotebook.py	/^    def setTrainSpec(self):$/;"	m	class:MyNotebook
+setTrainSpec	mynotebook.py	/^    def setTrainSpec(self, train_spec):$/;"	m	class:TrainSpecPage
+setTrainSpec_	myframe.py	/^    def setTrainSpec_(self):$/;"	m	class:MyFrame
 shuffle	utils/util.py	/^def shuffle(x, y):$/;"	f
 string	utils/string.py	/^class string:$/;"	c
+svm	run.py	/^    def svm(self):$/;"	m	class:Run
 test	model/simple.py	/^    def test(self, test_data = None, test_label=None):$/;"	m	class:LOGISTIC
 train	model/simple.py	/^    def train(self, epoch_trained, checkpoint_dir, checkpoint_name, epoch_interval=None, step_interval=None,$/;"	m	class:LOGISTIC
 treeOnActivated	myframe.py	/^    def treeOnActivated(self, tree, OnSpecFun):$/;"	m	class:MyFrame
