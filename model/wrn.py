@@ -11,7 +11,7 @@ from utils.data import *
 from utils.util import *
 from .model import NET
 
-class LOGISTIC(NET):
+class WRN(NET):
     """
 
     Scenario 1 : Using open data.
@@ -38,7 +38,7 @@ class LOGISTIC(NET):
                  model_dir = None
                  ):
 
-        super(LOGISTIC, self).__init__(sess,
+        super(WRN, self).__init__(sess,
                      model_name,
                      dataset,
                      learning_rate,
@@ -48,6 +48,13 @@ class LOGISTIC(NET):
                      batch_size,
                      epochs,
                      model_dir)
+
+        assert image_size[0]==image_size[1], "."
+
+        size = 28 if self.input_width % 28 == 0 else 32 if self.input_width % 32 == 0 else False
+        assert size, " [@] "
+        self.K = int(self.input_width/size)*4
+        self.D = 4+int(self.input_width/size)*6
 
     def build_model(self):
 
@@ -64,10 +71,28 @@ class LOGISTIC(NET):
         self.saver = tf.train.Saver()
 
     def classifier(self, reuse=False):
-        im_dim = np.product(np.array(self.image_size))
-        with tf.variable_scope('classifier') as scope:
+        assert (self.D-4) % 6 == 0, " [@] d has to be 6n+4"
+        n = int((self.D-4)/6)
+        k = self.K
+        conv2d = conv2d_3k
+        width = [16, 32, 64]
+        batch_norm4 = batch_norm(self.is_train, name='bn4')
+        self.set_shape(image, True)
+        with tf.variable_scope("classifier") as scope:
             if reuse:
                 scope.reuse_variables()
-            X = self.X if len(self.X.get_shape().as_list())==2 else tf.reshape(self.X, [-1, im_dim])
-            h = linear(X, self.classes, 'linear') # TODO : multi-classes
-        return h, tf.nn.softmax(h)
+            conv1 = conv2d(image, 16, st=1, name='conv1')
+            self.set_shape(conv1)
+            conv2 = block(conv1, n, width[0], k, self.is_train, 1, name='conv2')
+            self.set_shape(conv2)
+            conv3 = block(conv2, n, width[1], k, self.is_train, 2, name='conv3')
+            self.set_shape(conv3)
+            conv4 = block(conv3, n, width[2], k, self.is_train, 2, name='conv4')
+            self.set_shape(conv4)
+            bn_relu = relu(batch_norm4(conv4))
+            height, width = tensor_shape(bn_relu)[1:3]
+            avg_pool = tf.nn.avg_pool(bn_relu, [1, height, width, 1], strides = [1,1,1,1], padding='VALID')
+            self.set_shape(avg_pool)
+            out = linear(avg_pool, self.y_dim, 'lin')
+            self.set_shape(out)
+            return out, tf.nn.softmax(out)
