@@ -343,7 +343,7 @@ class MyFrame(wx.Frame):
 
             if ext == '.png' or ext == '.jpg':
                 img = Image.open(x)
-                input_shape = np.array(img).shape
+                input_shape = img.size
                 if input_shape not in input_shapes:
                     input_shapes.append(input_shape)
             else:
