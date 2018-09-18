@@ -9,8 +9,8 @@ class DataSpecPage(wx.Panel):
         self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, "3", style=wx.TE_READONLY)
         self.text_ctrl_4 = wx.TextCtrl(self, wx.ID_ANY, "4", style=wx.TE_READONLY)
         self.text_ctrl_5 = wx.TextCtrl(self, wx.ID_ANY, "5", style=wx.TE_READONLY)
-#        self.text_ctrl_6 = wx.TextCtrl(self, wx.ID_ANY, "6", style=wx.TE_READONLY)
-        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=["combo_box_1"], style=wx.CB_DROPDOWN)
+        self.text_ctrl_6 = wx.TextCtrl(self, wx.ID_ANY, "6", style=wx.TE_READONLY)
+#        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=["combo_box_1"], style=wx.CB_DROPDOWN)
         self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "8")
         self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "7")
 
@@ -19,6 +19,17 @@ class DataSpecPage(wx.Panel):
     def setDataSpec(self, data_spec):
         self.text_ctrl_2.SetValue("")
         self.text_ctrl_2.write(data_spec['path'])
+
+        self.text_ctrl_3.SetValue("")
+        self.text_ctrl_3.write(data_spec['output_size'])
+        self.text_ctrl_4.SetValue("")
+        self.text_ctrl_4.write(str(len(data_spec['data']['train']) + len(data_spec['data']['test'])))
+        self.text_ctrl_5.SetValue("")
+        self.text_ctrl_5.write(str(data_spec['input_shapes']))
+        self.text_ctrl_6.SetValue("")
+        self.text_ctrl_6.write(str(data_spec['input_types']))
+        self.text_ctrl_8.SetValue("")
+        self.text_ctrl_8.write(str(len(data_spec['data']['test']) / len(data_spec['data']['train'])))
 
 #        self.text_ctrl_2.SetValue("")
 #        self.text_ctrl_2.write(data_spec['path'])
@@ -62,7 +73,8 @@ class DataSpecPage(wx.Panel):
         label_5 = wx.StaticText(self, wx.ID_ANY, _("Image Type"), style=wx.ALIGN_CENTER | wx.ALIGN_LEFT)
         label_5.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_1.Add(label_5, (5, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.combo_box_1, (5, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        #grid_sizer_1.Add(self.combo_box_1, (5, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        grid_sizer_1.Add(self.text_ctrl_6, (5, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
         label_6 = wx.StaticText(self, wx.ID_ANY, _("% of Testing"), style=wx.ALIGN_CENTER | wx.ALIGN_LEFT)
         label_6.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
