@@ -156,3 +156,55 @@ def linear(x, out_dim, name, stddev=0.02):
         w = tf.get_variable('w', [in_dim, out_dim], initializer=tf.truncated_normal_initializer(stddev=stddev))
         b = tf.get_variable('b', [out_dim], initializer=tf.zeros_initializer)
     return tf.nn.bias_add(tf.matmul(x, w), b)
+
+class batch_norm(object):
+  def __init__(self, train, epsilon=1e-5, momentum = 0.9, name="batch_norm", use=True):
+    with tf.variable_scope(name):
+      self.epsilon  = epsilon
+      self.momentum = momentum
+      self.name = name
+      self.train = train
+      self.use = use
+  def __call__(self, x):
+    return tf.contrib.layers.batch_norm(x,
+                      decay=self.momentum,
+                      updates_collections=None,
+                      epsilon=self.epsilon,
+                      scale=True,
+                      is_training=self.train,
+                      scope=self.name) if self.use else tf.identity(x, name="no_batch")
+
+
+def conv2d_3k(input_, output_dim, st=1, name='conv2d_3k'):
+    return conv2d(input_, output_dim, ks=3, st=st, name=name)
+
+def conv2d(input_, output_dim,
+       ks=3, st=2, stddev=0.02, padding='SAME',name="conv2d", kw=None):
+  if kw is None:
+      kw, kh = ks, ks
+  else:
+      kw, kh = kw, ks
+  with tf.variable_scope(name):
+    w = tf.get_variable('w', [kw,kh, input_.get_shape()[-1], output_dim],
+              initializer=tf.truncated_normal_initializer(stddev=stddev))
+    conv = tf.nn.conv2d(input_, w, strides=[1, st, st, 1], padding=padding)
+
+    biases = tf.get_variable('biases', [1,1,1,output_dim], initializer=tf.constant_initializer(0.0))
+    return conv+biases
+
+def block(x, n, channel, k, train, stride, name, use_batch=True):
+
+    conv2d = conv2d_3k # alias
+    out_dim = k*channel
+    for i in range(n):
+        x_channel = tensor_shape(x)[-1]
+        with tf.variable_scope("{}_{}".format(name, i)):
+            bn1 = batch_norm(train, name='bn1', use=use_batch)
+            bn2 = batch_norm(train, name='bn2', use=use_batch)
+            relu_bn1 = relu(bn1(x))
+            conv1 = conv2d(relu_bn1, out_dim, st = stride if i==0 else 1, name='conv1')
+            relu_bn2 = relu(bn2(conv1))
+            conv2 = conv2d(relu_bn2, out_dim, st = 1, name='conv2')
+            shortcut = x if x_channel == out_dim else conv2d(relu_bn1, out_dim, stride, name='shortcut')
+            x = conv2 + shortcut
+    return x

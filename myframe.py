@@ -27,7 +27,7 @@ class MyFrame(wx.Frame):
         self.SetSize((1194, 922))
 
         self.cwd = os.getcwd()
-        
+
         # Menu Bar
         self.frame_menubar = wx.MenuBar()
         wxglade_tmp_menu = wx.Menu()
@@ -45,7 +45,7 @@ class MyFrame(wx.Frame):
         self.frame_menubar.Append(wxglade_tmp_menu, _("Models"))
         self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
-        
+
         # Tool Bar
         self.tool_bar = wx.ToolBar(self, wx.ID_ANY)
         self.SetToolBar(self.tool_bar)
@@ -71,7 +71,7 @@ class MyFrame(wx.Frame):
             os.makedirs(self.datasetDir)
         self.buildTree(self.data_tree, self.datasetDir)
         self.data_tree.Expand(self.data_tree.GetRootItem())
-    
+
         # load model tree (in Modules folder)
         self.modelDir= os.path.join(self.cwd, "Modules")
         if not os.path.exists(self.modelDir):
@@ -85,7 +85,7 @@ class MyFrame(wx.Frame):
             for pretrainedModel in os.listdir(self.pretrainedModelDir):
                 pretrainedModelPath = os.path.join(self.pretrainedModelDir, pretrainedModel)
                 self.buildTree(self.model_tree, pretrainedModelPath)
-       
+
         # toList
         self.datasets = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
         self.models= self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
@@ -176,7 +176,7 @@ class MyFrame(wx.Frame):
 
     def OnRun(self, event):
         spec = self.notebook.getSpec()
-        if not spec: 
+        if not spec:
             # self.tool_bar.EnableTool(self.tool_run.GetId(), False)
             return None
         return Run(spec)
@@ -185,7 +185,7 @@ class MyFrame(wx.Frame):
         data_spec = self.getDataSpec(item)
         page = self.notebook.createDataSpecPanel(self.notebook, wx.ID_ANY)
         page.setDataSpec(data_spec)
-        
+
         self.item_to_page[item] = page
 
     def OnModelSpec(self, item):
@@ -225,12 +225,12 @@ class MyFrame(wx.Frame):
         data_spec = dict()
         data_spec['name'] = self.data_tree.GetItemText(dataID)
         data_spec['path'] = self.data_tree.GetItemData(dataID)
-        
+
         return data_spec
 
 #    def setDataSpec(self, page):
 
-        
+
 
 
     def getModelSpec(self, modelID):
@@ -247,7 +247,7 @@ class MyFrame(wx.Frame):
 
         train_spec['datasets'] = self.datasets
         train_spec['models'] = self.models
-        
+
         train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
         train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
         train_spec['checkpoint_name'] = "modelname_dataname"
@@ -282,7 +282,7 @@ class MyFrame(wx.Frame):
         train_spec = {'max_iter': 10000, 'lr':1e-3, 'optimizer':'Adam', 'seed':0, 'batch_size':32, 'checkpoint interval':1000, 'validation interval':1000}
         train_spec['datasets'] = self.datasets
         train_spec['models'] = self.models
-        
+
         train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
         train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
         return train_spec
@@ -293,7 +293,7 @@ class MyFrame(wx.Frame):
     def childrenToList(self, tree, item):
         list = []
         child, cookie = tree.GetFirstChild(item)
-        
+
         while child.IsOk():
             list.append(child)
             child, cookie = tree.GetNextChild(item, cookie)
@@ -337,6 +337,6 @@ class MyFrame(wx.Frame):
                         grandchildID = tree.AppendItem(childID, grandchild)
                         tree.SetItemData(grandchildID, grandchildPath)
 
- 
+
 
 # end of class MyFrame
