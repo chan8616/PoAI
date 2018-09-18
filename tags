@@ -38,6 +38,7 @@ OnClosed	myframe.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrame
 OnClosed	myframeevent.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrameEvent
 OnDataSpec	myframe.py	/^    def OnDataSpec(self, item):$/;"	m	class:MyFrame
 OnDataSpec	myframeevent.py	/^    def OnDataSpec(self, item):$/;"	m	class:MyFrameEvent
+OnDatasetSelected	mynotebook.py	/^    def OnDatasetSelected(self, event):$/;"	m	class:TrainSpecPage
 OnInit	MyDialog_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	app.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	app_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
@@ -46,6 +47,7 @@ OnInit	gui_old_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	test.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnLoad	myframe.py	/^    def OnLoad(self, event):$/;"	m	class:MyFrame
 OnLoad	myframeevent.py	/^    def OnLoad(self, event):$/;"	m	class:MyFrameEvent
+OnModelSelected	mynotebook.py	/^    def OnModelSelected(self, event):$/;"	m	class:TrainSpecPage
 OnModelSpec	myframe.py	/^    def OnModelSpec(self, item):$/;"	m	class:MyFrame
 OnModelSpec	myframeevent.py	/^    def OnModelSpec(self, item):$/;"	m	class:MyFrameEvent
 OnNew	myframe.py	/^    def OnNew(self, event):$/;"	m	class:MyFrame
@@ -55,7 +57,6 @@ OnPageChanged	myframeevent.py	/^    def OnPageChanged(self, event):$/;"	m	class:
 OnRun	myframe.py	/^    def OnRun(self, event):$/;"	m	class:MyFrame
 OnSave	myframe.py	/^    def OnSave(self, event):$/;"	m	class:MyFrame
 OnSave	myframeevent.py	/^    def OnSave(self, event):$/;"	m	class:MyFrameEvent
-OnTabClicked	mynotebook.py	/^    def OnTabClicked(self, event):$/;"	m	class:MyNotebook
 OnTest	myframeevent.py	/^    def OnTest(self, event):$/;"	m	class:MyFrameEvent
 OnTestSpec	myframe.py	/^    def OnTestSpec(self, event):$/;"	m	class:MyFrame
 OnToolBar	myframe.py	/^    def OnToolBar(self, event):$/;"	m	class:MyFrame
@@ -73,6 +74,8 @@ __bind_events	gui_old.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file
 __bind_events	gui_old_old.py	/^    def __bind_events(self):$/;"	m	class:MyDialog1	file:
 __bind_events	gui_old_old.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
 __do_binds	myframe.py	/^    def __do_binds(self):$/;"	m	class:MyFrame	file:
+__do_binds	mynotebook.py	/^    def __do_binds(self):$/;"	m	class:TestSpecPage	file:
+__do_binds	mynotebook.py	/^    def __do_binds(self):$/;"	m	class:TrainSpecPage	file:
 __do_layout	MyDialog_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
 __do_layout	MyFrame_old.py	/^    def __do_layout(self):$/;"	m	class:MyFrame	file:
 __do_layout	gui_old.py	/^    def __do_layout(self):$/;"	m	class:MyDialog	file:
@@ -101,8 +104,8 @@ __init__	myframeevent.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:My
 __init__	mynotebook.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyNotebook
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:DataSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:ModelSpecPage
+__init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:TestSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:TrainSpecPage
-__init__	mynotebook.py	/^    def __init__(self, parent, id, dict):$/;"	m	class:TestSpecPage
 __init__	run.py	/^    def __init__(self, spec):$/;"	m	class:Run
 __init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrameEvent
@@ -164,15 +167,14 @@ getDataSpec	myframeevent.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyF
 getDataSpec_	myframe.py	/^    def getDataSpec_(self, dataID):$/;"	m	class:MyFrame
 getModelSpec	myframe.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrame
 getModelSpec	myframeevent.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrameEvent
-getModelSpec	mynotebook.py	/^    def getModelSpec(self):$/;"	m	class:MyNotebook
 getModelSpec_	myframe.py	/^    def getModelSpec_(self, modelID):$/;"	m	class:MyFrame
 getSpec	mynotebook.py	/^    def getSpec(self):$/;"	m	class:MyNotebook
 getStatistics	MyFrame_old.py	/^    def getStatistics(self, dirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
-getTestSpec	myframe.py	/^    def getTestSpec(self):$/;"	m	class:MyFrame
+getTestSpec	mynotebook.py	/^    def getTestSpec(self):$/;"	m	class:TestSpecPage
 getTrainSpec	myframe.py	/^    def getTrainSpec(self):$/;"	m	class:MyFrame
-getTrainSpec	mynotebook.py	/^    def getTrainSpec(self):$/;"	m	class:MyNotebook
+getTrainSpec	mynotebook.py	/^    def getTrainSpec(self):$/;"	m	class:TrainSpecPage
 getTrainSpec_	myframe.py	/^    def getTrainSpec_(self):$/;"	m	class:MyFrame
 get_accuracy	model/ops.py	/^def get_accuracy(y_true, y_pred):$/;"	f
 get_batch	model/simple.py	/^    def get_batch(self, data, label, i, data_file=None, batch_size = None):$/;"	m	class:LOGISTIC
@@ -203,12 +205,12 @@ pickle_save	utils/util.py	/^def pickle_save(d, file_name):$/;"	f
 report_plot	utils/util.py	/^def report_plot(data, i, model_name, log='.\/log'):$/;"	f
 save	model/simple.py	/^    def save(self, checkpoint_dir, epoch, name=None):$/;"	m	class:LOGISTIC
 setDataSpec	mynotebook.py	/^    def setDataSpec(self, data_spec):$/;"	m	class:DataSpecPage
-setDataSpec	mynotebook.py	/^    def setDataSpec(self, data_spec):$/;"	m	class:MyNotebook
 setModelSpec	mynotebook.py	/^    def setModelSpec(self, model_spec):$/;"	m	class:ModelSpecPage
 setTestSpec	mynotebook.py	/^    def setTestSpec(self, test_spec):$/;"	m	class:TestSpecPage
-setTrainSpec	mynotebook.py	/^    def setTrainSpec(self):$/;"	m	class:MyNotebook
+setTestSpec_dataset	mynotebook.py	/^    def setTestSpec_dataset(self):$/;"	m	class:TestSpecPage
 setTrainSpec	mynotebook.py	/^    def setTrainSpec(self, train_spec):$/;"	m	class:TrainSpecPage
 setTrainSpec_	myframe.py	/^    def setTrainSpec_(self):$/;"	m	class:MyFrame
+setTrainSpec_checkpoint_name	mynotebook.py	/^    def setTrainSpec_checkpoint_name(self):$/;"	m	class:TrainSpecPage
 shuffle	utils/util.py	/^def shuffle(x, y):$/;"	f
 string	utils/string.py	/^class string:$/;"	c
 svm	run.py	/^    def svm(self):$/;"	m	class:Run
