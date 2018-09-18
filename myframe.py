@@ -163,6 +163,7 @@ class MyFrame(wx.Frame):
         pass
     def OnSave(self, event):
         pass
+
     def OnTestSpec(self, event):
         test_spec = self.getTestSpec()
         page = self.notebook.createTestSpecPanel(self.notebook, wx.ID_ANY)
@@ -255,11 +256,11 @@ class MyFrame(wx.Frame):
 
         return train_spec
 
-    def getTestSpec(self):
-        test_spec = {}
-        test_spec['models'] = self.models
-        test_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
-        return test_spec
+#    def getTestSpec(self):
+#        test_spec = {}
+#        test_spec['models'] = self.models
+#        test_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+#        return test_spec
 
 #    def setTrainSpec(self):
 #        pass

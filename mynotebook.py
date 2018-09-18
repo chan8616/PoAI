@@ -19,6 +19,7 @@ class DataSpecPage(wx.Panel):
     def setDataSpec(self, data_spec):
         self.text_ctrl_2.SetValue("")
         self.text_ctrl_2.write(data_spec['path'])
+
 #        self.text_ctrl_2.SetValue("")
 #        self.text_ctrl_2.write(data_spec['path'])
 
@@ -119,17 +120,17 @@ class ModelSpecPage(wx.Panel):
         label_9 = wx.StaticText(self, wx.ID_ANY, _("Network Type"), style=wx.ALIGN_LEFT)
         label_9.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_9, (1, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_2.Add(self.text_ctrl_9, (1, 8), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        grid_sizer_2.Add(self.text_ctrl_9, (1, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
         label_10 = wx.StaticText(self, wx.ID_ANY, _("Number of Layers"), style=wx.ALIGN_LEFT)
         label_10.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_10, (2, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_2.Add(self.text_ctrl_10, (2, 8), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        grid_sizer_2.Add(self.text_ctrl_10, (2, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
         label_11 = wx.StaticText(self, wx.ID_ANY, _("Image Size (Input)"), style=wx.ALIGN_LEFT)
         label_11.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
-        grid_sizer_2.Add(label_11, (3, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 20)
-        grid_sizer_2.Add(self.text_ctrl_11, (3, 8), (1, 27), wx.EXPAND, 0)
+        grid_sizer_2.Add(label_11, (3, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_2.Add(self.text_ctrl_11, (3, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
 #        label_13 = wx.StaticText(self, wx.ID_ANY, _("X"), style=wx.ALIGN_CENTER)
 #        grid_sizer_2.Add(label_13, (3, 21), (1, 1), wx.ALIGN_CENTER, 0)
@@ -138,7 +139,7 @@ class ModelSpecPage(wx.Panel):
         label_12 = wx.StaticText(self, wx.ID_ANY, _("Number of Classes / Demension (Output)"))
         label_12.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_2.Add(label_12, (4, 1), (1, 6), wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_2.Add(self.text_ctrl_12, (4, 8), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        grid_sizer_2.Add(self.text_ctrl_12, (4, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
         self.SetSizer(grid_sizer_2)
 #        grid_sizer_2.AddGrowableRow(18)
@@ -162,48 +163,7 @@ class TrainSpecPage(wx.Panel):
         self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, "22")
 
         self.__do_layout()
-
-    def setTrainSpec(self, train_spec):
-        self.combo_box_2.Delete(0)
-        for i, model_name in enumerate(train_spec['model_names']):
-            self.combo_box_2.Insert(model_name, 0)
-        self.combo_box_3.Delete(0)
-        for i, dataset_name in enumerate(train_spec['dataset_names']):
-            self.combo_box_3.Insert(dataset_name, 0)
-        self.combo_box_4.Delete(0)
-        for i, gpu in enumerate(train_spec['gpus']):
-            self.combo_box_4.Insert(gpu, 0)
-        self.text_ctrl_15.SetValue("")
-        self.text_ctrl_15.write(train_spec['checkpoint_name'])
-        self.text_ctrl_16.SetValue("")
-        self.text_ctrl_16.write(train_spec['max_iter'])
-        self.text_ctrl_18.SetValue("")
-        self.text_ctrl_18.write(train_spec['batch_size'])
-        self.text_ctrl_20.SetValue("")
-        self.text_ctrl_20.write(train_spec['optimizer'])
-        self.text_ctrl_21.SetValue("")
-        self.text_ctrl_21.write(train_spec['learning_rate'])
-        self.text_ctrl_19.SetValue("")
-        self.text_ctrl_19.write(train_spec['interval'])
-        self.text_ctrl_22.SetValue("")
-        self.text_ctrl_22.write(train_spec['seed'])
-#   
-#    def __init__(self, parent, id, dict):
-#        super(TrainSpecPage, self).__init__(parent, id)
-#
-#        #self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, "14")
-#        self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["2"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-#        self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=dict['dataset_names'] if 'dataset_names' in dict else ["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-#        self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
-#        self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, str(dict['max_iter']) if 'max_iter' in dict else "26")
-#        self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, str(dict['batch_size']) if 'batch_size' in dict else "18")
-#        self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, dict['optimizer'] if 'optimizer' in dict else "20")
-#        self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, str(dict['lr']) if 'lr' in dict else "21")
-#        self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, str(dict['validation interval']) if 'validation interval' in dict else "19")
-#        self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, str(dict['seed']) if 'seed' in dict else "22")
-#        self.text_ctrl_23 = wx.TextCtrl(self, wx.ID_ANY, "23")
-#        
-#        self.__do_layout()
+        self.__do_binds()
 
     def __do_layout(self):
         grid_sizer_3 = wx.GridBagSizer(0, 0)
@@ -263,20 +223,77 @@ class TrainSpecPage(wx.Panel):
 
         self.SetSizer(grid_sizer_3)
 
-class TestSpecPage(wx.Panel):
-    #    def __init__(self, parent, id, dict):
-#        super(TestSpecPage, self).__init__(parent, id)
-#
-#        self.button_1 = wx.Button(self, wx.ID_ANY, _("Browse"))
-#        self.text_ctrl_24 = wx.TextCtrl(self, wx.ID_ANY, "24")
-#        self.button_2 = wx.Button(self, wx.ID_ANY, _("Browse"))
-#        self.text_ctrl_25 = wx.TextCtrl(self, wx.ID_ANY, "25")
-#        self.text_ctrl_26 = wx.TextCtrl(self, wx.ID_ANY, "26")
-#        self.text_ctrl_27 = wx.TextCtrl(self, wx.ID_ANY, "27")
-#        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=dict['model_names'] if 'model_names' in dict else ["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-#
-#        self.__do_layout()
+    def __do_binds(self):
+        self.combo_box_2.Bind(wx.EVT_COMBOBOX, self.OnModelSelected)
+        self.combo_box_3.Bind(wx.EVT_COMBOBOX, self.OnDatasetSelected)
 
+    def OnModelSelected(self, event):
+        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
+        self.setTrainSpec_checkpoint_name()
+
+    def OnDatasetSelected(self, event):
+        self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
+        self.setTrainSpec_checkpoint_name()
+        
+    def setTrainSpec(self, train_spec):
+        self.train_spec = train_spec
+
+        self.combo_box_2.Delete(0)
+        for i, model_name in enumerate(train_spec['model_names']):
+            self.combo_box_2.Insert(model_name, 0)
+        self.combo_box_3.Delete(0)
+        for i, dataset_name in enumerate(train_spec['dataset_names']):
+            self.combo_box_3.Insert(dataset_name, 0)
+        self.combo_box_4.Delete(0)
+        for i, gpu in enumerate(train_spec['gpus']):
+            self.combo_box_4.Insert(gpu, 0)
+        self.text_ctrl_15.SetValue("")
+        self.text_ctrl_15.write(train_spec['checkpoint_name'])
+        self.text_ctrl_16.SetValue("")
+        self.text_ctrl_16.write(train_spec['max_iter'])
+        self.text_ctrl_18.SetValue("")
+        self.text_ctrl_18.write(train_spec['batch_size'])
+        self.text_ctrl_20.SetValue("")
+        self.text_ctrl_20.write(train_spec['optimizer'])
+        self.text_ctrl_21.SetValue("")
+        self.text_ctrl_21.write(train_spec['learning_rate'])
+        self.text_ctrl_19.SetValue("")
+        self.text_ctrl_19.write(train_spec['interval'])
+        self.text_ctrl_22.SetValue("")
+        self.text_ctrl_22.write(train_spec['seed'])
+
+    def setTrainSpec_checkpoint_name(self):
+        self.text_ctrl_15.SetValue("")
+        self.text_ctrl_15.write(self.train_spec['checkpoint_name'])
+    
+    def getTrainSpec(self):
+        spec = []
+        idx = self.combo_box_2.GetSelection()
+        if idx == wx.NOT_FOUND:
+            print("select combo box 2")
+        else:
+            spec += [self.combo_box_2.GetStringSelection()]
+        idx = self.combo_box_3.GetSelection()
+        if idx == wx.NOT_FOUND:
+            print("select combo box 3")
+        else:
+            spec += [self.combo_box_3.GetStringSelection()]
+        idx = self.combo_box_4.GetSelection()
+        if idx == wx.NOT_FOUND:
+            print("select combo box 4")
+        else:
+            spec += [self.combo_box_4.GetStringSelection()]
+        spec += [self.text_ctrl_15.GetLineText(0)]
+        spec += [self.text_ctrl_16.GetLineText(0)]
+        spec += [self.text_ctrl_18.GetLineText(0)]
+        spec += [self.text_ctrl_20.GetLineText(0)]
+        spec += [self.text_ctrl_21.GetLineText(0)]
+        spec += [self.text_ctrl_19.GetLineText(0)]
+        spec += [self.text_ctrl_22.GetLineText(0)]
+        
+        return spec
+ 
+class TestSpecPage(wx.Panel):
     def __init__(self, parent, id):
         super(TestSpecPage, self).__init__(parent, id)
 
@@ -289,13 +306,7 @@ class TestSpecPage(wx.Panel):
         self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
 
         self.__do_layout()
-
-    def setTestSpec(self, test_spec):
-        self.combo_box_5.Delete(0)
-        for i, model_name in enumerate(test_spec['model_names']):
-            self.combo_box_5.Insert(model_name, 0)
-        #self.text_ctrl_24.SetValue("")
-        #self.text_ctrl_25.SetValue("")
+        self.__do_binds()
 
     def __do_layout(self):
         grid_sizer_4 = wx.GridBagSizer(0, 0)
@@ -334,6 +345,34 @@ class TestSpecPage(wx.Panel):
         grid_sizer_4.AddGrowableCol(20) 
         self.SetSizer(grid_sizer_4)
 
+    def __do_binds(self):
+        pass
+
+    def setTestSpec(self, test_spec):
+        self.test_spec = test_spec
+        self.combo_box_5.Delete(0)
+        for i, model_name in enumerate(test_spec['model_names']):
+            self.combo_box_5.Insert(model_name, 0)
+        #self.text_ctrl_24.SetValue("")
+        #self.text_ctrl_25.SetValue("")
+
+    def setTestSpec_dataset(self):
+        self.test_spec['dataset_path']
+        self.test_spec['dataset_name']
+ 
+    def getTestSpec(self):
+        spec = []
+        idx = self.combo_box_5.GetSelection()
+        if idx == wx.NOT_FOUND:
+            print("select combo box 5")
+        else:
+            spec += [self.combo_box_5.GetStringSelection()]
+        spec += self.test_spec['dataset_path']
+        spec += [self.text_ctrl_26.GetLineText(0)]
+        spec += [self.text_ctrl_27.GetLineText(0)]
+       
+        return spec
+ 
 class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
     def __init__(self, *args, **kwds):
 		# Auinotebook
@@ -356,7 +395,7 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
 #        self.AddPage(self.Testmodelimagefolder, _("Test model(image folder)")) 
         self.Layout()
 
-    #def createTestSpecPanel(self, parent, id, dict):
+   #def createTestSpecPanel(self, parent, id, dict):
     def createTestSpecPanel(self, parent, id):
         self.test_spec_count += 1
         test_spec_panel = TestSpecPage(parent, id)
@@ -388,25 +427,37 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
 
 #    def getDataSpec(self):
 #        pass
-    def setDataSpec(self, data_spec):
-        # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
-        data_spec = dict()
-        data_spec['name'] = self.data_tree.GetItemText(dataID)
-        data_spec['path'] = self.data_tree.GetItemData(dataID)
-        
-        return data_spec
-
-    def getTrainSpec(self):
-        pass
-    def setTrainSpec(self):
-        pass
-    def getModelSpec(self):
-        pass
+#    def setDataSpec(self, data_spec):
+#        # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
+#        data_spec = dict()
+#        data_spec['name'] = self.data_tree.GetItemText(dataID)
+#        data_spec['path'] = self.data_tree.GetItemData(dataID)
+#        
+#        return data_spec
+#
+#    def getTrainSpec(self):
+#        pass
+#    def setTrainSpec(self):
+#        pass
+#    def getModelSpec(self):
+#        pass
 #    def setModelSpec(self):
 #        pass
-   
+  
     def getSpec(self):
         page = self.GetPage(self.GetSelection())
+        if isinstance(page, TrainSpecPage):
+            spec = ['train']
+            spec += page.getTrainSpec()
+        elif isinstance(page, TestSpecPage):
+            spec = ['test']
+            spec += page.getTestSpec()
+
+        return spec
+
+        spec += page.getModelSpec()
+        spec += page.getDatasetSpec()
+
         if isinstance(page, TrainSpecPage):
             spec = ['train'] 
             # model, data, checkpoint, max_iter, batch_size, optimizer, lr, interval, random_seed
@@ -432,7 +483,6 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
             spec += [page.text_ctrl_21.GetLineText(0)]
             spec += [page.text_ctrl_19.GetLineText(0)]
             spec += [page.text_ctrl_22.GetLineText(0)]
-            spec += [page.text_ctrl_23.GetLineText(0)]
             
             return spec
         elif isinstance(page, TestSpecPage):
@@ -457,7 +507,7 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         page = self.GetPage(self.GetSelection())
         return isinstance(page, TestSpecPage)
 
-    def OnTabClicked(self, event):
-        super(MyNotebook, self).OnTabClicked(event)
+#    def OnTabClicked(self, event):
+#        super(MyNotebook, self).OnTabClicked(event)
         #print('tab clicked', event, event.GetNotifyEvent())
         #event.Skip()
