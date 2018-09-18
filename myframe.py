@@ -141,6 +141,8 @@ class MyFrame(wx.Frame):
         # trees
         self.data_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.dataTreeOnActivated)
         self.model_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.modelTreeOnActivated)
+        self.data_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.dataTreeOnExpand)
+        self.model_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.modelTreeOnExpand)
 
         # notebook
         self.notebook.Bind(wx.lib.agw.aui.auibook.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
@@ -153,6 +155,14 @@ class MyFrame(wx.Frame):
             self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         else:
             self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+    def dataTreeOnExpand(self, event):
+        itemID = event.GetItem()
+        self.data_tree.DeleteChildren(itemID)
+        self.extendTree(self.data_tree, itemID)
+    def modelTreeOnExpand(self, event):
+        itemID = event.GetItem()
+        self.model_tree.DeleteChildren(itemID)
+        self.extendTree(self.model_tree, itemID)
 
     def OnToolBar(self, event):
         print(event)
@@ -223,8 +233,49 @@ class MyFrame(wx.Frame):
     def getDataSpec(self, dataID):
         # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
         data_spec = dict()
-        data_spec['name'] = self.data_tree.GetItemText(dataID)
-        data_spec['path'] = self.data_tree.GetItemData(dataID)
+        data_name = self.data_tree.GetItemText(dataID)
+        data_path = self.data_tree.GetItemData(dataID)
+        data_spec['name'] = data_name
+        data_spec['path'] = data_path
+
+        childs = os.listdir(data_path)
+        # Data/, train.txt, test.txt
+        if 'Data' in childs and 'train.txt' in childs and 'test.txt' in childs:
+            f = open(os.path.join(data_path, 'train.txt'), 'r')
+            train = f.read().splitlines()
+            f.close()
+            f = open(os.path.join(data_path, 'test.txt'), 'r')
+            test = f.read().splitlines()
+            f.close()
+            pass
+        # train/, test/, labels.txt
+        elif 'train' in childs and 'test' in childs and 'labels.txt' in childs:
+            f = open(os.path.join(data_path, 'labels.txt'), 'r')
+            labels = f.read().splitlines()
+            f.close()
+
+            train = os.listdir(os.join(data_path, 'train'))
+            test = os.listdir(os.join(data_path, 'test'))
+            pass
+        # label/, ... , train.txt, test.txt
+        elif 'train.txt' in childs and 'test.txt' in childs:
+            labels = [ label for label in childs if os.path.isdir(os.path.join(data_path, label)) ]
+
+            f = open(os.path.join(data_path, 'train.txt'), 'r')
+            train = f.read().splitlines()
+            f.close()
+            f = open(os.path.join(data_path, 'test.txt'), 'r')
+            test = f.read().splitlines()
+            f.close()
+            pass
+        else:
+            pass
+
+        data_spec['labels'] = labels
+        data_spec['output_size'] = str(len(labels))
+        count = 0
+        for label in labels:
+            label_path = os.path.join(data_path, label)
 
         return data_spec
 
