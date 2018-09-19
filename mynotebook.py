@@ -165,6 +165,7 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=["2"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=["4"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.combo_box_6 = wx.ComboBox(self, wx.ID_ANY, choices=["6"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
         self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, "26")
 
@@ -188,6 +189,8 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_4.Delete(0)
         for i, gpu in enumerate(train_spec['gpus']):
             self.combo_box_4.Insert(gpu, 0)
+        self.combo_box_6.Delete(0)
+        self.combo_box_6.Insert("New",0)
         self.text_ctrl_15.SetValue("")
         self.text_ctrl_15.write(train_spec['checkpoint_name'])
         self.text_ctrl_16.SetValue("")
@@ -283,37 +286,42 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_3.Bind(wx.EVT_COMBOBOX, self.OnDatasetSelected)
 
     def OnModelSelected(self, event):
-        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
-        self.setTrainSpec_checkpoint_name()
+        model_name = event.GetString()
+        for i, trained_model_name in enumerate(self.train_spec['trained_model_names_dict'][model_name]):
+            self.combo_box_6.Insert(trained_model_name, i)
+
+#        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
+#        self.setTrainSpec_checkpoint_name()
 
     def OnDatasetSelected(self, event):
-        self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
+        self.train_spec['checkpoint_name'] = event.GetString()
+        #self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
         self.setTrainSpec_checkpoint_name()
         
-    def setTrainSpec_(self, train_spec):
-        self.combo_box_2.Delete(0)
-        for i, model_name in enumerate(train_spec['model_names']):
-            self.combo_box_2.Insert(model_name, 0)
-        self.combo_box_3.Delete(0)
-        for i, dataset_name in enumerate(train_spec['dataset_names']):
-            self.combo_box_3.Insert(dataset_name, 0)
-        self.combo_box_4.Delete(0)
-        for i, gpu in enumerate(train_spec['gpus']):
-            self.combo_box_4.Insert(gpu, 0)
-        self.text_ctrl_15.SetValue("")
-        self.text_ctrl_15.write(train_spec['checkpoint_name'])
-        self.text_ctrl_16.SetValue("")
-        self.text_ctrl_16.write(train_spec['max_iter'])
-        self.text_ctrl_18.SetValue("")
-        self.text_ctrl_18.write(train_spec['batch_size'])
-        self.text_ctrl_20.SetValue("")
-        self.text_ctrl_20.write(train_spec['optimizer'])
-        self.text_ctrl_21.SetValue("")
-        self.text_ctrl_21.write(train_spec['learning_rate'])
-        self.text_ctrl_19.SetValue("")
-        self.text_ctrl_19.write(train_spec['interval'])
-        self.text_ctrl_22.SetValue("")
-        self.text_ctrl_22.write(train_spec['seed'])
+#    def setTrainSpec_(self, train_spec):
+#        self.combo_box_2.Delete(0)
+#        for i, model_name in enumerate(train_spec['model_names']):
+#            self.combo_box_2.Insert(model_name, 0)
+#        self.combo_box_3.Delete(0)
+#        for i, dataset_name in enumerate(train_spec['dataset_names']):
+#            self.combo_box_3.Insert(dataset_name, 0)
+#        self.combo_box_4.Delete(0)
+#        for i, gpu in enumerate(train_spec['gpus']):
+#            self.combo_box_4.Insert(gpu, 0)
+#        self.text_ctrl_15.SetValue("")
+#        self.text_ctrl_15.write(train_spec['checkpoint_name'])
+#        self.text_ctrl_16.SetValue("")
+#        self.text_ctrl_16.write(train_spec['max_iter'])
+#        self.text_ctrl_18.SetValue("")
+#        self.text_ctrl_18.write(train_spec['batch_size'])
+#        self.text_ctrl_20.SetValue("")
+#        self.text_ctrl_20.write(train_spec['optimizer'])
+#        self.text_ctrl_21.SetValue("")
+#        self.text_ctrl_21.write(train_spec['learning_rate'])
+#        self.text_ctrl_19.SetValue("")
+#        self.text_ctrl_19.write(train_spec['interval'])
+#        self.text_ctrl_22.SetValue("")
+#        self.text_ctrl_22.write(train_spec['seed'])
 
     def setTrainSpec_checkpoint_name(self):
         self.text_ctrl_15.SetValue("")
@@ -335,6 +343,12 @@ class TrainSpecPage(wx.Panel):
             print("select combo box 4")
         else:
             self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
+        idx = self.combo_box_6.GetSelection()
+        if idx == wx.NOT_FOUND:
+            print("select combo box 6")
+        else:
+            self.train_spec['trained_model_name'] = None \
+                if self.combo_box_6.GetSelection() == 0 else self.combo_box_6.GetStringSelection()
         self.train_spec['checkpoint_name'] = self.text_ctrl_15.GetLineText(0)
         self.train_spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
         self.train_spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
