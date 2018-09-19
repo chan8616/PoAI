@@ -9,7 +9,8 @@ DataSpecPage	mynotebook.py	/^class DataSpecPage(wx.Panel):$/;"	c
 FILE_FORMAT	model/ops.py	/^FILE_FORMAT = ['jpg', 'jpeg', 'png', 'bmp']$/;"	v
 GetInfo	MyDialog_old.py	/^    def GetInfo(self, Info):$/;"	m	class:MyDialog
 IsDataset	MyFrame_old.py	/^    def IsDataset(self, item):$/;"	m	class:MyFrame
-LOGISTIC	model/simple.py	/^class LOGISTIC(object):$/;"	c
+LOGISTIC	model/simple.py	/^class LOGISTIC(NET):$/;"	c
+MODEL	run.py	/^MODEL = {'simple':LOGISTIC, 'wrn':WRN}$/;"	v
 ModelSpecPage	mynotebook.py	/^class ModelSpecPage(wx.Panel):$/;"	c
 MyApp	MyDialog_old.py	/^class MyApp(wx.App):$/;"	c
 MyApp	app.py	/^class MyApp(wx.App):$/;"	c
@@ -30,6 +31,7 @@ MyFrame	test.py	/^class MyFrame(wx.Frame):$/;"	c
 MyFrameEvent	myframeevent.py	/^class MyFrameEvent(MyFrame):$/;"	c
 MyFrameEvent	test.py	/^class MyFrameEvent(MyFrame):$/;"	c
 MyNotebook	mynotebook.py	/^class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):$/;"	c
+NET	model/model.py	/^class NET(object):$/;"	c
 OPTIMIZER	model/ops.py	/^OPTIMIZER = {'adam':tf.train.AdamOptimizer,$/;"	v
 OnButton_1	MyDialog_old.py	/^    def OnButton_1(self, event):$/;"	m	class:MyDialog
 OnClose	myframeevent.py	/^    def OnClose(self, event):$/;"	m	class:MyFrameEvent
@@ -65,14 +67,17 @@ OnTrainSpec	myframe.py	/^    def OnTrainSpec(self, event):$/;"	m	class:MyFrame
 OnTrainSpec	myframeevent.py	/^    def OnTrainSpec(self, event):$/;"	m	class:MyFrameEvent
 OnTrainStart	myframeevent.py	/^    def OnTrainStart(self, event):$/;"	m	class:MyFrameEvent
 Redirection	utils/util.py	/^class Redirection(object):$/;"	c
-Run	run.py	/^class Run():$/;"	c
+Run	run.py	/^class Run(object):$/;"	c
 SetDataset	MyFrame_old.py	/^    def SetDataset(self, treeItem):$/;"	m	class:MyFrame
 TestSpecPage	mynotebook.py	/^class TestSpecPage(wx.Panel):$/;"	c
 TrainSpecPage	mynotebook.py	/^class TrainSpecPage(wx.Panel):$/;"	c
+WRN	model/wrn.py	/^class WRN(NET):$/;"	c
 __bind_events	gui_old.py	/^    def __bind_events(self):$/;"	m	class:MyDialog1	file:
 __bind_events	gui_old.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
 __bind_events	gui_old_old.py	/^    def __bind_events(self):$/;"	m	class:MyDialog1	file:
 __bind_events	gui_old_old.py	/^    def __bind_events(self):$/;"	m	class:MyFrame	file:
+__call__	model/ops.py	/^  def __call__(self, x):$/;"	m	class:batch_norm	file:
+__call__	run.py	/^    def __call__(self, arg):$/;"	m	class:Run	file:
 __do_binds	myframe.py	/^    def __do_binds(self):$/;"	m	class:MyFrame	file:
 __do_binds	mynotebook.py	/^    def __do_binds(self):$/;"	m	class:TestSpecPage	file:
 __do_binds	mynotebook.py	/^    def __do_binds(self):$/;"	m	class:TrainSpecPage	file:
@@ -98,7 +103,10 @@ __init__	gui_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	gui_old_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog
 __init__	gui_old_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyDialog1
 __init__	gui_old_old.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
+__init__	model/model.py	/^    def __init__(self,$/;"	m	class:NET
+__init__	model/ops.py	/^  def __init__(self, train, epsilon=1e-5, momentum = 0.9, name="batch_norm", use=True):$/;"	m	class:batch_norm
 __init__	model/simple.py	/^    def __init__(self,$/;"	m	class:LOGISTIC
+__init__	model/wrn.py	/^    def __init__(self,$/;"	m	class:WRN
 __init__	myframe.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	myframeevent.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrameEvent
 __init__	mynotebook.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyNotebook
@@ -120,7 +128,7 @@ __set_properties	gui_old_old.py	/^    def __set_properties(self):$/;"	m	class:My
 __set_properties	gui_old_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog1	file:
 __set_properties	gui_old_old.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
 __set_properties	myframe.py	/^    def __set_properties(self):$/;"	m	class:MyFrame	file:
-_model_name	model/simple.py	/^    def _model_name(self):$/;"	m	class:LOGISTIC
+_model_name	model/model.py	/^    def _model_name(self):$/;"	m	class:NET
 aassert	utils/util.py	/^def aassert(statement, message=''): #TODO$/;"	f
 app	MyDialog_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	app.py	/^    app = MyApp(0)$/;"	v
@@ -128,12 +136,18 @@ app	app_old.py	/^    app = MyApp(0)$/;"	v
 app	gui_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	gui_old_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	test.py	/^    app = MyApp(0)$/;"	v	class:MyApp
+batch_norm	model/ops.py	/^class batch_norm(object):$/;"	c
+block	model/ops.py	/^def block(x, n, channel, k, train, stride, name, use_batch=True):$/;"	f
 buildTree	MyFrame_old.py	/^    def buildTree(self, tree, rootdirPath, treeRoot=None):$/;"	m	class:MyFrame
 buildTree	gui_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
 buildTree	gui_old_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
 buildTree	myframe.py	/^    def buildTree(self, tree, rootDir, treeRoot=None):$/;"	m	class:MyFrame
 buildTree	myframeevent.py	/^    def buildTree(self, tree, rootDir, treeRoot=None):$/;"	m	class:MyFrameEvent
+build_classification	model/model.py	/^    def build_classification(self, classes):$/;"	m	class:NET
+build_model	model/model.py	/^    def build_model(self):$/;"	m	class:NET
 build_model	model/simple.py	/^    def build_model(self):$/;"	m	class:LOGISTIC
+build_model	model/wrn.py	/^    def build_model(self):$/;"	m	class:WRN
+build_optimzier	model/model.py	/^    def build_optimzier(self, loss, var_list=None):$/;"	m	class:NET
 button_1_clicked	gui_old.py	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
 button_1_clicked	gui_old_old.py	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
 button_2_clicked	gui_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyDialog1
@@ -141,16 +155,26 @@ button_2_clicked	gui_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyF
 button_2_clicked	gui_old_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyDialog1
 button_2_clicked	gui_old_old.py	/^    def button_2_clicked(self, e):$/;"	m	class:MyFrame
 call_mnist	utils/data.py	/^def call_mnist(one_hot=True):$/;"	f
+child_path	Dataset/dist.py	/^    child_path = os.path.join(cifar_path, child)$/;"	v
 childrenToList	myframe.py	/^    def childrenToList(self, tree, item):$/;"	m	class:MyFrame
+cifar1_path	Dataset/dist.py	/^cifar1_path = os.path.join(cwd, 'cifar_class')$/;"	v
+cifar_path	Dataset/dist.py	/^cifar_path = os.path.join(cwd, 'cifar_png')$/;"	v
 classifier	model/simple.py	/^    def classifier(self, reuse=False):$/;"	m	class:LOGISTIC
+classifier	model/wrn.py	/^    def classifier(self, reuse=False):$/;"	m	class:WRN
 close	test.py	/^    def close(self,event):$/;"	m	class:MyFrameEvent
+conv2d	model/ops.py	/^def conv2d(input_, output_dim,$/;"	f
+conv2d_3k	model/ops.py	/^def conv2d_3k(input_, output_dim, st=1, name='conv2d_3k'):$/;"	f
+count	Dataset/dist.py	/^count = 0$/;"	v
 createDataSpecPanel	mynotebook.py	/^    def createDataSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
 createModelSpecPanel	mynotebook.py	/^    def createModelSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
 createTestSpecPanel	mynotebook.py	/^    def createTestSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
 createTrainSpecPanel	mynotebook.py	/^    def createTrainSpecPanel(self, parent, id):$/;"	m	class:MyNotebook
 cross_entropy	model/ops.py	/^def cross_entropy(y_true, y_pred):$/;"	f
+cwd	Dataset/dist.py	/^cwd = os.getcwd()$/;"	v
+cwd	Dataset/txt.py	/^cwd = os.getcwd()$/;"	v
 dataTreeOnActivated	myframe.py	/^    def dataTreeOnActivated(self, event):$/;"	m	class:MyFrame
 dataTreeOnActivated	myframeevent.py	/^    def dataTreeOnActivated(self, event): $/;"	m	class:MyFrameEvent
+dataTreeOnExpand	myframe.py	/^    def dataTreeOnExpand(self, event):$/;"	m	class:MyFrame
 data_input	model/ops.py	/^def data_input(data, istrain, label=None):$/;"	f
 data_load_button_clicked	MyFrame_old.py	/^    def data_load_button_clicked(self, event):$/;"	m	class:MyFrame
 data_select_button_clicked	MyFrame_old.py	/^    def data_select_button_clicked(self, event):$/;"	m	class:MyFrame
@@ -162,13 +186,15 @@ extendTree	gui_old.py	/^    def extendTree(self, parentID):$/;"	m	class:MyFrame
 extendTree	gui_old_old.py	/^    def extendTree(self, parentID):$/;"	m	class:MyFrame
 extendTree	myframe.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:MyFrame
 extendTree	myframeevent.py	/^    def extendTree(self, tree, parentID):$/;"	m	class:MyFrameEvent
+f	Dataset/dist.py	/^f = open(os.path.join(cifar_path, 'labels.txt'), "r")$/;"	v
+file_path	Dataset/dist.py	/^            file_path = os.path.join(child_path, file)$/;"	v
 getDataSpec	myframe.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyFrame
 getDataSpec	myframeevent.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyFrameEvent
 getDataSpec_	myframe.py	/^    def getDataSpec_(self, dataID):$/;"	m	class:MyFrame
 getModelSpec	myframe.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrame
 getModelSpec	myframeevent.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrameEvent
 getModelSpec_	myframe.py	/^    def getModelSpec_(self, modelID):$/;"	m	class:MyFrame
-getSpec	mynotebook.py	/^    def getSpec(self):$/;"	m	class:MyNotebook
+getRunSpec	mynotebook.py	/^    def getRunSpec(self):$/;"	m	class:MyNotebook
 getStatistics	MyFrame_old.py	/^    def getStatistics(self, dirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
@@ -177,7 +203,7 @@ getTrainSpec	myframe.py	/^    def getTrainSpec(self):$/;"	m	class:MyFrame
 getTrainSpec	mynotebook.py	/^    def getTrainSpec(self):$/;"	m	class:TrainSpecPage
 getTrainSpec_	myframe.py	/^    def getTrainSpec_(self):$/;"	m	class:MyFrame
 get_accuracy	model/ops.py	/^def get_accuracy(y_true, y_pred):$/;"	f
-get_batch	model/simple.py	/^    def get_batch(self, data, label, i, data_file=None, batch_size = None):$/;"	m	class:LOGISTIC
+get_batch	model/model.py	/^    def get_batch(self, data, label, i, data_file=None, batch_size = None):$/;"	m	class:NET
 image_load	utils/util.py	/^def image_load(file_path):            # load image as float numpy array$/;"	f
 isDataset	myframe.py	/^    def isDataset(self, item):$/;"	m	class:MyFrame
 isOnTestSpec	mynotebook.py	/^    def isOnTestSpec(self):$/;"	m	class:MyNotebook
@@ -186,24 +212,31 @@ itemExist	MyFrame_old.py	/^        def itemExist(tree, data, rootID):$/;"	f	func
 itemExist	myframe.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrame.buildTree
 itemExist	myframeevent.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrameEvent.buildTree
 label2txt	model/ops.py	/^def label2txt(label, txt_name, dataset, file_name=None):$/;"	f
+label_path	Dataset/dist.py	/^                    label_path = os.path.join(cifar1_path, label)$/;"	v
+label_path	Dataset/txt.py	/^    label_path = os.path.join(cwd, label)$/;"	v
+labels	Dataset/dist.py	/^labels = f.read().splitlines()$/;"	v
 linear	model/ops.py	/^def linear(x, out_dim, name, stddev=0.02):$/;"	f
-load	model/simple.py	/^    def load(self, checkpoint_dir, name=None):$/;"	m	class:LOGISTIC
-load_model	model/simple.py	/^def load_model(sess,               # tf.Session()$/;"	f
-logistic	run.py	/^    def logistic(self):$/;"	m	class:Run
+load	model/model.py	/^    def load(self, checkpoint_dir, name=None):$/;"	m	class:NET
+load_model	run.py	/^    def load_model(self,$/;"	m	class:Run
+main	Dataset/cifar/load.py	/^def main():$/;"	f
+meta	run.py	/^    def meta(self):$/;"	m	class:Run
 modelTreeOnActivated	myframe.py	/^    def modelTreeOnActivated(self, event):$/;"	m	class:MyFrame
 modelTreeOnActivated	myframeevent.py	/^    def modelTreeOnActivated(self, event):$/;"	m	class:MyFrameEvent
+modelTreeOnExpand	myframe.py	/^    def modelTreeOnExpand(self, event):$/;"	m	class:MyFrame
 model_make_button_clicked	MyFrame_old.py	/^    def model_make_button_clicked(self, event):$/;"	m	class:MyFrame
+model_meta	run.py	/^def model_meta(file_name, **kargs):$/;"	f
 new_panel	test.py	/^    def new_panel(self, event):$/;"	m	class:MyFrame
 onDir	MyFrame_old.py	/^    def onDir(self, event):$/;"	m	class:MyFrame
 onExpand	gui_old.py	/^    def onExpand(self, e):$/;"	m	class:MyFrame
 onExpand	gui_old_old.py	/^    def onExpand(self, e):$/;"	m	class:MyFrame
 onOpenFile	MyFrame_old.py	/^    def onOpenFile(self, event):$/;"	m	class:MyFrame
 one_hot_coding	model/ops.py	/^def one_hot_coding(y):$/;"	f
-open_data	model/simple.py	/^open_data = {'mnist':call_mnist}$/;"	v
+open_data	run.py	/^open_data = {'mnist':call_mnist}$/;"	v
 pickle_load	utils/util.py	/^def pickle_load(file_name):$/;"	f
 pickle_save	utils/util.py	/^def pickle_save(d, file_name):$/;"	f
+pngs	Dataset/txt.py	/^pngs = []$/;"	v
 report_plot	utils/util.py	/^def report_plot(data, i, model_name, log='.\/log'):$/;"	f
-save	model/simple.py	/^    def save(self, checkpoint_dir, epoch, name=None):$/;"	m	class:LOGISTIC
+save	model/model.py	/^    def save(self, checkpoint_dir, epoch, name=None):$/;"	m	class:NET
 setDataSpec	mynotebook.py	/^    def setDataSpec(self, data_spec):$/;"	m	class:DataSpecPage
 setModelSpec	mynotebook.py	/^    def setModelSpec(self, model_spec):$/;"	m	class:ModelSpecPage
 setTestSpec	mynotebook.py	/^    def setTestSpec(self, test_spec):$/;"	m	class:TestSpecPage
@@ -213,11 +246,11 @@ setTrainSpec_	myframe.py	/^    def setTrainSpec_(self):$/;"	m	class:MyFrame
 setTrainSpec_checkpoint_name	mynotebook.py	/^    def setTrainSpec_checkpoint_name(self):$/;"	m	class:TrainSpecPage
 shuffle	utils/util.py	/^def shuffle(x, y):$/;"	f
 string	utils/string.py	/^class string:$/;"	c
-svm	run.py	/^    def svm(self):$/;"	m	class:Run
-test	model/simple.py	/^    def test(self, test_data = None, test_label=None):$/;"	m	class:LOGISTIC
-train	model/simple.py	/^    def train(self, epoch_trained, checkpoint_dir, checkpoint_name, epoch_interval=None, step_interval=None,$/;"	m	class:LOGISTIC
+test	model/model.py	/^    def test(self, test_data = None, test_label=None):$/;"	m	class:NET
+train	model/model.py	/^    def train(self, epoch_trained, checkpoint_dir, checkpoint_name, epoch_interval=None, step_interval=None,$/;"	m	class:NET
 treeOnActivated	myframe.py	/^    def treeOnActivated(self, tree, OnSpecFun):$/;"	m	class:MyFrame
 treeOnActivated	myframeevent.py	/^    def treeOnActivated(self, tree, OnSpecFun):$/;"	m	class:MyFrameEvent
 txt2label	model/ops.py	/^def txt2label(file_path, istrain):$/;"	f
+unpickle	Dataset/cifar/load.py	/^def unpickle(file):$/;"	f
 wildcard	MyFrame_old.py	/^            "All files (*.*)|*.*"$/;"	v
 write	utils/util.py	/^    def write(self, string):$/;"	m	class:Redirection

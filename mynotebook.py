@@ -178,6 +178,7 @@ class TrainSpecPage(wx.Panel):
         self.__do_binds()
 
     def setTrainSpec(self, train_spec):
+        self.train_spec = train_spec
         self.combo_box_2.Delete(0)
         for i, model_name in enumerate(train_spec['model_names']):
             self.combo_box_2.Insert(model_name, 0)
@@ -190,7 +191,7 @@ class TrainSpecPage(wx.Panel):
         self.text_ctrl_15.SetValue("")
         self.text_ctrl_15.write(train_spec['checkpoint_name'])
         self.text_ctrl_16.SetValue("")
-        self.text_ctrl_16.write(train_spec['epochs'])
+        self.text_ctrl_16.write(train_spec['max_epochs'])
         self.text_ctrl_18.SetValue("")
         self.text_ctrl_18.write(train_spec['batch_size'])
         self.text_ctrl_20.SetValue("")
@@ -289,9 +290,7 @@ class TrainSpecPage(wx.Panel):
         self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
         self.setTrainSpec_checkpoint_name()
         
-    def setTrainSpec(self, train_spec):
-        self.train_spec = train_spec
-
+    def setTrainSpec_(self, train_spec):
         self.combo_box_2.Delete(0)
         for i, model_name in enumerate(train_spec['model_names']):
             self.combo_box_2.Insert(model_name, 0)
@@ -321,31 +320,29 @@ class TrainSpecPage(wx.Panel):
         self.text_ctrl_15.write(self.train_spec['checkpoint_name'])
     
     def getTrainSpec(self):
-        spec = []
         idx = self.combo_box_2.GetSelection()
         if idx == wx.NOT_FOUND:
             print("select combo box 2")
         else:
-            spec += [self.combo_box_2.GetStringSelection()]
+            self.train_spec['model_name'] = self.combo_box_2.GetStringSelection()
         idx = self.combo_box_3.GetSelection()
         if idx == wx.NOT_FOUND:
             print("select combo box 3")
         else:
-            spec += [self.combo_box_3.GetStringSelection()]
+            self.train_spec['dataset_name'] = self.combo_box_3.GetStringSelection()
         idx = self.combo_box_4.GetSelection()
         if idx == wx.NOT_FOUND:
             print("select combo box 4")
         else:
-            spec += [self.combo_box_4.GetStringSelection()]
-        spec += [self.text_ctrl_15.GetLineText(0)]
-        spec += [self.text_ctrl_16.GetLineText(0)]
-        spec += [self.text_ctrl_18.GetLineText(0)]
-        spec += [self.text_ctrl_20.GetLineText(0)]
-        spec += [self.text_ctrl_21.GetLineText(0)]
-        spec += [self.text_ctrl_19.GetLineText(0)]
-        spec += [self.text_ctrl_22.GetLineText(0)]
-        
-        return spec
+            self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
+        self.train_spec['checkpoint_name'] = self.text_ctrl_15.GetLineText(0)
+        self.train_spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
+        self.train_spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
+        self.train_spec['optimizer'] = self.text_ctrl_20.GetLineText(0)
+        self.train_spec['learning_rate'] = self.text_ctrl_21.GetLineText(0)
+        self.train_spec['interval'] = self.text_ctrl_19.GetLineText(0)
+        self.train_spec['seed'] = self.text_ctrl_22.GetLineText(0)
+        return self.train_spec
  
 class TestSpecPage(wx.Panel):
     def __init__(self, parent, id):
@@ -479,38 +476,19 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         self.AddPage(data_spec_panel, _("Data Spec %d"%self.data_spec_count), select=True)
         return data_spec_panel
 
-#    def getDataSpec(self):
-#        pass
-    def setDataSpec(self, data_spec):
-        # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
-        data_spec = dict()
-        data_spec['name'] = self.data_tree.GetItemText(dataID)
-        data_spec['path'] = self.data_tree.GetItemData(dataID)
-
-        return data_spec
-
-    def getTrainSpec(self):
-        pass
-    def setTrainSpec(self):
-        pass
-    def getModelSpec(self):
-        pass
-#    def setModelSpec(self):
-#        pass
-
-    def getSpec(self):
+    def getRunSpec(self):
         page = self.GetPage(self.GetSelection())
+        spec = [page]
         if isinstance(page, TrainSpecPage):
-            spec = ['train']
-            spec += page.getTrainSpec()
+            spec += ['Train']
+            spec += [page.getTrainSpec()]
         elif isinstance(page, TestSpecPage):
-            spec = ['test']
-            spec += page.getTestSpec()
+            spec += ['Test']
+            spec += [page.getTestSpec()]
+        else: 
+            return None
 
         return spec
-
-        spec += page.getModelSpec()
-        spec += page.getDatasetSpec()
 
         if isinstance(page, TrainSpecPage):
             spec = ['train'] 

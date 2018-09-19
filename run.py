@@ -60,6 +60,15 @@ class Run(object):
         self.model_name, self.dataset_name, gpu_selected, \
         self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         self.learning_rate, self.interval, self.random_seed = spec[1:]
+
+        data_spec['name']
+        data_spec['path']
+        data_spec['label_names']
+        data_spec['data']
+        data_spec['output_size']
+        data_spec['input_types']
+        data_spec['input_shapes']
+
         gpu_selected = int(gpu_selected)
 
 

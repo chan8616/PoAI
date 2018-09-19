@@ -87,8 +87,8 @@ class MyFrame(wx.Frame):
                 self.buildTree(self.model_tree, pretrainedModelPath)
 
         # toList
-        self.datasets = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
-        self.models= self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
+        self.dataset_list = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
+        self.model_list = self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
         # TreeCtrl end
 
         # AuiNotebook
@@ -185,11 +185,63 @@ class MyFrame(wx.Frame):
         page.setTrainSpec(train_spec)
 
     def OnRun(self, event):
-        spec = self.notebook.getSpec()
-        if not spec:
-            # self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+        page, phase, spec = self.notebook.getRunSpec()
+        if spec is not None:
+            model_name, dataset_name = spec['model_name'], spec['dataset_name']
+            if phase == 'Train':
+                modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(model_name)]
+                datasetID = page.train_spec['dataset_list'][page.train_spec['dataset_names'].index(dataset_name)]
+            elif phase == 'Test':
+                modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(model_name)]
+                datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(dataset_name)]
+            
+            spec['model_spec'] = self.getModelSpec(modelID)
+            """
+            return {'type':'None',
+                    'n_layer':'None',
+                    'input_size':'None',
+                    'output_size':'None'}
+            """
+            spec['dataset_spec'] = self.getDataSpec(datasetID)
+            """
+            data_spec['name']
+            data_spec['path']
+            data_spec['label_names']
+            data_spec['data']
+            data_spec['output_size']
+            data_spec['input_types']
+            data_spec['input_shapes']
+            """
+           
+            if phase == 'Train':
+                spec_list = [True, 
+                         spec['model_spec'],
+                         spec['dataset_spec'],
+                         spec['checkpoint_name'],
+                         spec['max_epochs'],
+                         spec['batch_size'],
+                         spec['optimizer'],
+                         spec['learning_rate'],
+                         spec['interval'],
+                         spec['seed']]
+            elif phase == 'Test':
+                spec_list = [False, 
+                         spec['model_spec'],
+                         spec['dataset_spec'],
+                         spec['interval'],
+                         spec['seed']]
+
+            print(spec_list)
             return None
-        return Run(spec)
+#        self.model_name, self.dataset_name, gpu_selected, \
+        #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
+        #        self.learning_rate, self.interval, self.random_seed \
+        #        self.input_shape, self.output_size = spec[1:]
+
+            return Run(spec_list)
+        else:
+            # self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+            pass
 
     def OnDataSpec(self, item):
         data_spec = self.getDataSpec(item)
@@ -232,7 +284,7 @@ class MyFrame(wx.Frame):
 
     def getDataSpec(self, dataID):
         import numpy as np
-        # name, path, class_n (output_size), image_size (input_shape), ratio of testing, max sample per class
+
         data_spec = dict()
         data_name = self.data_tree.GetItemText(dataID)
         data_path = self.data_tree.GetItemData(dataID)
@@ -354,11 +406,6 @@ class MyFrame(wx.Frame):
 
         return data_spec
 
-#    def setDataSpec(self, page):
-
-
-
-
     def getModelSpec(self, modelID):
         return {'type':'None',
                 'n_layer':'None',
@@ -368,14 +415,14 @@ class MyFrame(wx.Frame):
 #        pass
 
     def getTrainSpec(self):
-        train_spec = {'max_iter': '10000', 'learning_rate':'1e-3', 'optimizer':'Adam', 'seed':'0', 'batch_size':'32', 'interval':'1000'}
+        train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'optimizer':'Adam', 'seed':'0', 'batch_size':'32', 'interval':'1000'}
         train_spec['lr'] = train_spec['learning_rate']
 
-        train_spec['datasets'] = self.datasets
-        train_spec['models'] = self.models
+        train_spec['dataset_list'] = self.dataset_list
+        train_spec['model_list'] = self.model_list
 
-        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
-        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.dataset_list]
+        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.model_list]
         train_spec['checkpoint_name'] = "modelname_dataname"
 
         train_spec['gpus'] = ['Not Yet Implemented']
@@ -404,14 +451,14 @@ class MyFrame(wx.Frame):
         res = dict()
         return res
 
-    def setTrainSpec_(self):
-        train_spec = {'max_iter': 10000, 'lr':1e-3, 'optimizer':'Adam', 'seed':0, 'batch_size':32, 'checkpoint interval':1000, 'validation interval':1000}
-        train_spec['datasets'] = self.datasets
-        train_spec['models'] = self.models
-
-        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
-        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
-        return train_spec
+#    def setTrainSpec_(self):
+#        train_spec = {'max_iter': 10000, 'lr':1e-3, 'optimizer':'Adam', 'seed':0, 'batch_size':32, 'checkpoint interval':1000, 'validation interval':1000}
+#        train_spec['datasets'] = self.datasets
+#        train_spec['models'] = self.models
+#
+#        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.datasets]
+#        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
+#        return train_spec
 
     def getTrainSpec_(self):
         pass
