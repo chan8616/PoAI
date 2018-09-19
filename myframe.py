@@ -73,22 +73,21 @@ class MyFrame(wx.Frame):
         self.data_tree.Expand(self.data_tree.GetRootItem())
 
         # load model tree (in Modules folder)
-        self.modelDir= os.path.join(self.cwd, "Modules")
-        if not os.path.exists(self.modelDir):
-            os.makedirs(self.modelDir)
+        self.modelDir = os.path.join(self.cwd, "checkpoint")
         self.buildTree(self.model_tree, self.modelDir)
         self.model_tree.Expand(self.model_tree.GetRootItem())
 
-        # load pretrained model tree (in checkpoint folder)
-        self.pretrainedModelDir= os.path.join(self.cwd, "checkpoint")
-        if os.path.exists(self.pretrainedModelDir):
-            for pretrainedModel in os.listdir(self.pretrainedModelDir):
-                pretrainedModelPath = os.path.join(self.pretrainedModelDir, pretrainedModel)
-                self.buildTree(self.model_tree, pretrainedModelPath)
+#        # load pretrained model tree (in checkpoint folder)
+#        self.pretrainedModelDir = os.path.join(self.cwd, "checkpoint")
+#        if os.path.exists(self.pretrainedModelDir):
+#            for pretrainedModel in os.listdir(self.pretrainedModelDir):
+#                pretrainedModelPath = os.path.join(self.pretrainedModelDir, pretrainedModel)
+#                self.buildTree(self.model_tree, pretrainedModelPath)
+#            self.model_tree.Expand(self.model_tree.GetRootItem())
 
         # toList
-        self.dataset_list = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
-        self.model_list = self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
+        #self.dataset_list = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
+        #self.model_list = self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
         # TreeCtrl end
 
         # AuiNotebook
@@ -187,9 +186,12 @@ class MyFrame(wx.Frame):
     def OnRun(self, event):
         page, phase, spec = self.notebook.getRunSpec()
         if spec is not None:
-            model_name, dataset_name = spec['model_name'], spec['dataset_name']
+            model_name, trained_model_name, dataset_name = spec['model_name'], spec['trained_model_name'], spec['dataset_name']
             if phase == 'Train':
-                modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(model_name)]
+                if trained_model_name is None:
+                    modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(model_name)]
+                else:
+                    modelID = page.train_spec['trained_model_dict'][model_name]
                 datasetID = page.train_spec['dataset_list'][page.train_spec['dataset_names'].index(dataset_name)]
             elif phase == 'Test':
                 modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(model_name)]
@@ -232,7 +234,6 @@ class MyFrame(wx.Frame):
                          spec['seed']]
 
             print(spec_list)
-            return None
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
@@ -276,11 +277,37 @@ class MyFrame(wx.Frame):
                     self.notebook.SetSelection(idx)
 
     def dataTreeOnActivated(self, event):
-        self.treeOnActivated(self.data_tree, self.OnDataSpec)
+        #self.treeOnActivated(self.data_tree, self.OnDataSpec)
+        tree, OnSpecFun = self.data_tree, self.OnDataSpec
+        item = tree.GetFocusedItem()
+
+        if tree.GetItemParent(item) == tree.GetRootItem():
+            if item not in self.item_to_page:
+                OnSpecFun(item)
+            else:
+                _, idx = self.notebook.FindTab(self.item_to_page[item])
+                if idx == -1:
+                    OnSpecFun(item)
+                else:
+                    self.notebook.SetSelection(idx)
+
 
     def modelTreeOnActivated(self, event):
-        print('modelTreeOnActivated')
-        self.treeOnActivated(self.model_tree, self.OnModelSpec)
+        #self.treeOnActivated(self.model_tree, self.OnModelSpec)
+        tree, OnSpecFun = self.model_tree, self.OnModelSpec
+        item = tree.GetFocusedItem()
+
+        if tree.GetItemParent(item) == tree.GetRootItem() or \
+           tree.GetItemParent(tree.GetItemParent(item)) == tree.GetRootItem():
+            if item not in self.item_to_page:
+                OnSpecFun(item)
+            else:
+                _, idx = self.notebook.FindTab(self.item_to_page[item])
+                if idx == -1:
+                    OnSpecFun(item)
+                else:
+                    self.notebook.SetSelection(idx)
+
 
     def getDataSpec(self, dataID):
         import numpy as np
@@ -418,12 +445,25 @@ class MyFrame(wx.Frame):
         train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'optimizer':'Adam', 'seed':'0', 'batch_size':'32', 'interval':'1000'}
         train_spec['lr'] = train_spec['learning_rate']
 
-        train_spec['dataset_list'] = self.dataset_list
-        train_spec['model_list'] = self.model_list
+        dataset_list = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
+        model_list = self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
+        train_spec['dataset_list'] = dataset_list
+        train_spec['model_list'] = model_list
 
-        train_spec['dataset_names'] = [self.data_tree.GetItemText(x) for x in self.dataset_list]
-        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.model_list]
-        train_spec['checkpoint_name'] = "modelname_dataname"
+        dataset_names = [self.data_tree.GetItemText(x) for x in dataset_list]
+        model_names = [self.model_tree.GetItemText(x) for x in model_list]
+        train_spec['dataset_names'] = dataset_names
+        train_spec['model_names'] = model_names
+
+        trained_model_dict = {}
+        trained_model_names_dict = {}
+        for model, model_name in zip(model_list, model_names):
+            trained_model_list = self.childrenToList(self.model_tree, model)
+            trained_model_dict[model_name] = trained_model_list
+            trained_model_names_dict[model_name] = [self.model_tree.GetItemText(x) for x in trained_model_list]
+        train_spec['trained_model_dict'] = trained_model_dict
+        train_spec['trained_model_names_dict'] = trained_model_names_dict
+        train_spec['checkpoint_name'] = "datasetname"
 
         train_spec['gpus'] = ['Not Yet Implemented']
 
@@ -460,8 +500,8 @@ class MyFrame(wx.Frame):
 #        train_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
 #        return train_spec
 
-    def getTrainSpec_(self):
-        pass
+#    def getTrainSpec_(self):
+#        pass
 
     def childrenToList(self, tree, item):
         list = []
