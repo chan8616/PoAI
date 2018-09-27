@@ -4,12 +4,11 @@
 import numpy as np
 import copy
 
-from tensorflow.python.keras.layers import Input, Dense, Conv2D, MaxPooling2D, AveragePooling2D, ZeroPadding2D, Flatten, Activation, add
-from tensorflow.python.keras.optimizers import SGD
-from tensorflow.python.keras.layers.normalization import BatchNormalization
+from tensorflow.python.keras.layers import Input, Dense, Conv2D, MaxPooling2D, \
+                                            AveragePooling2D, ZeroPadding2D, Flatten, \
+                                            Activation, add, BatchNormalization, Layer, InputSpec
 from tensorflow.python.keras.models import Model
 from tensorflow.python.keras import initializers
-from tensorflow.python.keras.engine import Layer, InputSpec
 from tensorflow.python.keras import backend as K
 
 import sys
@@ -230,9 +229,3 @@ class RESNET152(NET):
                 layer.trainable = False
         self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy',
                             metrics=['accuracy'])
-
-    def test(self, x, y=None):
-        if y is not None:
-            return self.accuracy(x,y)
-        else:
-            return self.predict(x)

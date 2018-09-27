@@ -1,6 +1,7 @@
 import wx
 import wx.lib.inspection
 
+
 class DataSpecPage(wx.Panel):
     def __init__(self, parent, id):
         super(DataSpecPage, self).__init__(parent, id)
@@ -187,8 +188,13 @@ class TrainSpecPage(wx.Panel):
         for i, dataset_name in enumerate(train_spec['dataset_names']):
             self.combo_box_3.Insert(dataset_name, 0)
         self.combo_box_4.Delete(0)
-        for i, gpu in enumerate(train_spec['gpus']):
-            self.combo_box_4.Insert(gpu, 0)
+
+        from utils.util import gpu_inspection
+
+        num_gpus = gpu_inspection()
+        for gpu in range(num_gpus): # -1 means CPU
+            self.combo_box_4.Insert(str(gpu),0)
+        self.combo_box_4.Insert('cpu', 0)
         self.combo_box_6.Delete(0)
         self.combo_box_6.Insert("New",0)
         self.text_ctrl_15.SetValue("")
@@ -297,7 +303,7 @@ class TrainSpecPage(wx.Panel):
         self.train_spec['checkpoint_name'] = event.GetString()
         #self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
         self.setTrainSpec_checkpoint_name()
-        
+
 #    def setTrainSpec_(self, train_spec):
 #        self.combo_box_2.Delete(0)
 #        for i, model_name in enumerate(train_spec['model_names']):
@@ -326,25 +332,23 @@ class TrainSpecPage(wx.Panel):
     def setTrainSpec_checkpoint_name(self):
         self.text_ctrl_15.SetValue("")
         self.text_ctrl_15.write(self.train_spec['checkpoint_name'])
-    
+
     def getTrainSpec(self):
-        idx = self.combo_box_2.GetSelection()
-        if idx == wx.NOT_FOUND:
-            print("select combo box 2")
-        else:
-            self.train_spec['model_name'] = self.combo_box_2.GetStringSelection()
-        idx = self.combo_box_3.GetSelection()
-        if idx == wx.NOT_FOUND:
-            print("select combo box 3")
-        else:
-            self.train_spec['dataset_name'] = self.combo_box_3.GetStringSelection()
-        idx = self.combo_box_4.GetSelection()
-        if idx == wx.NOT_FOUND:
-            print("select combo box 4")
-        else:
-            self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
-        idx = self.combo_box_6.GetSelection()
-        if idx == wx.NOT_FOUND:
+
+        model_name_idx = self.combo_box_2.GetSelection()
+        assert model_name_idx != wx.NOT_FOUND, "[!] select model"
+        self.train_spec['model_name'] = self.combo_box_2.GetStringSelection()
+
+        dataset_name_idx = self.combo_box_3.GetSelection()
+        assert model_name_idx != wx.NOT_FOUND, "[!] select dataset"
+        self.train_spec['dataset_name'] = self.combo_box_3.GetStringSelection()
+
+        gpu_idx = self.combo_box_4.GetSelection()
+        assert gpu_idx != wx.NOT_FOUND, "[!] select gpu"
+        self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
+
+        train_model_name_idx = self.combo_box_6.GetSelection()
+        if train_model_name_idx == wx.NOT_FOUND:
             print("select combo box 6")
         else:
             self.train_spec['trained_model_name'] = None \
@@ -357,7 +361,7 @@ class TrainSpecPage(wx.Panel):
         self.train_spec['interval'] = self.text_ctrl_19.GetLineText(0)
         self.train_spec['seed'] = self.text_ctrl_22.GetLineText(0)
         return self.train_spec
- 
+
 class TestSpecPage(wx.Panel):
     def __init__(self, parent, id):
         super(TestSpecPage, self).__init__(parent, id)
@@ -424,20 +428,18 @@ class TestSpecPage(wx.Panel):
     def setTestSpec_dataset(self):
         self.test_spec['dataset_path']
         self.test_spec['dataset_name']
- 
+
     def getTestSpec(self):
         spec = []
         idx = self.combo_box_5.GetSelection()
-        if idx == wx.NOT_FOUND:
-            print("select combo box 5")
-        else:
-            spec += [self.combo_box_5.GetStringSelection()]
+        assert idx != wx.NOT_FOUND, "[!] Not Found"
+        spec += [self.combo_box_5.GetStringSelection()]
         spec += self.test_spec['dataset_path']
         spec += [self.text_ctrl_26.GetLineText(0)]
         spec += [self.text_ctrl_27.GetLineText(0)]
-       
+
         return spec
- 
+
 class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
     def __init__(self, *args, **kwds):
 		# Auinotebook
@@ -492,60 +494,59 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
 
     def getRunSpec(self):
         page = self.GetPage(self.GetSelection())
-        spec = [page]
         if isinstance(page, TrainSpecPage):
-            spec += ['Train']
-            spec += [page.getTrainSpec()]
+            phase = 'Train'
+            spec = page.getTrainSpec()
         elif isinstance(page, TestSpecPage):
-            spec += ['Test']
-            spec += [page.getTestSpec()]
-        else: 
+            phase = 'Test'
+            spec = page.getTestSpec()
+        else:
             return None
 
-        return spec
+        return page, phase, spec
 
-        if isinstance(page, TrainSpecPage):
-            spec = ['train'] 
-            # model, data, checkpoint, max_iter, batch_size, optimizer, lr, interval, random_seed
-            idx = page.combo_box_2.GetSelection() # model_name
-            if idx == wx.NOT_FOUND:
-                print("select combo box 2")
-            else:
-                spec += [page.combo_box_2.GetStringSelection()]
-            idx = page.combo_box_3.GetSelection() # dataset name
-            if idx == wx.NOT_FOUND:
-                print("select combo box 3")
-            else:
-                spec += [page.combo_box_3.GetStringSelection()]
-            idx = page.combo_box_4.GetSelection() # GPU_selection
-            if idx == wx.NOT_FOUND:
-                print("select combo box 4")
-            else:
-                spec += [page.combo_box_4.GetStringSelection()]
-            spec += [page.text_ctrl_15.GetLineText(0)] # checkpoint_name
-            spec += [page.text_ctrl_16.GetLineText(0)] # max_iter
-            spec += [page.text_ctrl_18.GetLineText(0)] # batch_size
-            spec += [page.text_ctrl_20.GetLineText(0)] # optimizer
-            spec += [page.text_ctrl_21.GetLineText(0)] # learning_rate
-            spec += [page.text_ctrl_19.GetLineText(0)] # interval
-            spec += [page.text_ctrl_22.GetLineText(0)] # random_seed
-            # spec += [page.text_ctrl_23.GetLineText(0)] # ?
-
-            return spec
-        elif isinstance(page, TestSpecPage):
-            spec = ['test']
-            idx = page.combo_box_5.GetSelection()
-            if idx == wx.NOT_FOUND:
-                print("select combo box 5")
-            else:
-                spec += [page.combo_box_5.GetStringSelection()]
-
-#            spec['model'] =
-#            spec['data'] =
+#         if isinstance(page, TrainSpecPage):
+#             spec = ['train']
+#             # model, data, checkpoint, max_iter, batch_size, optimizer, lr, interval, random_seed
+#             idx = page.combo_box_2.GetSelection() # model_name
+#             if idx == wx.NOT_FOUND:
+#                 print("select combo box 2")
+#             else:
+#                 spec += [page.combo_box_2.GetStringSelection()]
+#             idx = page.combo_box_3.GetSelection() # dataset name
+#             if idx == wx.NOT_FOUND:
+#                 print("select combo box 3")
+#             else:
+#                 spec += [page.combo_box_3.GetStringSelection()]
+#             idx = page.combo_box_4.GetSelection() # GPU_selection
+#             if idx == wx.NOT_FOUND:
+#                 print("select combo box 4")
+#             else:
+#                 spec += [page.combo_box_4.GetStringSelection()]
+#             spec += [page.text_ctrl_15.GetLineText(0)] # checkpoint_name
+#             spec += [page.text_ctrl_16.GetLineText(0)] # max_iter
+#             spec += [page.text_ctrl_18.GetLineText(0)] # batch_size
+#             spec += [page.text_ctrl_20.GetLineText(0)] # optimizer
+#             spec += [page.text_ctrl_21.GetLineText(0)] # learning_rate
+#             spec += [page.text_ctrl_19.GetLineText(0)] # interval
+#             spec += [page.text_ctrl_22.GetLineText(0)] # random_seed
+#             # spec += [page.text_ctrl_23.GetLineText(0)] # ?
 #
-            return spec
-        else:
-            return False
+#             return spec
+#         elif isinstance(page, TestSpecPage):
+#             spec = ['test']
+#             idx = page.combo_box_5.GetSelection()
+#             if idx == wx.NOT_FOUND:
+#                 print("select combo box 5")
+#             else:
+#                 spec += [page.combo_box_5.GetStringSelection()]
+#
+# #            spec['model'] =
+# #            spec['data'] =
+# #
+#             return spec
+#         else:
+#             return False
 
     def isOnTrainSpec(self):
         page = self.GetPage(self.GetSelection())

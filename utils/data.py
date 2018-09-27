@@ -3,8 +3,10 @@
     Open data
 """
 
+
 from .util import shuffle
 import numpy as np
+import sklearn
 
 def one_hot(y, classes=None):
     if classes is None:
@@ -39,24 +41,36 @@ def call_cifar10(one_hot_coding=True):
             'test_x' : test_data,
             'test_y' : test_label}
 
-def call_wine(one_hot=True):
-    raise NotImplementedError('.')
-    return {'train_x':_,
-            'train_y':_,
-            'test_x':_,
-            'test_y':_}
+def call_wine(one_hot_coding=True, train_ratio=0.7):
+    from sklearn.datasets import load_wine
+    dataset = load_wine()
+    data = dataset['data']
+    label = dataset['target']
+    data, label = shuffle(data, label)
+    train = int(len(data)*train_ratio)
+    train_data = data[:train]
+    train_label = one_hot(label[:train]) if one_hot_coding else label[:train]
+    test_data = data[train:]
+    test_label = label[train:]
 
-def call_iris(one_hot=True):
-    raise NotImplementedError('.')
-    return {'train_x':_,
-            'train_y':_,
-            'test_x':_,
-            'test_y':_}
+    return {'train_x':train_data,
+            'train_y':train_label,
+            'test_x':test_data,
+            'test_y':test_label}
 
-def call_bearing(one_hot=True):
-    data_url = 'https://ti.arc.nasa.gov/c/3/'
-    file_name = 'IMS.7z'
-    return {'train_x':_,
-            'train_y':_,
-            'test_x':_,
-            'test_y':_}
+def call_iris(one_hot_coding=True, train_ratio=0.7):
+    from sklearn.datasets import load_iris
+    dataset = load_iris()
+    data = dataset['data']
+    label = dataset['target']
+    data, label = shuffle(data, label)
+    train = int(len(data)*train_ratio)
+    train_data = data[:train]
+    train_label = one_hot(label[:train]) if one_hot_coding else label[:train]
+    test_data = data[train:]
+    test_label = label[train:]
+
+    return {'train_x':train_data,
+            'train_y':train_label,
+            'test_x':test_data,
+            'test_y':test_label}
