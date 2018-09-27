@@ -13,6 +13,17 @@ from .ops import *
 from utils.data import *
 from utils.util import *
 
+from sklearn.metrics import confusion_matrix
+import pandas as pd
+import seaborn as sns
+
+def conf_mtx(y_true, y_pred, label_names=None):
+    mtx = confusion_matrix(y_true, y_pred)
+    if label_names is None or len(mtx) != len(label_names):
+        label_names = list(np.arange(len(mtx)))
+    cm = pd.DataFrame(mtx,columns=label_names,index=label_names)
+    sns.heatmap(cm, annot=True)
+
 """
     #1 By dictionary
         Train Data path : [Project Folder]/dataset/[data name]/Data/[Class name]/[Data_name].[format]
@@ -104,8 +115,51 @@ class NET(object):
     def build_model(self):
         raise NotImplementedError('.')
 
-    def test(self):
-        raise NotImplementedError('.')
+    def test(self, x, y=None, label_name=None, visualize=False):
+        y_pred_score = self.predict(x)
+        y_pred = np.argmax(y_pred_score, axis=1)
+        from math import log10
+        idx = int(log10(len(y_pred)))+1
+        classes = int(log10(y_pred_score.shape[1]))+1
+        if y is not None:
+            if x.shape[0] == 1: # A image
+                print("The prediction is [{}], result : [{}]".format(np.argmax(y_pred), np.argmax(y_pred)==y))
+            else:
+                if not path.exists(self.model_result):
+                    makedirs(self.model_result)
+                with open(path.join(self.model_result, self.model_name+'_eval.txt')) as f:
+                    f.write('{} | {} | {} | {}'.foramt('order'.rjust(idx),
+                                                       'pred'.rjust(classes),
+                                                       'label'.rjust(classes),
+                                                       'Correct'))
+                    f.write('-' * (max(idx,5) + 3*3+7 + max(classes,4)+max(classes,5)))
+                    for i,v in enumerate(y_pred):
+                        cor = 'True' if v == y[i] else 'False'
+                        f.write('{} | {} | {} | {}'.format(str(i).zfill(idx).rjust(5),
+                                                           str(v).zfill(classes).rjust(4),
+                                                           str(y[i]).zfill(classes).rjust(5),
+                                                           cor.rjust(7)))
+                    f.write('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
+            print('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
+            if visualize:
+                conf_mtx(y, self.predict(x), label_name)
+        else:
+            if x.shape[0] == 1: # A image
+                print("The result is [{}]".format(np.argmax(y_pred)))
+            else:
+                if not path.exists(self.model_result):
+                    makedirs(self.model_result)
+                with open(path.join(self.model_result, self.model_name+'_predict.txt')) as f:
+                    f.write('{} | {}'.foramt('order'.rjust(idx), 'pred'.rjust(classes)))
+                    f.write('-' * (max(idx,5) + 3 + max(classes,4)))
+                    for i,v in enumerate(y_pred):
+                        f.write('{} | {}'.format(str(i).zfill(idx).rjust(5), str(v).zfill(classes).rjust(4)))
+                    f.write('The number of samples : [{}]'.format(y_pred.shape[0]))
+            print('The number of samples : [{}]'.format(y_pred.shape[0]))
+
+    def test_with_provider(self, generator, steps, label_name=None, visualize=False):
+        y_pred_score = self.predict_with_generator(generator, steps)
+        y_pred = np.argmax(y_pred_score, axis=1)
 
     def merge_callbacks(self, conf):
         name, batch_size = self.model_conf['name'], self.model_conf['batch_size']
@@ -137,12 +191,50 @@ class NET(object):
 
     def predict(self, x):
         return self.model.predict(x)
+    def predict_with_generator(self, generator, steps):
+        return self.model.predict_generator(generator=generator(with_y=False),
+                                            steps=steps)
     def accuracy(self, x, y):
         assert y is not None
         y_pred = self.predict(x)
         return np.mean(np.equal(np.argmax(y_pred, axis=1), y).astype(np.float))
-    def train_with_provider(self, generator, epochs, save=True):
-        pass
+
+    def accuracy_with_generator(self, generator, steps):
+        return self.model.evaluate_generator(generator=generator(),
+                                             steps=steps)['acc']
+    def train_with_generator(self,
+                            generator,
+                            valid_generator,
+                            steps,
+                            valid_steps,
+                            epochs,
+                            period,
+                            num_x,
+                            step_interval,
+                            save=True):
+
+        debug_conf = {'log_dir':path.join('./logs', self.model_name),
+                      'ntrain' : num_x,
+                      'save_best_only':True,
+                      'ckpt_path':self.model_ckpt,
+                      'step_interval':step_interval,
+                      'period':period,
+                      'patience':2}
+        if self.epochs >= epochs:
+            print("[!] Already Done.")
+            return
+        self.model.fit_generator(generator=generator(),
+                                 steps_per_epoch=steps,
+                                 epochs=epochs,
+                                 verbose=0,
+                                 callbacks=self.merge_callbacks(debug_conf),
+                                 validation_data = valid_generator,
+                                 validation_steps = valid_step,
+                                 shuffle=True,
+                                 initial_epoch = self.epochs)
+        self.epochs = epochs
+        if save:
+            self.save()
 
     def train(self,
               x,
@@ -160,20 +252,19 @@ class NET(object):
                       'period':period,
                       'patience':2}
 
-        self.callbacks = self.merge_callbacks(debug_conf)
         if self.epochs >= epochs:
             print("[!] Already Done.")
-            return 0
+            return
         self.model.fit(x=x,
                        y=y,
                        epochs=epochs,
                        validation_split=0.01,
                        initial_epoch=self.epochs,
-                       callbacks=self.callbacks,
+                       callbacks=self.merge_callbacks(debug_conf),
                        verbose=0)
         self.epochs = epochs
         if save:
-            return self.save()
+            self.save()
     @property
     def prog_info(self):
         """
@@ -186,21 +277,3 @@ class NET(object):
     @property
     def trained(self):
         return True if self.epochs > 0 else False
-
-    def get_batch(self, data, label, i, data_file=None, batch_size = None):
-        if not batch_size : batch_size = self.batch_size
-        last_batch = False if i < self.no_batch else True
-        batch_offset = self.batch_size * i
-        batch_size = self.batch_size if not last_batch else len(label)-batch_offset
-        if data is not None:
-            batch_x = data[batch_offset:batch_offset+batch_size]
-        else:
-            batch_file = data_file[batch_offset:batch_offset+batch_size]
-            batch_x = np.array([image_load(data_file) for data_file in batch_file]) # TODO : crop
-
-        if label is not None:
-            batch_y = label[self.batch_size*i:self.batch_size*(i+1)] if not last_batch else label[self.batch_size*i:]
-        else:
-            batch_y = None
-
-        return batch_x, batch_y

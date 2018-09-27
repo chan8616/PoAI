@@ -196,7 +196,7 @@ class MyFrame(wx.Frame):
             elif phase == 'Test':
                 modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(model_name)]
                 datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(dataset_name)]
-            
+
             spec['model_spec'] = self.getModelSpec(modelID)
             """
             return {'type':'None',
@@ -214,9 +214,9 @@ class MyFrame(wx.Frame):
             data_spec['input_types']
             data_spec['input_shapes']
             """
-           
+
             if phase == 'Train':
-                spec_list = [True, 
+                spec_list = [True,
                          spec['model_spec'],
                          spec['dataset_spec'],
                          spec['checkpoint_name'],
@@ -227,13 +227,13 @@ class MyFrame(wx.Frame):
                          spec['interval'],
                          spec['seed']]
             elif phase == 'Test':
-                spec_list = [False, 
+                spec_list = [False,
                          spec['model_spec'],
                          spec['dataset_spec'],
                          spec['interval'],
                          spec['seed']]
 
-            print(spec_list)
+            print(**spec_list)
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
@@ -310,6 +310,7 @@ class MyFrame(wx.Frame):
 
 
     def getDataSpec(self, dataID):
+        #TODO : how about data aggregated into a single file like .csv, .txt, etc.
         import numpy as np
 
         data_spec = dict()
@@ -322,17 +323,22 @@ class MyFrame(wx.Frame):
             pass
         else:
             pass
+        ######################################################
+        # Fix it if we can deal with various data in general.
+        data_spec['data_type'] = 'I' # image
+        data_spec['valid_rate'] = 0.05 # validation ratio
+        ######################################################
 
 
         childs = os.listdir(data_path)
         # Data/, train.txt, test.txt
         if 'Data' in childs and 'train.txt' in childs and 'test.txt' in childs:
             print('case1')
-            path_fun = lambda a: [data_path+'/'+a[0]] + a[1:]
+            path_fun = lambda a: [data_path+'/'+a[0]] + a[1:] # data_file, label
             with open(os.path.join(data_path, 'train.txt'), 'r') as f:
                 train = np.array([path_fun(x.split()) for x in f.read().splitlines()])
                 x_train = train[:,0]
-                y_train = train[:,1] 
+                y_train = train[:,1]
             with open(os.path.join(data_path, 'test.txt'), 'r') as f:
                 test = np.array([path_fun(x.split()) for x in f.read().splitlines()])
                 x_test = test[:,0]
@@ -371,7 +377,7 @@ class MyFrame(wx.Frame):
                     print("Data without label %s"%x)
             test = np.concatenate(([x_test], [y_test]), axis=0).T
 
-        # label/, ... , train.txt, test.txt
+        # [label]/, ... , train.txt, test.txt
         elif 'train.txt' in childs and 'test.txt' in childs:
             print('case3')
             label_names = np.sort([ label for label in childs if os.path.isdir(os.path.join(data_path, label)) ])

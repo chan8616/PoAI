@@ -23,9 +23,3 @@ class VGGNET19(NET):
             for layer in base_model.layers:
                 layer.trainable = False
         self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
-
-    def test(self, x, y=None):
-        if y is not None:
-            return self.accuracy(x,y)
-        else:
-            return self.predict(x)
