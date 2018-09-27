@@ -179,7 +179,11 @@ def conv2d_3k(input_, output_dim, st=1, name='conv2d_3k'):
     return conv2d(input_, output_dim, ks=3, st=st, name=name)
 
 def conv2d(input_, output_dim,
+<<<<<<< HEAD
        ks=3, st=2, stddev=0.02, padding='SAME',name="conv2d", kw=None, biases=True):
+=======
+       ks=3, st=2, stddev=0.02, padding='SAME',name="conv2d", kw=None):
+>>>>>>> 403b6c7bc006da055a5cd2caff622997ff08c5e9
   if kw is None:
       kw, kh = ks, ks
   else:
@@ -188,11 +192,19 @@ def conv2d(input_, output_dim,
     w = tf.get_variable('w', [kw,kh, input_.get_shape()[-1], output_dim],
               initializer=tf.truncated_normal_initializer(stddev=stddev))
     conv = tf.nn.conv2d(input_, w, strides=[1, st, st, 1], padding=padding)
+<<<<<<< HEAD
     if biases:
         biases = tf.get_variable('biases', [1,1,1,output_dim], initializer=tf.constant_initializer(0.0))
         conv += biases
     return conv
 def wrn_block(x, n, channel, k, train, stride, name, use_batch=True):
+=======
+
+    biases = tf.get_variable('biases', [1,1,1,output_dim], initializer=tf.constant_initializer(0.0))
+    return conv+biases
+
+def block(x, n, channel, k, train, stride, name, use_batch=True):
+>>>>>>> 403b6c7bc006da055a5cd2caff622997ff08c5e9
 
     conv2d = conv2d_3k # alias
     out_dim = k*channel
@@ -208,6 +220,7 @@ def wrn_block(x, n, channel, k, train, stride, name, use_batch=True):
             shortcut = x if x_channel == out_dim else conv2d(relu_bn1, out_dim, stride, name='shortcut')
             x = conv2 + shortcut
     return x
+<<<<<<< HEAD
 
 #
 # def iden_block(_input, ks, filters, name):
@@ -227,3 +240,5 @@ def wrn_block(x, n, channel, k, train, stride, name, use_batch=True):
 #     bn_base_name = 'bn_'+name
 #     bn = [batch_norm(name=bn_base_name+'c{}'.format(i)) for i in range(3)]
 #
+=======
+>>>>>>> 403b6c7bc006da055a5cd2caff622997ff08c5e9
