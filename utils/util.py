@@ -18,6 +18,9 @@ class Redirection(object):
     def write(self, string):
         self.out.WriteText(string)
 
+    def flush(self):
+        pass
+
 def shuffle(x, y):
     from random import shuffle as sf
     d = list(zip(x,y))
@@ -28,7 +31,6 @@ def shuffle(x, y):
 
 def pickle_save(d, file_name):
     #    with open("test.pickle", 'wb') as f:
-    print(file_name)
     with open("{}.pickle".format(file_name), 'wb') as f:
         pickle.dump(d, f)
 
@@ -45,12 +47,9 @@ def aassert(statement, message=''): #TODO
         assert False, message
 
 def report_plot(data, i, model_name, log='./log'):
-    print(data,i)
     if not os.path.exists(log):
         os.mkdir(log)
-    if i==0 or not os.path.exists(os.path.join(log,"{}.pickle".format(model_name))):
-        with open(os.path.join(log,"{}.pickle".format(model_name)), 'w'):
-            pass
+    if i==0. or not os.path.exists(os.path.join(log,"{}.pickle".format(model_name))):
         pickle_save([[data], [i]], os.path.join(log,model_name))
         return
     d, t = pickle_load(os.path.join(log,model_name))
@@ -59,3 +58,30 @@ def report_plot(data, i, model_name, log='./log'):
     pickle_save([d,t], os.path.join(log,model_name))
     plt.plot(t,d)
     plt.pause(0.0001)
+
+class LossHistory(tf.keras.callbacks.Callback):
+    def __init__(self, model_name, batch_size, ntrain, step_interval=0.1):
+        self.ntrain = ntrain
+        self.batch_size = batch_size
+        self.step = np.ceil(ntrain/batch_size).astype(np.int64)
+        self.model_name = model_name
+        self.step_interval = int(self.step*step_interval)
+    def on_train_begin(self, logs={}):
+        print("[@] trainig start...")
+    def on_train_end(self, logs={}):
+        print("[@] trainig is done.")
+    def on_epoch_begin(self, epoch, logs={}):
+        self.epoch = epoch
+    def on_epoch_end(self, epoch, logs={}):
+        val_loss = logs.get('val_loss')
+        val_acc = logs.get('val_acc')
+        print('[{}] epoch_end, val_loss : [{}], val_acc : [{}]' \
+                    .format(epoch, val_loss, val_acc))
+    def on_batch_end(self, batch, logs={}):
+        if batch % self.step_interval > 0 or batch == self.step:
+            return
+        loss = logs.get('loss')
+        acc = logs.get('acc')
+        report_plot(loss, float(self.epoch)+batch/self.step, self.model_name)
+        print('[{}] epoch [{}/{}], loss : [{:.4f}], acc : [{}]' \
+                    .format(self.epoch, batch*self.batch_size, self.ntrain, loss, acc))
