@@ -58,12 +58,19 @@ OPTIMIZER = {'adam':keras.optimizers.Adam,
              'adagrad':keras.optimizers.Adagrad,
              'rmsprop':keras.optimizers.RMSprop}
 DATA_TYPE = ('I', 'P', "T") # Image, Point, Time-series
-IMAGE_SIZE = (224,224)      # Fixed
-def data_select(dataset_name):
-    if dataset_name in OPEN_DATA.keys(): # data is provided
+IMAGE_SIZE = 224      # Fixed
+def data_select(dataset):
+    if dataset['name'] in OPEN_DATA.keys(): # data is provided
         return OPEN_DATA[dataset_name](), None
     else:    # own dataset
-        return None, None
+        data_provider = DATA_PROVIDER(train_x = dataset['data']['train'][:,0],
+                                      train_y = one_hot(dataset['data']['train'][:,1]),
+                                      test_x = dataset['data']['test'][:,0],
+                                      test_y = dataset['data']['test'][:,1],
+                                      intput_size = IMAGE_SIZE,
+                                      data_type = dataset['data_type'],
+                                      valid_split = dataset['valid_rate'])
+        return None, data_provider
 
 class Run(object):
     def __init__(self, **kargs):
@@ -71,9 +78,6 @@ class Run(object):
             **kargs : for advanced_option (NotImplemented)
         """
         # mode, model, data, gpu, checkpoint, max_epochs, batch_size, optimizer, lr, interval, random_seed
-        print(kargs)
-        print(get_data_list())
-        print(get_model_list())
         self.model_name, dataset_name, gpu_selected, \
         name, epochs, batch_size, optimizer, \
         learning_rate, interval, random_seed =\
@@ -91,6 +95,7 @@ class Run(object):
             print('gpu [{}] is selected'.format(gpu_selected))
             os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_selected)
         else:
+            #TODO
             print('cpu is selected')
 
         self.train = True if 'train' in spec[0] else False
@@ -139,6 +144,7 @@ class Run(object):
                                            'name' : 'gradient',
                                            'learning_rate': 1e-3,
                                            'arg':None},
+                   visualize            = True,
                    batch_size           = 64,
                    epochs               = 20,
                    checkpoint_dir       = "checkpoint",
@@ -167,13 +173,37 @@ class Run(object):
             print(model())
         # 6.2 train the model.
         if train:
-            model.train(x=data['train_x'],
-                        y=data['train_y'],
-                        epochs=epochs,
-                        period=epoch_interval,
-                        step_interval=step_interval,
-                        save=True)
+            if data is not None:
+                model.train(x=data['train_x'],
+                            y=data['train_y'],
+                            epochs=epochs,
+                            period=epoch_interval,
+                            step_interval=step_interval,
+                            save=True)
+            elif provider is not None:
+                g, steps = provider('train', batch_size)
+                g_, steps_ = provider('valid', batch_size)
+                model.train_with_provider(generator = g,
+                                          valid_generator = g_,
+                                          steps = steps,
+                                          valid_steps = steps_,
+                                          epochs = epochs,
+                                          period = epochs_interval,
+                                          num_x = provider.ntrain,
+                                          step_interval = step_interval,
+                                          save = True)
+
         # 6.3 test the model.
         if test:
             assert model.trained, " [@] Train model first."
-            model.test(data['test_x'], data['test_y'])
+            if data is not None:
+                model.test(x = data['test_x'],
+                           y = data['test_y'],
+                           label_name = data['label'],
+                           visualize=visualize)
+            elif provider is not None:
+                g, steps = provider('test', batch_size)
+                model.test_with_provider(generator = g,
+                                         steps = steps,
+                                         label_name = data['label'],
+                                         visualize  = visualize)

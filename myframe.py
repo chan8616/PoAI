@@ -310,6 +310,7 @@ class MyFrame(wx.Frame):
 
 
     def getDataSpec(self, dataID):
+        #TODO : how about data aggregated into a single file like .csv, .txt, etc.
         import numpy as np
 
         data_spec = dict()
@@ -318,11 +319,18 @@ class MyFrame(wx.Frame):
         data_spec['name'] = data_name
         data_spec['path'] = data_path
 
+        ######################################################
+        # Fix it if we can deal with various data in general.
+        data_spec['data_type'] = 'I' # image
+        data_spec['valid_rate'] = 0.05 # validation ratio
+        ######################################################
+
+
         childs = os.listdir(data_path)
         # Data/, train.txt, test.txt
         if 'Data' in childs and 'train.txt' in childs and 'test.txt' in childs:
             print('case1')
-            path_fun = lambda a: [data_path+'/'+a[0]] + a[1:]
+            path_fun = lambda a: [data_path+'/'+a[0]] + a[1:] # data_file, label
             with open(os.path.join(data_path, 'train.txt'), 'r') as f:
                 train = np.array([path_fun(x.split()) for x in f.read().splitlines()])
                 x_train = train[:,0]
@@ -365,7 +373,7 @@ class MyFrame(wx.Frame):
                     print("Data without label %s"%x)
             test = np.concatenate(([x_test], [y_test]), axis=0).T
 
-        # label/, ... , train.txt, test.txt
+        # [label]/, ... , train.txt, test.txt
         elif 'train.txt' in childs and 'test.txt' in childs:
             print('case3')
             label_names = np.sort([ label for label in childs if os.path.isdir(os.path.join(data_path, label)) ])
