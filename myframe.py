@@ -318,6 +318,12 @@ class MyFrame(wx.Frame):
         data_spec['name'] = data_name
         data_spec['path'] = data_path
 
+        if data_name == 'iris':
+            pass
+        else:
+            pass
+
+
         childs = os.listdir(data_path)
         # Data/, train.txt, test.txt
         if 'Data' in childs and 'train.txt' in childs and 'test.txt' in childs:
