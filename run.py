@@ -1,4 +1,3 @@
-import sklearn
 import tensorflow as tf
 import numpy as np
 import os
@@ -12,11 +11,12 @@ from tensorflow import keras
 
 from model.simple import LOGISTIC # simple classifier
 from model.vgg19 import VGGNET19
+from model.resnet import RESNET152
+from model.svm import SVM
 
 #TODO:
 # from model.resnet import RES #
 # from model.lstm import LSTM
-# from model.svm import SVM
 # from model.random_forest import RF
 # from model.gru import GRU
 # from model.lstm import AELSTM
@@ -40,9 +40,16 @@ OPEN_DATA = {'mnist':call_mnist,
 IMG_MODEL = ('logistic', 'res152', 'vgg19')
 PIT_MODEL = ('svm','random_forest')
 TMS_MODEL = ('lstm','gru','ae_lstm')
-MODEL = {'simple':LOGISTIC, 'res':None, 'vgg19':VGGNET19,
+MODEL = {'logistic':LOGISTIC, 'res152':RESNET152, 'vgg19':VGGNET19,
          'svm':None, 'random_forest':None,
          'lstm':None, 'gru':None, 'ae_lstm':None}
+
+def get_model_list():
+    return MODEL
+
+def get_data_list():
+    return OPEN_DATA
+
 # TODO:
 
 """
@@ -62,13 +69,14 @@ def data_select(dataset_name):
         return None, None
 
 class Run(object):
-    def __init__(self, spec, **kargs):
+    def __init__(self, **kargs):
         """
             **kargs : for advanced_option (NotImplemented)
         """
         # mode, model, data, gpu, checkpoint, max_epochs, batch_size, optimizer, lr, interval, random_seed
-        print(spec)
-
+        print(kargs)
+        print(get_data_list())
+        print(get_model_list())
         self.model_name, dataset_name, gpu_selected, \
         name, epochs, batch_size, optimizer, \
         learning_rate, interval, random_seed =\
@@ -82,8 +90,12 @@ class Run(object):
         self.data_type = 'I' #TODO
         self.classes = 10  #TODO
 
-        print('gpu [{}] is selected'.format(gpu_selected))
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_selected)
+        if gpu_selected.isdigit() :
+            print('gpu [{}] is selected'.format(gpu_selected))
+            os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_selected)
+        else:
+            print('cpu is selected')
+
         self.train = True if 'train' in spec[0] else False
         self.test = True if 'test' in spec[0] else False
 
