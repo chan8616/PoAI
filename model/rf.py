@@ -1,4 +1,4 @@
-from sklean.ensemble import RandomForestClassifier as rfc
+from sklearn.ensemble import RandomForestClassifier as rfc
 from .model import NET, conf_mtx
 
 
@@ -9,11 +9,11 @@ class RF(NET):
                 checkpoint_dir,
                 name,
                 **kargs):
-        model = 'svm'
+        model = 'randomforest'
         checkpoint_name = 'model'
         self.model_name = '{}_{}'.format(dataset_name, name) if name is not None else dataset_name
         checkpoint_dir = path.join(checkpoint_dir, model)
-        if not path.exists(checkpoint_dir)
+        if not path.exists(checkpoint_dir):
             makedirs(checkpoint_dir)
         self.model_dir = path.join(checkpoint_dir, self.model_name)
         self.model_ckpt = path.join(self.model_dir, checkpoint_name)
