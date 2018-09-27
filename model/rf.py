@@ -46,11 +46,6 @@ class RF(NET):
     def build_model(self, conf):
         self.model = rfc(n_estimators=100, oob_score=True)
 
-    def accuracy(self, x, y):
-        assert y is not None
-        y_pred = self.predict(x)
-        return self.model.oob_score_, np.mean(np.equal(np.argmax(y_pred, axis=1), y).astype(np.float))
-
     def train(self,
               x,
               y,

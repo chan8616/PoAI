@@ -116,26 +116,46 @@ class NET(object):
         raise NotImplementedError('.')
 
     def test(self, x, y=None, label_name=None, visualize=False):
+        y_pred_score = self.predict(x)
+        y_pred = np.argmax(y_pred_score, axis=1)
+        from math import log10
+        idx = int(log10(len(y_pred)))+1
+        classes = int(log10(y_pred_score.shape[1]))+1
         if y is not None:
-            print('Accuracy : {:.4f}'.format(self.accuracy(x,y)))
+            if x.shape[0] == 1: # A image
+                print("The prediction is [{}], result : [{}]".format(np.argmax(y_pred), np.argmax(y_pred)==y))
+            else:
+                if not path.exists(self.model_result):
+                    makedirs(self.model_result)
+                with open(path.join(self.model_result, self.model_name+'_eval.txt')) as f:
+                    f.write('{} | {} | {} | {}'.foramt('order'.rjust(idx),
+                                                       'pred'.rjust(classes),
+                                                       'label'.rjust(classes),
+                                                       'Correct'))
+                    f.write('-' * (max(idx,5) + 3*3+7 + max(classes,4)+max(classes,5)))
+                    for i,v in enumerate(y_pred):
+                        cor = 'True' if v == y[i] else 'False'
+                        f.write('{} | {} | {} | {}'.format(str(i).zfill(idx).rjust(5),
+                                                           str(v).zfill(classes).rjust(4),
+                                                           str(y[i]).zfill(classes).rjust(5),
+                                                           cor.rjust(7)))
+                    f.write('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
+            print('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
             if visualize:
                 conf_mtx(y, self.predict(x), label_name)
         else:
-            y_pred = self.predict(x)
-            from math import log10
-            idx = int(log10(len(y_pred)))+1
-            classes = int(log10(y_pred.shape[1]))+1
-
             if x.shape[0] == 1: # A image
                 print("The result is [{}]".format(np.argmax(y_pred)))
             else:
                 if not path.exists(self.model_result):
                     makedirs(self.model_result)
-                with open(path.join(self.model_result, self.model_name+'.txt')) as f:
+                with open(path.join(self.model_result, self.model_name+'_predict.txt')) as f:
                     f.write('{} | {}'.foramt('order'.rjust(idx), 'pred'.rjust(classes)))
                     f.write('-' * (max(idx,5) + 3 + max(classes,4)))
                     for i,v in enumerate(y_pred):
                         f.write('{} | {}'.format(str(i).zfill(idx).rjust(5), str(v).zfill(classes).rjust(4)))
+                    f.write('The number of samples : [{}]'.format(y_pred.shape[0]))
+            print('The number of samples : [{}]'.format(y_pred.shape[0]))
 
     def test_with_provider(self, provider, label_name=None, visualize=False):
         pass
@@ -174,6 +194,7 @@ class NET(object):
         assert y is not None
         y_pred = self.predict(x)
         return np.mean(np.equal(np.argmax(y_pred, axis=1), y).astype(np.float))
+
     def train_with_provider(self, generator, epochs, save=True):
         pass
 
