@@ -11,6 +11,26 @@ import matplotlib.pyplot as plt
 
 import wx
 
+from os import makedirs, path, stat
+import sys
+import urllib
+
+
+def _download(url, directory, file_name=None):
+    file_path = path.join(directory, file_name)
+    if not path.exists(directory):
+        makedirs(directory)
+    if not path.isfile(file_path):
+        def _progress(count, block_size, total_size):
+            sys.stdout.write('\r>> Downloading {} {:.1f} %'.format(
+                file_name, float(count * block_size) / float(total_size) * 100.0))
+            sys.stdout.flush()
+        file_path, _ = urllib.request.urlretrieve(url, file_path, _progress)
+        print()
+        statinfo = stat(file_path)
+        print('Successfully donloaded', file_name, statinfo.st_size, 'bytes.')
+    return file_path
+
 class Redirection(object):
     def __init__(self, log_area):
         self.out = log_area
@@ -26,7 +46,7 @@ def shuffle(x, y):
     d = list(zip(x,y))
     sf(d)
     x_, y_ = zip(*d)
-    return np.array(x_).astype(float), np.array(y_).astype(float)
+    return np.array(x_).astype(x.dtype), np.array(y_).astype(y.dtype)
 
 
 def pickle_save(d, file_name):
@@ -38,8 +58,9 @@ def pickle_load(file_name):
     with open("{}.pickle".format(file_name), 'rb') as f:
         return pickle.load(f, encoding='bytes')
 
-def image_load(file_path):            # load image as float numpy array
-    return np.array(Image.open(file_path)).astype(float)/255.
+def image_load(file_path, resize=0):            # load image as float numpy array
+    img = Image.open(file_path).resize((resize,resize)) if resize > 0 else Image.open(file_path)
+    return np.array(img).astype(float)/255.
 
 def aassert(statement, message=''): #TODO
     if not statement:
@@ -58,6 +79,14 @@ def report_plot(data, i, model_name, log='./log'):
     pickle_save([d,t], os.path.join(log,model_name))
     plt.plot(t,d)
     plt.pause(0.0001)
+
+def gpu_inspection():
+    from tensorflow.python.client import device_lib
+    device_info = device_lib.list_local_devices()
+    cpu = [dev for dev in device_info if 'CPU' in dev.name][0]
+    gpu = [dev for dev in device_info if 'GPU' in dev.name]
+    print("The number of gpu is {}".format(len(gpu)))
+    return len(gpu)
 
 class LossHistory(tf.keras.callbacks.Callback):
     def __init__(self, model_name, batch_size, ntrain, step_interval=0.1):
