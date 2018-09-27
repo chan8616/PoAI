@@ -13,11 +13,10 @@ from model.simple import LOGISTIC # simple classifier
 from model.vgg19 import VGGNET19
 from model.resnet import RESNET152
 from model.svm import SVM
-
+from model.rf import RF
 #TODO:
 # from model.resnet import RES #
 # from model.lstm import LSTM
-# from model.random_forest import RF
 # from model.gru import GRU
 # from model.lstm import AELSTM
 
@@ -29,19 +28,17 @@ OPEN_PIT = ('wine', 'iris')
 OPEN_TMS = ('bearing')
 OPEN_DATA = {'mnist':call_mnist,
              'cifar10':call_cifar10,
-             'wine':None,
-             'iris':None,
-             'bearing':None}
-# TODO:
-# add  wine, iris, one time-series data
+             'wine':call_wine,
+             'iris':call_iris}
+# TODO: one time-series data
 """
     model list
 """
 IMG_MODEL = ('logistic', 'res152', 'vgg19')
-PIT_MODEL = ('svm','random_forest')
+PIT_MODEL = ('svm','randomforest')
 TMS_MODEL = ('lstm','gru','ae_lstm')
 MODEL = {'logistic':LOGISTIC, 'res152':RESNET152, 'vgg19':VGGNET19,
-         'svm':None, 'random_forest':None,
+         'svm':SVM, 'randomforest':RF,
          'lstm':None, 'gru':None, 'ae_lstm':None}
 
 def get_model_list():

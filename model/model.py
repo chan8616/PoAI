@@ -16,6 +16,14 @@ from utils.util import *
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 import seaborn as sns
+
+def conf_mtx(y_true, y_pred, label_names=None):
+    mtx = confusion_matrix(y_true, y_pred)
+    if label_names is None or len(mtx) != len(label_names):
+        label_names = list(np.arange(len(mtx)))
+    cm = pd.DataFrame(mtx,columns=label_names,index=label_names)
+    sns.heatmap(cm, annot=True)
+
 """
     #1 By dictionary
         Train Data path : [Project Folder]/dataset/[data name]/Data/[Class name]/[Data_name].[format]
@@ -229,11 +237,3 @@ class NET(object):
             batch_y = None
 
         return batch_x, batch_y
-
-
-    def conf_mtx(y_true, y_pred, label_names=None):
-        mtx = confusion_matrix(y_true, y_pred)
-        if label_names is None or len(mtx) != len(label_names):
-            label_names = list(np.arange(len(mtx)))
-        cm = pd.DataFrame(mtx,columns=label_names,index=label_names)
-        sns.heatmap(cm, annot=True)
