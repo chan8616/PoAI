@@ -109,7 +109,7 @@ class NET(object):
 
     def test(self, x, y=None, label_name=None, visualize=False):
         if y is not None:
-            print('Accuracy : {:.4f}'.format(self.accuracy(x,y))
+            print('Accuracy : {:.4f}'.format(self.accuracy(x,y)))
             if visualize:
                 conf_mtx(y, self.predict(x), label_name)
         else:
@@ -123,7 +123,7 @@ class NET(object):
             else:
                 if not path.exists(self.model_result):
                     makedirs(self.model_result)
-                with open(path.join(self.model_result, self.model_name+'.txt'))
+                with open(path.join(self.model_result, self.model_name+'.txt')) as f:
                     f.write('{} | {}'.foramt('order'.rjust(idx), 'pred'.rjust(classes)))
                     f.write('-' * (max(idx,5) + 3 + max(classes,4)))
                     for i,v in enumerate(y_pred):
@@ -233,7 +233,7 @@ class NET(object):
 
     def conf_mtx(y_true, y_pred, label_names=None):
         mtx = confusion_matrix(y_true, y_pred)
-        if label_names is None or len(mtx) != len(label_names)
+        if label_names is None or len(mtx) != len(label_names):
             label_names = list(np.arange(len(mtx)))
         cm = pd.DataFrame(mtx,columns=label_names,index=label_names)
         sns.heatmap(cm, annot=True)
