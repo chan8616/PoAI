@@ -46,7 +46,7 @@ def shuffle(x, y):
     d = list(zip(x,y))
     sf(d)
     x_, y_ = zip(*d)
-    return np.array(x_).astype(float), np.array(y_).astype(float)
+    return np.array(x_).astype(x.dtype), np.array(y_).astype(y.dtype)
 
 
 def pickle_save(d, file_name):
@@ -58,8 +58,9 @@ def pickle_load(file_name):
     with open("{}.pickle".format(file_name), 'rb') as f:
         return pickle.load(f, encoding='bytes')
 
-def image_load(file_path):            # load image as float numpy array
-    return np.array(Image.open(file_path)).astype(float)/255.
+def image_load(file_path, resize=0):            # load image as float numpy array
+    img = Image.open(file_path).resize((resize,resize)) if resize > 0 else Image.open(file_path)
+    return np.array(img).astype(float)/255.
 
 def aassert(statement, message=''): #TODO
     if not statement:
