@@ -16,6 +16,7 @@ from mynotebook import MyNotebook
 from utils.util import Redirection
 
 from run import Run
+from run import get_model_list, get_data_list
 
 os.environ["UBUNTU_MENUPROXY"] = "0"
 
@@ -70,11 +71,13 @@ class MyFrame(wx.Frame):
         if not os.path.exists(self.datasetDir):
             os.makedirs(self.datasetDir)
         self.buildTree(self.data_tree, self.datasetDir)
+        self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
         self.data_tree.Expand(self.data_tree.GetRootItem())
 
         # load model tree (in Modules folder)
-        self.modelDir = os.path.join(self.cwd, "checkpoint")
+        self.modelDir = os.path.join(self.cwd, "model")
         self.buildTree(self.model_tree, self.modelDir)
+        self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), True)
         self.model_tree.Expand(self.model_tree.GetRootItem())
 
 #        # load pretrained model tree (in checkpoint folder)
@@ -228,6 +231,11 @@ class MyFrame(wx.Frame):
 
     def OnDataSpec(self, item):
         data_spec = self.getDataSpec(item)
+#        import numpy as np
+#        print(np.array(data_spec))
+        if data_spec is None:
+            print('wrong dataset folder')
+            return
         page = self.notebook.createDataSpecPanel(self.notebook, wx.ID_ANY)
         page.setDataSpec(data_spec)
 
@@ -293,6 +301,8 @@ class MyFrame(wx.Frame):
 
     def getDataSpec(self, dataID):
         #TODO : how about data aggregated into a single file like .csv, .txt, etc.
+        # return name, path, data_type, valid_rate,
+        #       label_names, data, output_size, input_types, input_shapes
         import numpy as np
 
         data_spec = dict()
@@ -300,7 +310,23 @@ class MyFrame(wx.Frame):
         data_path = self.data_tree.GetItemData(dataID)
         data_spec['name'] = data_name
         data_spec['path'] = data_path
-
+        
+        if type(data_path) == str:
+            pass
+        else:
+            ######################################################
+            # Open data setting
+            print('open data. need implement')
+            data_spec['path'] = 'Open Data'
+            data_spec['data_type'] = 'not yet implemented'
+            data_spec['valid_rate'] = 'not yet implemented'
+            data_spec['label_names'] = 'not yet implemented'
+            data_spec['data'] = {'train':{'x':[], 'y':[]}, 'test':{'x':[], 'y':[]}}
+            data_spec['output_size'] = 'not yet implemented'
+            data_spec['input_types'] = 'not yet implemented'
+            data_spec['input_shapes'] = 'not yet implemented'
+            return  data_spec
+            ######################################################
         ######################################################
         # Fix it if we can deal with various data in general.
         data_spec['data_type'] = 'I' # image
@@ -322,6 +348,11 @@ class MyFrame(wx.Frame):
                 x_test = test[:,0]
                 y_test = test[:,1]
             label_names = [str(label) for label in np.unique(y_train.tolist() + y_test.tolist())]
+
+            train, test = {}, {}
+            train['x'], test['x'] = x_train, x_test
+            train['y'] = np.array(list(map(lambda x: label_names.index(x), y_train)))
+            test['y'] = np.array(list(map(lambda x: label_names.index(x), y_test)))
         # train/, test/, labels.txt
         elif 'train' in childs and 'test' in childs and 'labels.txt' in childs:
             print('case2')
@@ -340,7 +371,10 @@ class MyFrame(wx.Frame):
                         y_train[i] = label
                 if not label_check:
                     print("Data without label %s"%x)
-            train = np.concatenate(([x_train], [y_train]), axis=0).T
+            train = {}
+            train['x'] = x_train
+            train['y'] = np.array(y_train, int)
+            #train = np.concatenate(([x_train], [y_train]), axis=0).T
 
             #x_test = os.listdir(os.path.join(data_path, 'test'))
             x_test = [os.path.join(data_path, 'test', data) for data in os.listdir(os.path.join(data_path, 'test'))]
@@ -353,7 +387,11 @@ class MyFrame(wx.Frame):
                         y_test[i] = label
                 if not label_check:
                     print("Data without label %s"%x)
-            test = np.concatenate(([x_test], [y_test]), axis=0).T
+
+            test = {}
+            test['x'] = x_test
+            test['y'] = np.array(y_test, int)
+            #test = np.concatenate(([x_test], [y_test]), axis=0).T
 
         # [label]/, ... , train.txt, test.txt
         elif 'train.txt' in childs and 'test.txt' in childs:
@@ -376,10 +414,13 @@ class MyFrame(wx.Frame):
                             y_train[i] = label
                     if not label_check:
                         print("Data without label %s"%x)
-            train = np.concatenate(([x_train], [y_train]), axis=0).T
+            train = {}
+            train['x'] = x_train
+            train['y'] = np.array(y_train, int)
+            #train = np.concatenate(([x_train], [y_train]), axis=0).T
 
             with open(os.path.join(data_path, 'test.txt'), 'r') as f:
-                test = f.read().splitlines()
+                #test = f.read().splitlines()
                 x_test = f.read().splitlines()
                 y_test = np.zeros(len(x_test))
                 for i, x in enumerate(x_test):
@@ -391,10 +432,14 @@ class MyFrame(wx.Frame):
                             y_test[i] = label
                     if not label_check:
                         print("Data without label %s"%x)
-            test = np.concatenate(([x_test], [y_test]), axis=0).T
+            test = {}
+            test['x'] = x_test
+            test['y'] = np.array(y_test, int)
+            #test = np.concatenate(([x_test], [y_test]), axis=0).T
 
         else:
             print('Invalid Dataset folder %s'%data_path)
+            return None
 
         data_spec['label_names'] = label_names
         data_spec['data'] = {'train':train, 'test':test}
@@ -402,10 +447,12 @@ class MyFrame(wx.Frame):
 
         from PIL import Image
 
-        data = np.concatenate((train[:,0], test[:,0]), axis=0)
+        #data = np.concatenate((train[:,0], test[:,0]), axis=0)
+        x_data = np.concatenate([data['x'] for data in data_spec['data'].values()], axis=0)
+        
         types = []
         input_shapes = []
-        for x in data:
+        for x in x_data:
             fname, ext = os.path.splitext(x)
             if ext not in types:
                 types.append(ext)
@@ -517,7 +564,26 @@ class MyFrame(wx.Frame):
             tree.SetItemData(rootID, rootDir)
             self.extendTree(tree, rootID)
         else:
-            print("Dataset is already exist!")
+            print("tree item is already exist!")
+
+    # input tree, root name, child list
+    def appendTree(self, tree, parentID, childdict, model=False):
+        for child, value in childdict.items():
+            if model:
+                checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
+                if os.path.exists(checkpointdirpath) and \
+                        os.path.exists(os.path.join(checkpointdirpath, child)):
+                    trainedmodelpath = os.path.join(checkpointdirpath, child)
+                    childID = tree.AppendItem(parentID, child)
+                    tree.SetItemData(childID, trainedmodelpath)
+                    self.extendTree(tree, childID)
+                else:
+                    childID = tree.AppendItem(parentID, child)
+                    tree.SetItemData(childID, value)
+            else:
+                childID = tree.AppendItem(parentID, child)
+                tree.SetItemData(childID, value)
+            print(child, childID, tree.GetItemData(childID))
 
     def extendTree(self, tree, parentID):
         parentPath = tree.GetItemData(parentID)
@@ -526,7 +592,8 @@ class MyFrame(wx.Frame):
         subdirs.sort()
         for child in subdirs:
             childPath = os.path.join(parentPath, child)
-            if os.path.isdir(childPath) and not os.path.islink(child):
+            if os.path.isdir(childPath) and not os.path.islink(child) \
+                    and not "pycache" in child:
                 childID = tree.AppendItem(parentID, child)
                 tree.SetItemData(childID, childPath)
 
