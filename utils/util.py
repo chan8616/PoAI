@@ -91,12 +91,13 @@ def gpu_inspection():
     return len(gpu)
 
 class LossHistory(tf.keras.callbacks.Callback):
-    def __init__(self, model_name, batch_size, ntrain, step_interval=0.1):
+    def __init__(self, model_name, batch_size, ntrain, step_interval):
         self.ntrain = ntrain
         self.batch_size = batch_size
-        self.step = np.ceil(ntrain/batch_size).astype(np.int64)
+        self.step = int(np.ceil(ntrain/batch_size))
         self.model_name = model_name
         self.step_interval = int(self.step*step_interval)
+        print(self.step, self.step_interval, batch_size)
     def on_train_begin(self, logs={}):
         print("[@] trainig start...")
     def on_train_end(self, logs={}):
@@ -106,7 +107,7 @@ class LossHistory(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         val_loss = logs.get('val_loss')
         val_acc = logs.get('val_acc')
-        print('[{}] epoch_end, val_loss : [{}], val_acc : [{}]' \
+        print('[{}] epoch_end, val_loss : [{:.4f}], val_acc : [{:.4f}]' \
                     .format(epoch, val_loss, val_acc))
     def on_batch_end(self, batch, logs={}):
         if batch % self.step_interval > 0 or batch == self.step:

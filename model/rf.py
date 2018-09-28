@@ -1,6 +1,13 @@
 from sklearn.ensemble import RandomForestClassifier as rfc
-from .model import NET, conf_mtx
+from .model import NET
+from os import path, makedirs
+from copy import deepcopy
 
+import sys
+sys.path.append(path.abspath('..')) # refer to sibling folder
+
+from .ops import *
+from utils.util import pickle_save, pickle_load
 
 class RF(NET):
 
@@ -11,8 +18,8 @@ class RF(NET):
                 **kargs):
         model = 'randomforest'
         checkpoint_name = 'model'
-        self.model_name = '{}_{}'.format(dataset_name, name) if name is not None else dataset_name
-        checkpoint_dir = path.join(checkpoint_dir, model)
+        self.model_name = name
+        checkpoint_dir = path.join(checkpoint_dir,model,dataset_name)
         if not path.exists(checkpoint_dir):
             makedirs(checkpoint_dir)
         self.model_dir = path.join(checkpoint_dir, self.model_name)
@@ -31,7 +38,6 @@ class RF(NET):
                                'meta':self.model_meta,
                                'dataset':dataset_name,
                                'trained':False}
-            self.trained = False
             self.build_model(self.model_conf)
             pickle_save(self.prog_info, self.model_meta)
 
@@ -50,11 +56,13 @@ class RF(NET):
               x,
               y,
               save=True, **kargs):
-
+        print("[@] start training....")
         self.model.fit(x, y)
-        self.trained = True
+        self.model_conf['trained']= True
         if save:
             self.save()
+        print("[@] Training is done...")
+
     def train_with_provider(self, generator, epochs, save=True):
         pass
 
@@ -62,3 +70,7 @@ class RF(NET):
     @property
     def prog_info(self):
         return deepcopy(self.model_conf)
+
+    @property
+    def trained(self):
+        return self.model_conf['trained']

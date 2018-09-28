@@ -242,7 +242,7 @@ class TrainSpecPage(wx.Panel):
         grid_sizer_3.Add(label_14, (1, 1), (1, 10), 0, 0)
         grid_sizer_3.Add(self.combo_box_2, (2, 1), (1, 18), wx.EXPAND, 0)
 
-        label_19 = wx.StaticText(self, wx.ID_ANY, _("Sanpshot interval(in epochs)"))
+        label_19 = wx.StaticText(self, wx.ID_ANY, _("Sanpshot ratio (in epochs)"))
         label_19.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_19, (1, 21), (1, 10), 0, 0)
         #grid_sizer_3.Add(self.text_ctrl_14, (2, 1), (1, 18), wx.EXPAND, 0)
@@ -322,7 +322,7 @@ class TrainSpecPage(wx.Panel):
                     idx = self.train_spec['ckeckpoint_name'].rfind("_")
                     self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'][:idx]
                     print("num founded")
-                except ValueError: 
+                except ValueError:
                     num = 1
                     print("num not founded")
                 while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
@@ -392,7 +392,7 @@ class TrainSpecPage(wx.Panel):
         else:
             self.train_spec['trained_model_name'] = None \
                 if self.combo_box_6.GetSelection() == 0 else self.combo_box_6.GetStringSelection()
-        self.train_spec['checkpoint_name'] = self.text_ctrl_15.GetLineText(0)
+        self.train_spec['checkpoint_name'] = self.combo_box_6.GetValue()
         self.train_spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
         self.train_spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
         self.train_spec['optimizer'] = self.text_ctrl_20.GetLineText(0)

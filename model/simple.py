@@ -32,14 +32,15 @@ class LOGISTIC(NET):
     def __init__(self, **kargs):
         kargs['model'] = 'logistic'
         kargs['init'] = [None, None]
-        super(LOGISTIC, self).__init__(**kargs)
 
+        super(LOGISTIC, self).__init__(**kargs)
     def build_model(self, conf):
 
-        input_ = Input(shape=input_shape, name='data')
-
+        input_ = Input(shape=(conf['input_shape']), name='data')
+        print(conf['input_shape'])
         x = Flatten()(input_)
-        y_pred = Dense(self.num_classes, activation='softmax', name='lin')(x)
+        x = Dense(512, activation='relu', name='lin')(x)
+        y_pred = Dense(self.num_classes, activation='softmax', name='prediction')(x)
 
         self.model = Model(inputs=input_, outputs=y_pred)
         self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy',
