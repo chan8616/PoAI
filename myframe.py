@@ -152,7 +152,6 @@ class MyFrame(wx.Frame):
     def OnClosed(self, event):
         print('closed')
     def OnPageChanged(self, event):
-        print('OnPageChanged')
         if self.notebook.isOnTrainSpec() or self.notebook.isOnTestSpec():
             self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         else:
