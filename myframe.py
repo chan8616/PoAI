@@ -184,27 +184,26 @@ class MyFrame(wx.Frame):
         page.setTrainSpec(train_spec)
 
     def OnRun(self, event):
-        page, phase, spec = self.notebook.getRunSpec()
-        if spec is not None:
-            model_name, trained_model_name, dataset_name = spec['model_name'], spec['trained_model_name'], spec['dataset_name']
+        page, phase, args = self.notebook.getRunSpec()
+        if args is not None:
             if phase == 'Train':
-                if trained_model_name is None:
-                    modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(model_name)]
+                if args['model_name'] is None:
+                    modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 else:
-                    modelID = page.train_spec['trained_model_dict'][model_name]
-                datasetID = page.train_spec['dataset_list'][page.train_spec['dataset_names'].index(dataset_name)]
+                    modelID = page.train_spec['trained_model_dict'][args['model_name']]
+                datasetID = page.train_spec['dataset_list'][page.train_spec['dataset_names'].index(args['dataset_name'])]
             elif phase == 'Test':
-                modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(model_name)]
-                datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(dataset_name)]
+                modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
+                datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(args['dataset_name'])]
 
-            spec['model_spec'] = self.getModelSpec(modelID)
+            args['model_spec'] = self.getModelSpec(modelID)
             """
             return {'type':'None',
                     'n_layer':'None',
                     'input_size':'None',
                     'output_size':'None'}
             """
-            spec['dataset_spec'] = self.getDataSpec(datasetID)
+            args['dataset_spec'] = self.getDataSpec(datasetID)
             """
             data_spec['name']
             data_spec['path']
@@ -215,31 +214,14 @@ class MyFrame(wx.Frame):
             data_spec['input_shapes']
             """
 
-            if phase == 'Train':
-                spec_list = [True,
-                         spec['model_spec'],
-                         spec['dataset_spec'],
-                         spec['checkpoint_name'],
-                         spec['max_epochs'],
-                         spec['batch_size'],
-                         spec['optimizer'],
-                         spec['learning_rate'],
-                         spec['interval'],
-                         spec['seed']]
-            elif phase == 'Test':
-                spec_list = [False,
-                         spec['model_spec'],
-                         spec['dataset_spec'],
-                         spec['interval'],
-                         spec['seed']]
-
-            print(**spec_list)
+            args['phase'] = phase
+            print(args.keys())
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
         #        self.input_shape, self.output_size = spec[1:]
 
-            return Run(spec_list)
+            return Run(**args)
         else:
             # self.tool_bar.EnableTool(self.tool_run.GetId(), False)
             pass
@@ -471,9 +453,7 @@ class MyFrame(wx.Frame):
             trained_model_names_dict[model_name] = [self.model_tree.GetItemText(x) for x in trained_model_list]
         train_spec['trained_model_dict'] = trained_model_dict
         train_spec['trained_model_names_dict'] = trained_model_names_dict
-        train_spec['checkpoint_name'] = "datasetname"
-
-        train_spec['gpus'] = ['Not Yet Implemented']
+        train_spec['checkpoint_name'] = "."
 
         return train_spec
 

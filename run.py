@@ -40,29 +40,32 @@ TMS_MODEL = ('lstm','gru','ae_lstm')
 MODEL = {'logistic':LOGISTIC, 'res152':RESNET152, 'vgg19':VGGNET19,
          'svm':SVM, 'randomforest':RF,
          'lstm':None, 'gru':None, 'ae_lstm':None}
+OPTIMIZER = {'adam':keras.optimizers.Adam,
+             'gradient':keras.optimizers.SGD,
+             'adadelta':keras.optimizers.Adadelta,
+             'adagrad':keras.optimizers.Adagrad,
+             'rmsprop':keras.optimizers.RMSprop}
 
 def get_model_list():
     return MODEL
 
 def get_data_list():
     return OPEN_DATA
-
+def get_optimizer_lisT():
+    return OPTIMIZER
 # TODO:
 
 """
     MACRO
 """
-OPTIMIZER = {'adam':keras.optimizers.Adam,
-             'gradient':keras.optimizers.SGD,
-             'adadelta':keras.optimizers.Adadelta,
-             'adagrad':keras.optimizers.Adagrad,
-             'rmsprop':keras.optimizers.RMSprop}
 DATA_TYPE = ('I', 'P', "T") # Image, Point, Time-series
 IMAGE_SIZE = 224      # Fixed
 def data_select(dataset):
     if dataset['name'] in OPEN_DATA.keys(): # data is provided
-        return OPEN_DATA[dataset_name](), None
+        return OPEN_DATA[dataset['name']](), None
     else:    # own dataset
+        print(dataset['data']['train'][:,1])
+        print(dataset['data']['test'][:,1])
         data_provider = DATA_PROVIDER(train_x = dataset['data']['train'][:,0],
                                       train_y = one_hot(dataset['data']['train'][:,1]),
                                       test_x = dataset['data']['test'][:,0],
@@ -70,52 +73,53 @@ def data_select(dataset):
                                       intput_size = IMAGE_SIZE,
                                       data_type = dataset['data_type'],
                                       valid_split = dataset['valid_rate'])
-        return None, data_provider
+        return {'classes':dataset['output_size']}, data_provider
 
 class Run(object):
-    def __init__(self, **kargs):
+    def __init__(self,
+                phase,
+                model_name,
+                gpu,
+                learning_rate,
+                checkpoint_name,
+                batch_size,
+                optimizer,
+                interval,
+                max_epochs,
+                dataset_spec,
+                **kargs):
         """
             **kargs : for advanced_option (NotImplemented)
         """
         # mode, model, data, gpu, checkpoint, max_epochs, batch_size, optimizer, lr, interval, random_seed
-        self.model_name, dataset_name, gpu_selected, \
-        name, epochs, batch_size, optimizer, \
-        learning_rate, interval, random_seed =\
-            ['vgg19', 'cifar10', '0', 'init', '5', '32', 'gradient','0.0001', '1', '0']#spec[1:]
-
-        gpu_selected = int(gpu_selected)
-        self.epochs = int(epochs)
-        batch_size = int(batch_size)
-        interval = int(interval)
+        self.model_name = model_name
+            # ['vgg19', {'dataset_name':'cifar10'}, '0', 'init', '5', '32', 'gradient','0.0001', '1', '0']#spec[1:]
 
         self.data_type = 'I' #TODO
         self.classes = 10  #TODO
 
-        if gpu_selected.isdigit() :
-            print('gpu [{}] is selected'.format(gpu_selected))
-            os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_selected)
+        if gpu.isdigit() :
+            print('gpu [{}] is selected'.format(gpu))
+            os.environ['CUDA_VISIBLE_DEVICES'] = gpu
         else:
             #TODO
             print('cpu is selected')
 
-        self.train = True if 'train' in spec[0] else False
-        self.test = True if 'test' in spec[0] else False
+        train = True if phase else False
 
-        optimizer = self.select_optimizer(optimizer, float(learning_rate))
-        data, provider = data_select(dataset_name)
+        opt = self.select_optimizer(optimizer, float(learning_rate))
+        data, provider = data_select(dataset_spec)
         self.load_model(model_name=self.model_name,
-                          dataset_name=dataset_name,
-                          name=name,
+                          dataset_name=dataset_spec['name'],
+                          name=checkpoint_name,
                           classes=self.classes,
                           data=data,
                           data_provider=provider,
-                          optimizer=optimizer,
-                          epochs = self.epochs,
-                          batch_size = batch_size,
-                          train=self.train,
-                          test=self.test,
-                          epoch_interval=interval,
-                          random_seed=random_seed)
+                          optimizer=opt,
+                          epochs = int(max_epochs),
+                          batch_size = int(batch_size),
+                          train=train,
+                          epoch_interval=int(interval))
     def select_optimizer(self, optimizer='gradient', lr=1e-3):
         assert optimizer in OPTIMIZER.keys(), "[!] There is no such optimizer."
         return {'opt': OPTIMIZER[optimizer](lr=lr),
@@ -137,7 +141,6 @@ class Run(object):
                    model_name,          # model name
                    name                 = None,  # additional_name
                    dataset_name         = None,  # dataset name, open data e.g. mnist or hand-crafted dataset
-                   classes              = None,  # We treat this model as classifier if it has values
                    data_provider        = False, # if own dataset is given, flag it
                    data                 = None,  # dictionary : {train_x:-, train_y:-, test_x:-, test_y:-(optional)}
                    optimizer            = {'opt': keras.optimizers.SGD(lr=1e-3),
@@ -150,17 +153,15 @@ class Run(object):
                    checkpoint_dir       = "checkpoint",
                    checkpoint_name      = None,
                    train                = False,    # if True, Do train
-                   test                 = False,    # if True, Do test
                    epoch_interval       = None,     # save interval
                    step_interval        = 0.1,     # obtaining state rate per epoch
-                   random_seed          = 0,
                    pre_trained          = {'init':True,'freeze':False}      # by imagenet
                    ):
         # 1. validation model
         self.model_validation()
         # 2. call the instance of the network
         model = MODEL[model_name](dataset_name=dataset_name,
-                                  num_classes=classes,
+                                  num_classes=data['classes'],
                                   pretrained=pre_trained['init'],
                                   optimizer=optimizer,
                                   batch_size = batch_size,
@@ -194,7 +195,7 @@ class Run(object):
                                           save = True)
 
         # 6.3 test the model.
-        if test:
+        else:
             assert model.trained, " [@] Train model first."
             if data is not None:
                 model.test(x = data['test_x'],
