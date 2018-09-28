@@ -33,7 +33,9 @@ def call_mnist(one_hot_coding=True):
             'train_y':train_label,
             'test_x': test_data.reshape(-1, 28,28,1),
             'test_y': test_label,
-            'label': list(np.arange(10))}
+            'classes':10,
+            'label_names': list(np.arange(10)),
+            'input_shapes': (28, 28, 1)}
 
 def call_cifar10(one_hot_coding=True):
     from tensorflow.python.keras.datasets.cifar10 import load_data
@@ -45,16 +47,18 @@ def call_cifar10(one_hot_coding=True):
             'train_y' : train_label,
             'test_x' : test_data,
             'test_y' : test_label,
-            'label' : ['airplane',
-                       'automobile',
-                       'bird',
-                       'cat',
-                       'deer',
-                       'dog',
-                       'frog',
-                       'horse',
-                       'ship',
-                       'truck']}
+            'classes':10,
+            'label_names' : ['airplane',
+                           'automobile',
+                           'bird',
+                           'cat',
+                           'deer',
+                           'dog',
+                           'frog',
+                           'horse',
+                           'ship',
+                           'truck'],
+            'input_shapes': (32, 32, 3)}
 
 def call_wine(one_hot_coding=True, train_ratio=0.7):
     from sklearn.datasets import load_wine
@@ -67,12 +71,14 @@ def call_wine(one_hot_coding=True, train_ratio=0.7):
     train_label = one_hot(label[:train]) if one_hot_coding else label[:train]
     test_data = data[train:]
     test_label = label[train:]
-
     return {'train_x':train_data,
             'train_y':train_label,
             'test_x':test_data,
             'test_y':test_label,
-            'label':[list(np.arange(3))]}
+            'classes':3,
+            'label_names':[list(np.arange(3))],
+            'input_shapes':(13,)
+            }
 
 def call_iris(one_hot_coding=True, train_ratio=0.7):
     from sklearn.datasets import load_iris
@@ -90,7 +96,9 @@ def call_iris(one_hot_coding=True, train_ratio=0.7):
             'train_y':train_label,
             'test_x':test_data,
             'test_y':test_label,
-            'label':['Setosa', 'Versicolour', 'Virginica']}
+            'classes':4,
+            'label_names':['Setosa', 'Versicolour', 'Virginica'],
+            'input_shapes':(4,)}
 
 
 class DATA_PROVIDER(object):
@@ -136,7 +144,7 @@ class DATA_PROVIDER(object):
     @property
     def label(self):
         return self.label_info if self.label_info is not None else \
-               list(np.arange(self.y['train'].shape[1])))
+               list(np.arange(self.y['train'].shape[1]))
 
     @property
     def ntrain(self):

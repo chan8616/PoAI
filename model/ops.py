@@ -15,11 +15,8 @@ from utils.util import *
 
 FILE_FORMAT = ['jpg', 'jpeg', 'png', 'bmp']
 
-OPTIMIZER = {'adam':tf.train.AdamOptimizer,
-             'gradient':tf.train.GradientDescentOptimizer}
 
 
-        
 
 def data_input(data, istrain, label=None):
     """
