@@ -45,6 +45,7 @@ class NET(object):
                  freeze_pretrained,
                  init,
                  name,
+                 input_shape,
                  checkpoint_name = 'model',
                  additional_layer = [1024]
                  ):
@@ -81,6 +82,7 @@ class NET(object):
                                'model_dir':self.model_dir,
                                'ckpt_path':self.model_ckpt,
                                'meta':self.model_meta,
+                               'input_shape':input_shape, #
                                'init':weight_init,
                                'freeze':freeze_pretrained,
                                'dataset':dataset_name,

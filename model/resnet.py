@@ -222,7 +222,7 @@ class RESNET152(NET):
         base_model = resnet152_model(weights=conf['init'])
         x = base_model.get_layer('avg_pool').output
         y_pred = Dense(self.num_classes, Activation='softmax', name='prediction')(x)
-        self.model = Model(inputs=base_model.input, output=y_pred)
+        self.model = Model(inputs=base_model.input, outputs=y_pred)
 
         if conf['freeze'] and conf['init']:
             for layer in base_model.layers:
