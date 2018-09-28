@@ -45,6 +45,7 @@ OPEN_TMS	run.py	/^OPEN_TMS = ('bearing')$/;"	v
 OPTIMIZER	model/ops.py	/^OPTIMIZER = {'adam':tf.train.AdamOptimizer,$/;"	v
 OPTIMIZER	run.py	/^OPTIMIZER = {'adam':keras.optimizers.Adam,$/;"	v
 OnButton_1	MyDialog_old.py	/^    def OnButton_1(self, event):$/;"	m	class:MyDialog
+OnCheckpointnameSelected	mynotebook.py	/^    def OnCheckpointnameSelected(self, event):$/;"	m	class:TrainSpecPage
 OnClose	myframeevent.py	/^    def OnClose(self, event):$/;"	m	class:MyFrameEvent
 OnClose	test.py	/^    def OnClose(self, event):$/;"	m	class:MyFrameEvent
 OnClosed	myframe.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrame
@@ -162,7 +163,7 @@ app	app_old.py	/^    app = MyApp(0)$/;"	v
 app	gui_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	gui_old_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	test.py	/^    app = MyApp(0)$/;"	v	class:MyApp
-appendTree	myframe.py	/^    def appendTree(self, tree, parentID, childdict):$/;"	m	class:MyFrame
+appendTree	myframe.py	/^    def appendTree(self, tree, parentID, childdict, model=False):$/;"	m	class:MyFrame
 build	model/resnet.py	/^    def build(self, input_shape):$/;"	m	class:Scale
 buildTree	MyFrame_old.py	/^    def buildTree(self, tree, rootdirPath, treeRoot=None):$/;"	m	class:MyFrame
 buildTree	gui_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
@@ -232,6 +233,7 @@ getRunSpec	mynotebook.py	/^    def getRunSpec(self):$/;"	m	class:MyNotebook
 getStatistics	MyFrame_old.py	/^    def getStatistics(self, dirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
+getTestSpec	myframe.py	/^    def getTestSpec(self):$/;"	m	class:MyFrame
 getTestSpec	mynotebook.py	/^    def getTestSpec(self):$/;"	m	class:TestSpecPage
 getTrainSpec	myframe.py	/^    def getTrainSpec(self):$/;"	m	class:MyFrame
 getTrainSpec	mynotebook.py	/^    def getTrainSpec(self):$/;"	m	class:TrainSpecPage
