@@ -24,7 +24,7 @@ class DataSpecPage(wx.Panel):
         self.text_ctrl_3.SetValue("")
         self.text_ctrl_3.write(data_spec['output_size'])
         self.text_ctrl_4.SetValue("")
-        self.text_ctrl_4.write(str(len(data_spec['data']['train']) + len(data_spec['data']['test'])))
+        self.text_ctrl_4.write(str(len(data_spec['data']['train']['x']) + len(data_spec['data']['test']['x'])))
         self.text_ctrl_5.SetValue("")
         self.text_ctrl_5.write(str(data_spec['input_shapes']))
         self.text_ctrl_6.SetValue("")
@@ -166,7 +166,8 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_2 = wx.ComboBox(self, wx.ID_ANY, choices=["2"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=["4"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-        self.combo_box_6 = wx.ComboBox(self, wx.ID_ANY, choices=["6"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.combo_box_6 = wx.ComboBox(self, wx.ID_ANY, choices=["6"], style = wx.CB_DROPDOWN)
+        #self.combo_box_6 = wx.ComboBox(self, wx.ID_ANY, choices=["6"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         #self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
         self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, "26")
 
@@ -298,26 +299,45 @@ class TrainSpecPage(wx.Panel):
 
     def OnModelSelected(self, event):
         model_name = event.GetString()
-        for i in range(self.combo_box_6.GetCount()-1):
+        for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(0)
         print(event.GetSelection())
         for i, trained_model_name in enumerate(self.train_spec['trained_model_names_dict'][model_name]):
-            self.combo_box_6.Insert(trained_model_name, i)
-        print(train_spce['trained_model_names_dict'])
+            self.combo_box_6.Insert(trained_model_name, i+1)
+        print(self.train_spec['trained_model_names_dict'])
 
 #        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
 #        self.setTrainSpec_checkpoint_name()
 
     def OnDatasetSelected(self, event):
+        print("Dataset Selected")
         self.train_spec['checkpoint_name'] = event.GetString()
         #self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
-        self.setTrainSpec_checkpoint_name()
+        if self.combo_box_6.GetSelection() == 0: # New
+            print("new selected")
+            if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
+                print("name founded")
+                try:
+                    num = int(self.train_spec['checkpoint_name'].split("_")[-1])
+                    idx = self.train_spec['ckeckpoint_name'].rfind("_")
+                    self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'][:idx]
+                    print("num founded")
+                except ValueError: 
+                    num = 1
+                    print("num not founded")
+                while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
+                    print("name founded")
+                    self.train_spec['checkpoint_name'] += "_" + str(num)
+                    num += 1
+            self.setTrainSpec_checkpoint_name()
 
     def OnCheckpointnameSelected(self, event):
-        if event.GetSelection() != self.combo_bot_6.GetCount()-1:
-            pass
+        print("Checkpointname Selected")
+        if event.GetSelection() == 0:
+            self.combo_box_6.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         else:
-            pass
+            self.combo_box_6.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
+        self.setTrainSpec_checkpoint_name()
 
 #    def setTrainSpec_(self, train_spec):
 #        self.combo_box_2.Delete(0)
@@ -345,6 +365,9 @@ class TrainSpecPage(wx.Panel):
 #        self.text_ctrl_22.write(train_spec['seed'])
 
     def setTrainSpec_checkpoint_name(self):
+        self.combo_box_6.SetValue(self.train_spec['checkpoint_name'])
+        #self.combo_box_6.SetString(0, self.train_spec['checkpoint_name'])
+        #self.text_ctrl_15.write(self.train_spec['checkpoint_name'])
         pass
         #self.text_ctrl_15.SetValue("")
         #self.text_ctrl_15.write(self.train_spec['checkpoint_name'])
