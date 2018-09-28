@@ -459,7 +459,7 @@ class TestSpecPage(wx.Panel):
     def setTestSpec(self, test_spec):
         self.test_spec = test_spec
         self.combo_box_5.Delete(0)
-        for i, model_name in enumerate(test_spec['model_names']):
+        for i, model_name in enumerate(test_spec['trained_model_list_names']):
             self.combo_box_5.Insert(model_name, 0)
         #self.text_ctrl_24.SetValue("")
         #self.text_ctrl_25.SetValue("")

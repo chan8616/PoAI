@@ -524,11 +524,23 @@ class MyFrame(wx.Frame):
 
         return train_spec
 
-#    def getTestSpec(self):
-#        test_spec = {}
-#        test_spec['models'] = self.models
-#        test_spec['model_names'] = [self.model_tree.GetItemText(x) for x in self.models]
-#        return test_spec
+    def getTestSpec(self):
+        test_spec = {}
+
+        model_list = self.childrenToList(self.model_tree, self.model_tree.GetRootItem())
+        test_spec['model_list'] = model_list
+        model_names = [self.model_tree.GetItemText(x) for x in model_list]
+        test_spec['model_names'] = model_names
+
+        trained_model_list = []
+        trained_model_list_names = []
+        for model, model_name in zip(model_list, model_names):
+            trained_model_list_ = self.childrenToList(self.model_tree, model)
+            trained_model_list_names += [self.model_tree.GetItemText(x) for x in trained_model_list_]
+            trained_model_list += trained_model_list_ 
+            print(model, model_name, trained_model_list_names, trained_model_list)
+        test_spec['trained_model_list_names'] = trained_model_list_names
+        return test_spec
 
 #    def setTrainSpec(self):
 #        pass
