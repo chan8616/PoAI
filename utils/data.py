@@ -136,7 +136,7 @@ class DATA_PROVIDER(object):
     @property
     def label(self):
         return self.label_info if self.label_info is not None else \
-               list(np.arange(self.y['train'].shape[1])))
+               list(np.arange(self.y['train'].shape[1]))
 
     @property
     def ntrain(self):
