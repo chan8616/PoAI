@@ -310,28 +310,28 @@ class MyFrame(wx.Frame):
         data_path = self.data_tree.GetItemData(dataID)
         data_spec['name'] = data_name
         data_spec['path'] = data_path
-        
-        if type(data_path) == str:
-            pass
+
+        if not data_path in get_data_list():
+            ######################################################
+            # Fix it if we can deal with various data in general.
+            data_spec['data_type'] = 'I' # image
+            ######################################################
         else:
+            data_info = get_data_list(data_name)(meta=True)
             ######################################################
             # Open data setting
-            print('open data. need implement')
             data_spec['path'] = 'Open Data'
-            data_spec['data_type'] = 'not yet implemented'
-            data_spec['valid_rate'] = 'not yet implemented'
-            data_spec['label_names'] = 'not yet implemented'
-            data_spec['data'] = {'train':{'x':[], 'y':[]}, 'test':{'x':[], 'y':[]}}
-            data_spec['output_size'] = 'not yet implemented'
-            data_spec['input_types'] = 'not yet implemented'
-            data_spec['input_shapes'] = 'not yet implemented'
+            data_spec['data_type'] = data_info['data_type']
+            data_spec['label_names'] = str(data_info['label_names'])
+            data_spec['data'] = {'train':{'x':np.zeros(data_info['ntrain'])}, 'test':{'x':np.zeros(data_info['ntest'])}}
+            data_spec['output_size'] = str(data_info['classes'])
+            t = data_info['data_type']
+            data_spec['input_types'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
+            data_spec['input_shapes'] = str(data_info['input_shape'])[1:-1]
             return  data_spec
             ######################################################
-        ######################################################
-        # Fix it if we can deal with various data in general.
-        data_spec['data_type'] = 'I' # image
+
         data_spec['valid_rate'] = 0.05 # validation ratio
-        ######################################################
 
 
         childs = os.listdir(data_path)
@@ -449,7 +449,7 @@ class MyFrame(wx.Frame):
 
         #data = np.concatenate((train[:,0], test[:,0]), axis=0)
         x_data = np.concatenate([data['x'] for data in data_spec['data'].values()], axis=0)
-        
+
         types = []
         input_shapes = []
         for x in x_data:
@@ -458,8 +458,8 @@ class MyFrame(wx.Frame):
                 types.append(ext)
 
             if ext == '.png' or ext == '.jpg':
-                img = Image.open(x)
-                input_shape = img.size
+                img = np.array(Image.open(x))
+                input_shape = str(img.shape)[1:-1]
                 if input_shape not in input_shapes:
                     input_shapes.append(input_shape)
             else:
@@ -479,7 +479,7 @@ class MyFrame(wx.Frame):
 #        pass
 
     def getTrainSpec(self):
-        train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'optimizer':'Adam', 'seed':'0', 'batch_size':'32', 'interval':'1000'}
+        train_spec = {'max_epochs': '25', 'learning_rate':'1e-3', 'optimizer':'adam', 'seed':'0', 'batch_size':'32', 'interval':'0.1'}
         train_spec['lr'] = train_spec['learning_rate']
 
         dataset_list = self.childrenToList(self.data_tree, self.data_tree.GetRootItem())
@@ -500,7 +500,7 @@ class MyFrame(wx.Frame):
             trained_model_names_dict[model_name] = [self.model_tree.GetItemText(x) for x in trained_model_list]
         train_spec['trained_model_dict'] = trained_model_dict
         train_spec['trained_model_names_dict'] = trained_model_names_dict
-        train_spec['checkpoint_name'] = "."
+        train_spec['checkpoint_name'] = ''
 
         return train_spec
 
@@ -517,7 +517,7 @@ class MyFrame(wx.Frame):
         for model, model_name in zip(model_list, model_names):
             trained_model_list_ = self.childrenToList(self.model_tree, model)
             trained_model_list_names += [self.model_tree.GetItemText(x) for x in trained_model_list_]
-            trained_model_list += trained_model_list_ 
+            trained_model_list += trained_model_list_
             print(model, model_name, trained_model_list_names, trained_model_list)
         test_spec['trained_model_list_names'] = trained_model_list_names
         return test_spec
@@ -580,23 +580,40 @@ class MyFrame(wx.Frame):
 
     # input tree, root name, child list
     def appendTree(self, tree, parentID, childdict, model=False):
-        for child, value in childdict.items():
-            if model:
-                checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
-                if os.path.exists(checkpointdirpath) and \
-                        os.path.exists(os.path.join(checkpointdirpath, child)):
-                    trainedmodelpath = os.path.join(checkpointdirpath, child)
-                    childID = tree.AppendItem(parentID, child)
-                    tree.SetItemData(childID, trainedmodelpath)
-                    self.extendTree(tree, childID)
+        if type(childdict) == dict:
+            for child, value in childdict.items():
+                if model:
+                    checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
+                    if os.path.exists(checkpointdirpath) and \
+                            os.path.exists(os.path.join(checkpointdirpath, child)):
+                        trainedmodelpath = os.path.join(checkpointdirpath, child)
+                        childID = tree.AppendItem(parentID, child)
+                        tree.SetItemData(childID, trainedmodelpath)
+                        self.extendTree(tree, childID)
+                    else:
+                        childID = tree.AppendItem(parentID, child)
+                        tree.SetItemData(childID, value)
                 else:
                     childID = tree.AppendItem(parentID, child)
                     tree.SetItemData(childID, value)
-            else:
-                childID = tree.AppendItem(parentID, child)
-                tree.SetItemData(childID, value)
-            print(child, childID, tree.GetItemData(childID))
-
+                # print(child, childID, tree.GetItemData(childID))
+        elif type(childdict) == list:
+            for value in childdict:
+                if model:
+                    checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
+                    if os.path.exists(checkpointdirpath) and \
+                            os.path.exists(os.path.join(checkpointdirpath, value)):
+                        trainedmodelpath = os.path.join(checkpointdirpath, value)
+                        childID = tree.AppendItem(parentID, value)
+                        tree.SetItemData(childID, trainedmodelpath)
+                        self.extendTree(tree, childID)
+                    else:
+                        childID = tree.AppendItem(parentID, value)
+                        tree.SetItemData(childID, value)
+                else:
+                    childID = tree.AppendItem(parentID, value)
+                    tree.SetItemData(childID, value)
+                # print(value, childID, tree.GetItemData(childID))
     def extendTree(self, tree, parentID):
         parentPath = tree.GetItemData(parentID)
 

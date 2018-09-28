@@ -53,8 +53,8 @@ class NET(object):
         self.add_layer= additional_layer
         # 1. Define a name and a checkpoint path of the model
 
-        self.model_name = '{}_{}'.format(dataset_name, name) if name is not None else dataset_name
-        checkpoint_dir = path.join(checkpoint_dir, model)
+        self.model_name = name
+        checkpoint_dir = path.join(checkpoint_dir, model, dataset_name)
         if not path.exists(checkpoint_dir):
             makedirs(checkpoint_dir)
         self.model_dir = path.join(checkpoint_dir, self.model_name)
@@ -159,12 +159,17 @@ class NET(object):
                     f.write('The number of samples : [{}]'.format(y_pred.shape[0]))
             print('The number of samples : [{}]'.format(y_pred.shape[0]))
 
-    def test_with_provider(self, generator, steps, label_name=None, visualize=False):
+    def test_with_generator(self, generator, steps, label_name=None, visualize=False):
         y_pred_score = self.predict_with_generator(generator, steps)
         y_pred = np.argmax(y_pred_score, axis=1)
 
     def merge_callbacks(self, conf):
         name, batch_size = self.model_conf['name'], self.model_conf['batch_size']
+
+        print(conf['ntrain'], batch_size)
+        print(int(np.ceil(conf['ntrain']/batch_size)))
+        print(int(np.ceil(conf['ntrain']/batch_size)*conf['step_interval']))
+
         return [ # keras.callbacks.Tensorboard(log_dir=conf['log_dir']),
             LossHistory(name, batch_size, conf['ntrain'], conf['step_interval']),
             keras.callbacks.EarlyStopping(monitor='val_loss',
@@ -230,8 +235,8 @@ class NET(object):
                                  epochs=epochs,
                                  verbose=0,
                                  callbacks=self.merge_callbacks(debug_conf),
-                                 validation_data = valid_generator,
-                                 validation_steps = valid_step,
+                                 validation_data = valid_generator(),
+                                 validation_steps = valid_steps,
                                  shuffle=True,
                                  initial_epoch = self.epochs)
         self.epochs = epochs
@@ -258,7 +263,7 @@ class NET(object):
             print("[!] Already Done.")
             return
         self.model.fit(x=x,
-                       y=y,
+                       y=one_hot(y, classes=self.num_classes),
                        epochs=epochs,
                        validation_split=0.01,
                        initial_epoch=self.epochs,

@@ -4,7 +4,9 @@
 """
 
 
-from .util import shuffle, image_load
+from .util import shuffle as _shuffle
+from .util import image_load
+from tensorflow import keras
 import numpy as np
 import sklearn
 
@@ -21,84 +23,124 @@ def one_hot(y, classes=None):
     y_one_hot[np.arange(N),y]=1
     return y_one_hot
 
-def call_mnist(one_hot_coding=True):
-    from tensorflow.examples.tutorials.mnist import input_data
-    mnist = input_data.read_data_sets("/tmp/mnist", one_hot=False)
-    train_data, train_label = shuffle(np.concatenate((mnist.train.images, mnist.validation.images),axis=0),
-                                     np.concatenate((mnist.train.labels, mnist.validation.labels),axis=0))
-    test_data, test_label = shuffle(mnist.test.images, mnist.test.labels)
-    if one_hot_coding:
-        train_label = one_hot(train_label)
-    return {'train_x':train_data.reshape(-1, 28,28,1),
-            'train_y':train_label,
-            'test_x': test_data.reshape(-1, 28,28,1),
-            'test_y': test_label,
-            'classes':10,
-            'label_names': list(np.arange(10)),
-            'input_shapes': (28, 28, 1)}
+def call_mnist(meta=False):
+    from tensorflow.python.keras.datasets.mnist import load_data
+    (train_data, train_label), (test_data, test_label) = load_data(path='/tmp/mnist.npz')
+    train_data, train_label = _shuffle(train_data, train_label)
+    if meta:
+        return {'ntrain':len(train_data),
+                'ntest':len(test_data),
+                'classes':10,
+                'label_names': list(np.arange(10)),
+                'input_shape': (28, 28, 1),
+                'data_type':'I'}
+    else:
+        return {'train_x':train_data.reshape(-1, 28,28,1),
+                'train_y':train_label,
+                'test_x': test_data.reshape(-1, 28,28,1),
+                'test_y': test_label,
+                'classes':10,
+                'label_names': list(np.arange(10)),
+                'input_shape': (28, 28, 1),
+                'data_type':'I'}
 
-def call_cifar10(one_hot_coding=True):
+def call_cifar10(meta=False):
     from tensorflow.python.keras.datasets.cifar10 import load_data
     (train_data, train_label), (test_data, test_label) = load_data()
-    if one_hot_coding:
-        train_label = one_hot(train_label)
-    train_data, train_label = shuffle(train_data, train_label)
-    return {'train_x' : train_data,
-            'train_y' : train_label,
-            'test_x' : test_data,
-            'test_y' : test_label,
-            'classes':10,
-            'label_names' : ['airplane',
-                           'automobile',
-                           'bird',
-                           'cat',
-                           'deer',
-                           'dog',
-                           'frog',
-                           'horse',
-                           'ship',
-                           'truck'],
-            'input_shapes': (32, 32, 3)}
+    train_data, train_label = _shuffle(train_data, train_label)
+    if meta:
+        return {'ntrain':len(train_data),
+                'ntest':len(test_data),
+                'classes':10,
+                'label_names' : ['airplane',
+                               'automobile',
+                               'bird',
+                               'cat',
+                               'deer',
+                               'dog',
+                               'frog',
+                               'horse',
+                               'ship',
+                               'truck'],
+                'input_shape': (32, 32, 3),
+                'data_type':'I'}
+    else:
+        return {'train_x' : train_data,
+                'train_y' : train_label,
+                'test_x' : test_data,
+                'test_y' : test_label,
+                'classes':10,
+                'label_names' : ['airplane',
+                               'automobile',
+                               'bird',
+                               'cat',
+                               'deer',
+                               'dog',
+                               'frog',
+                               'horse',
+                               'ship',
+                               'truck'],
+                'input_shape': (32, 32, 3),
+                'data_type':'I'}
 
-def call_wine(one_hot_coding=True, train_ratio=0.7):
+def call_wine(train_ratio=0.7, meta=False):
     from sklearn.datasets import load_wine
     dataset = load_wine()
     data = dataset['data']
     label = dataset['target']
-    data, label = shuffle(data, label)
+    data, label = _shuffle(data, label)
     train = int(len(data)*train_ratio)
     train_data = data[:train]
-    train_label = one_hot(label[:train]) if one_hot_coding else label[:train]
+    train_label = label[:train]
     test_data = data[train:]
     test_label = label[train:]
-    return {'train_x':train_data,
-            'train_y':train_label,
-            'test_x':test_data,
-            'test_y':test_label,
-            'classes':3,
-            'label_names':[list(np.arange(3))],
-            'input_shapes':(13,)
-            }
+    if meta:
+        return {'ntrain':len(train_data),
+                'ntest':len(test_data),
+                'classes':3,
+                'label_names':[list(np.arange(3))],
+                'input_shape':(13,),
+                'data_type':'P'
+                }
+    else:
+        return {'train_x':train_data,
+                'train_y':train_label,
+                'test_x':test_data,
+                'test_y':test_label,
+                'classes':3,
+                'label_names':[list(np.arange(3))],
+                'input_shape':(13,),
+                'data_type':'P'
+                }
 
-def call_iris(one_hot_coding=True, train_ratio=0.7):
+def call_iris(train_ratio=0.7, meta=False):
     from sklearn.datasets import load_iris
     dataset = load_iris()
     data = dataset['data']
     label = dataset['target']
-    data, label = shuffle(data, label)
+    data, label = _shuffle(data, label)
     train = int(len(data)*train_ratio)
     train_data = data[:train]
-    train_label = one_hot(label[:train]) if one_hot_coding else label[:train]
+    print(train_data.shape)
+    train_label = label[:train]
     test_data = data[train:]
     test_label = label[train:]
-
-    return {'train_x':train_data,
-            'train_y':train_label,
-            'test_x':test_data,
-            'test_y':test_label,
-            'classes':4,
-            'label_names':['Setosa', 'Versicolour', 'Virginica'],
-            'input_shapes':(4,)}
+    if meta:
+        return {'ntrain':len(train_data),
+                'ntest':len(test_data),
+                'classes':4,
+                'label_names':['Setosa', 'Versicolour', 'Virginica'],
+                'input_shape':(4,),
+                'data_type':'P'}
+    else:
+        return {'train_x':train_data,
+                'train_y':train_label,
+                'test_x':test_data,
+                'test_y':test_label,
+                'classes':4,
+                'label_names':['Setosa', 'Versicolour', 'Virginica'],
+                'input_shape':(4,),
+                'data_type':'P'}
 
 
 class DATA_PROVIDER(object):
@@ -113,15 +155,16 @@ class DATA_PROVIDER(object):
                  input_size = 224, # if zero, do not resize
                  shuffle=True,
                  data_type='I',
+                 num_classes=None,
                  valid_split = 0.0):
         self.x, self.y, self.is_file, self.data_type, self.input_size = {}, {}, {}, data_type, input_size
         self.label_info = label_info
         if shuffle:
-            train_x, train_y = shuffle(train_x, train_y)
+            train_x, train_y = _shuffle(train_x, train_y)
 
         if valid_x is not None and valid_y is not None:
             self.x['valid'] = valid_x
-            self.y['valid'] = valid_y
+            self.y['valid'] = one_hot(valid_y, classes=num_classes)
             self.is_file['valid'] = True if type(valid_x[0]) == str else False
 
             valid = 0
@@ -129,18 +172,22 @@ class DATA_PROVIDER(object):
             assert valid_split < 1.0
             valid = int(len(train_x)*valid_split)
             self.x['valid'] = train_x[:valid]
-            self.y['valid'] = train_x[:valid]
-            self.is_file['valid'] = True if type(train_x[0]) == str else False
-
+            self.y['valid'] = one_hot(train_y[:valid], classes=num_classes)
+            self.is_file['valid'] = True if type(train_x[0]) == np.str_ else False
+        print(train_y, test_y)
         self.x['train'] = train_x[valid:]
-        self.y['train'] = train_y[valid:]
+        self.y['train'] = one_hot(train_y[valid:], classes=num_classes)
         self.x['test'] = test_x
         self.y['test'] = test_y
+        print(self.x['train'][0])
+        print(self.x['test'][0])
+        print(self.x['valid'][0])
 
         # inspecting data
         # data is given as file path #TODO : what if the data is some string?
-        self.is_file['train'] = True if type(self.train_x[0]) == str else False
-        self.is_file['test'] = True if type(self.test_x[0]) == str else False
+        self.is_file['train'] = True if type(self.x['train'][0]) == np.str_ else False
+        self.is_file['test'] = True if type(self.x['test'][0]) == np.str_ else False
+        print(self.is_file, type(self.x['train'][0]))
     @property
     def label(self):
         return self.label_info if self.label_info is not None else \
@@ -153,13 +200,15 @@ class DATA_PROVIDER(object):
     def __call__(self,
                  mode,
                  batch_size = 100):
-        assert mode in ['train', 'test'], "[!] Only 'train' or 'test' is allowed."
+        assert mode in ['train', 'test', 'valid'], "[!] Only 'train' or 'test' is allowed."
         x = self.x[mode]
         batch_size = batch_size if batch_size else len(x)
-        steps = np.ceil(len(x)/batch_size)
+        steps = int(np.ceil(len(x)/batch_size))
         if self.is_file[mode]:
+            print('from file')
             return lambda :self.generate_arrays_from_file(mode, batch_size, steps), steps
         else:
+            print('from mem')
             return lambda :self.generate_arrays_from_mem(mode, batch_size, steps), steps
 
     def generate_arrays_from_file(self, mode, batch_size, steps, with_y=True):
@@ -193,7 +242,7 @@ class DATA_PROVIDER(object):
 
     def generate_arrays_from_mem(self, mode, batch_size, steps, with_y=True):
         x = self.x[mode]
-        length = len(data_list)
+        length = len(x)
         if with_y:
             y = self.y[mode]
             while True:
