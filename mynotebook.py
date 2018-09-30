@@ -390,34 +390,49 @@ class TrainSpecPage(wx.Panel):
 
         model_name_idx = self.combo_box_2.GetSelection()
         assert model_name_idx != wx.NOT_FOUND, "[!] select model"
-        self.train_spec['model_name'] = self.combo_box_2.GetStringSelection()
+        #self.train_spec['model_name'] = self.combo_box_2.GetStringSelection()
+        spec['model_name'] = self.combo_box_2.GetStringSelection()
 
         dataset_name_idx = self.combo_box_3.GetSelection()
         assert model_name_idx != wx.NOT_FOUND, "[!] select dataset"
-        self.train_spec['dataset_name'] = self.combo_box_3.GetStringSelection()
+        #self.train_spec['dataset_name'] = self.combo_box_3.GetStringSelection()
+        spec['dataset_name'] = self.combo_box_3.GetStringSelection()
 
         gpu_idx = self.combo_box_4.GetSelection()
         assert gpu_idx != wx.NOT_FOUND, "[!] select gpu"
-        self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
+        #self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
+        spec['gpu'] = self.combo_box_4.GetStringSelection()
 
         train_model_name = self.combo_box_6.GetValue()
         assert train_model_name != "", "select trained_model or write checkpoint name(combo box 6)"
-        self.train_spec['trained_model_name'] = None \
+        #self.train_spec['trained_model_name'] = None \
+        spec['trained_model_name'] = None \
             if self.combo_box_6.GetSelection() == wx.NOT_FOUND \
             else self.combo_box_6.GetStringSelection()
 
         train_model_name_idx = self.combo_box_7.GetSelection()
         assert train_model_name_idx != wx.NOT_FOUND, "select solver(combo box 7)"
-        self.train_spec['optimizer'] = self.combo_box_7.GetStringSelection()
+        #self.train_spec['optimizer'] = self.combo_box_7.GetStringSelection()
+        spec['optimizer'] = self.combo_box_7.GetStringSelection()
 
-        self.train_spec['checkpoint_name'] = self.combo_box_6.GetValue()
-        self.train_spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
-        self.train_spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
-        #self.train_spec['optimizer'] = self.text_ctrl_20.GetLineText(0)
-        self.train_spec['learning_rate'] = self.text_ctrl_21.GetLineText(0)
-        self.train_spec['interval'] = self.text_ctrl_19.GetLineText(0)
-        self.train_spec['seed'] = self.text_ctrl_22.GetLineText(0)
-        return self.train_spec
+        spec['checkpoint_name'] = self.combo_box_6.GetValue()
+        spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
+        spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
+        #spec['optimizer'] = self.text_ctrl_20.GetLineText(0)
+        spec['learning_rate'] = self.text_ctrl_21.GetLineText(0)
+        spec['interval'] = self.text_ctrl_19.GetLineText(0)
+        spec['seed'] = self.text_ctrl_22.GetLineText(0)
+        return spec
+
+
+#        self.train_spec['checkpoint_name'] = self.combo_box_6.GetValue()
+#        self.train_spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
+#        self.train_spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
+#        #self.train_spec['optimizer'] = self.text_ctrl_20.GetLineText(0)
+#        self.train_spec['learning_rate'] = self.text_ctrl_21.GetLineText(0)
+#        self.train_spec['interval'] = self.text_ctrl_19.GetLineText(0)
+#        self.train_spec['seed'] = self.text_ctrl_22.GetLineText(0)
+#        return self.train_spec
 
 class TestSpecPage(wx.Panel):
     def __init__(self, parent, id):

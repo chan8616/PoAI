@@ -164,6 +164,17 @@ class MyFrame(wx.Frame):
         itemID = event.GetItem()
         self.model_tree.DeleteChildren(itemID)
         self.extendTree(self.model_tree, itemID)
+    def refresh_trees(self):
+        #self.buildTree(self.data_tree, self.datasetDir)
+        #self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
+        self.extendTree(self.data_tree, self.data_tree.GetRootItem)
+        self.data_tree.Expand(self.data_tree.GetRootItem())
+
+        #self.buildTree(self.data_tree, self.datasetDir)
+        #self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
+        self.extendTree(self.model_tree, self.model_tree.GetRootItem)
+        self.data_tree.Expand(self.data_tree.GetRootItem())
+
 
     def OnToolBar(self, event):
         print(event)
@@ -195,17 +206,12 @@ class MyFrame(wx.Frame):
         args = {}
         page, phase, spec = self.notebook.getRunSpec()
         args['page'], args['phase'] = page, phase
+        args.update(spec)
         ### return page, phase, spec
-        ###             (train): max_epochs, learning_rate, seed, batch_size, interval,
-        ###                     learning_rate, dataset_list, model_list, dataset_names, model_names,
-        ###                     trained_model_dict, trained_model_names_dict, checkpoint_name, solver_list,
-        ###
-        ###                     model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
+        ###             (train): model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
         ###                     max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
         ###
-        ###             (test): model_list, model_names, trained_model_list_names,
-        ###             
-        ###                     model_name, upload_list
+        ###             (test): model_name, upload_list
 
         if spec is not None:
             if phase == 'Train':
@@ -221,7 +227,6 @@ class MyFrame(wx.Frame):
                     #modelID = page.train_spec['trained_model_dict'][args['model_name']]
                 model_spec = self.getModelSpec(modelID)
 
-                args.update(spec['train_spec'])
             elif phase == 'Test':
                 dataset_spec = self.getTestDataSpec(spec['upload_list'])
                 modelID = self.getModelsDict()[1][spec['model_name']][spec['trained_model_name']]
@@ -252,10 +257,18 @@ class MyFrame(wx.Frame):
             """
 
             print(args.keys())
+            print(dataset_spec.keys())
+            print(dataset_spec['data'].keys())
+            print(model_spec.keys())
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
         #        self.input_shape, self.output_size = spec[1:]
+
+            Run(**args)
+            self.refresh_trees()
+            pass
+
 
             return Run(**args)
         else:
@@ -430,7 +443,7 @@ class MyFrame(wx.Frame):
             label_names = [str(label) for label in np.unique(y_train.tolist() + y_test.tolist())]
 
             train, test = {}, {}
-            train['x'], test['x'] = x_train, x_test
+            train['x'], test['x'] = np.array(x_train), np.array(x_test)
             train['y'] = np.array(list(map(lambda x: label_names.index(x), y_train)))
             test['y'] = np.array(list(map(lambda x: label_names.index(x), y_test)))
         # train/, test/, labels.txt
@@ -452,7 +465,7 @@ class MyFrame(wx.Frame):
                 if not label_check:
                     print("Data without label %s"%x)
             train = {}
-            train['x'] = x_train
+            train['x'] = np.array(x_train)
             train['y'] = np.array(y_train, int)
             #train = np.concatenate(([x_train], [y_train]), axis=0).T
 
@@ -469,7 +482,7 @@ class MyFrame(wx.Frame):
                     print("Data without label %s"%x)
 
             test = {}
-            test['x'] = x_test
+            test['x'] = np.array(x_test)
             test['y'] = np.array(y_test, int)
             #test = np.concatenate(([x_test], [y_test]), axis=0).T
 
@@ -495,7 +508,7 @@ class MyFrame(wx.Frame):
                     if not label_check:
                         print("Data without label %s"%x)
             train = {}
-            train['x'] = x_train
+            train['x'] = np.array(x_train)
             train['y'] = np.array(y_train, int)
             #train = np.concatenate(([x_train], [y_train]), axis=0).T
 
@@ -513,13 +526,12 @@ class MyFrame(wx.Frame):
                     if not label_check:
                         print("Data without label %s"%x)
             test = {}
-            test['x'] = x_test
+            test['x'] = np.array(x_test)
             test['y'] = np.array(y_test, int)
             #test = np.concatenate(([x_test], [y_test]), axis=0).T
 
         else:
-            print('Invalid Dataset folder %s'%data_path)
-            return None
+            assert False, 'Invalid Dataset folder %s'%data_path
 
         data_spec['label_names'] = label_names
         data_spec['data'] = {'train':train, 'test':test}
@@ -562,7 +574,7 @@ class MyFrame(wx.Frame):
         ### return dict
         ### max_epochs, learning_rate, seed, batch_size, interval, checkpoint_name, solver_list,
         ### dataset_dict, model_dict, trained_model_dict
-        train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'1000', \
+        train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'.1', \
                 'checkpoint_name': ".", "solver_list":get_optimizer_list()}
 
         train_spec['dataset_dict'] = self.getDataDict()
@@ -715,7 +727,6 @@ class MyFrame(wx.Frame):
             list.append(child)
             child, cookie = tree.GetNextChild(item, cookie)
         return list
-
 
     def buildTree(self, tree, rootDir, treeRoot=None):
         if treeRoot is None: treeRoot = tree.GetRootItem()
