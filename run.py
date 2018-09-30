@@ -35,24 +35,38 @@ OPEN_DATA = {'mnist':call_mnist,
     model list
 """
 IMG_MODEL = ('logistic', 'res152', 'vgg19')
-PIT_MODEL = ('svm','randomforest')
+PIT_MODEL = ('logistic','svm','randomforest')
 TMS_MODEL = ('lstm','gru','ae_lstm')
 MODEL = {'logistic':LOGISTIC, 'res152':RESNET152, 'vgg19':VGGNET19,
-         'svm':SVM, 'randomforest':RF,
-         'lstm':None, 'gru':None, 'ae_lstm':None}
+         'svm':SVM, 'randomforest':RF}
+         # 'lstm':None, 'gru':None, 'ae_lstm':None}
 OPTIMIZER = {'adam':keras.optimizers.Adam,
              'gradient':keras.optimizers.SGD,
              'adadelta':keras.optimizers.Adadelta,
              'adagrad':keras.optimizers.Adagrad,
              'rmsprop':keras.optimizers.RMSprop}
 
-def get_model_list():
-    return MODEL
-
-def get_data_list():
-    return OPEN_DATA
-def get_optimizer_list():
-    return OPTIMIZER
+def get_model_list(name=None):
+    model_list = list(MODEL.keys())
+    if name is None:
+        return model_list
+    else:
+        assert name in model_list, "[!] There is no such model."
+        return MODEL[name]
+def get_data_list(name=None):
+    data_list = list(OPEN_DATA.keys())
+    if name is None:
+        return data_list
+    else:
+        assert name in data_list, '[!] There is no such dataset'
+        return OPEN_DATA[name]
+def get_optimizer_list(name=None):
+    opt_list = list(OPTIMIZER.keys())
+    if name is None:
+        return opt_list
+    else:
+        assert name in opt_list, "[!] There is no such optimizer"
+        return OPTIMIZER[name]
 # TODO:
 
 """
@@ -64,16 +78,17 @@ def data_select(dataset):
     if dataset['name'] in OPEN_DATA.keys(): # data is provided
         return OPEN_DATA[dataset['name']](), None
     else:    # own dataset
-        print(dataset['data']['train'][:,1])
-        print(dataset['data']['test'][:,1])
-        data_provider = DATA_PROVIDER(train_x = dataset['data']['train'][:,0],
-                                      train_y = one_hot(dataset['data']['train'][:,1]),
-                                      test_x = dataset['data']['test'][:,0],
-                                      test_y = dataset['data']['test'][:,1],
-                                      intput_size = IMAGE_SIZE,
+        data_provider = DATA_PROVIDER(train_x = dataset['data']['train']['x'],
+                                      train_y = dataset['data']['train']['y'],
+                                      test_x = dataset['data']['test']['x'],
+                                      test_y = dataset['data']['test']['y'],
+                                      input_size = IMAGE_SIZE,
                                       data_type = dataset['data_type'],
-                                      valid_split = dataset['valid_rate'])
-        return {'classes':dataset['output_size']}, data_provider
+                                      valid_split = float(dataset['valid_rate']),
+                                      num_classes = int(dataset['output_size']))
+        return {'classes':int(dataset['output_size']),
+                'data_type':dataset['data_type'],
+                'input_shape':(IMAGE_SIZE, IMAGE_SIZE, 3)}, data_provider
 
 class Run(object):
     def __init__(self,
@@ -92,11 +107,8 @@ class Run(object):
             **kargs : for advanced_option (NotImplemented)
         """
         # mode, model, data, gpu, checkpoint, max_epochs, batch_size, optimizer, lr, interval, random_seed
-        self.model_name = model_name
             # ['vgg19', {'dataset_name':'cifar10'}, '0', 'init', '5', '32', 'gradient','0.0001', '1', '0']#spec[1:]
 
-        self.data_type = 'I' #TODO
-        self.classes = 10  #TODO
 
         if gpu.isdigit() :
             print('gpu [{}] is selected'.format(gpu))
@@ -107,104 +119,107 @@ class Run(object):
 
         train = True if phase else False
 
-        opt = self.select_optimizer(optimizer, float(learning_rate))
+        opt = select_optimizer(optimizer, float(learning_rate))
         data, provider = data_select(dataset_spec)
-        self.load_model(model_name=self.model_name,
+        load_model(model_name=model_name,
                           dataset_name=dataset_spec['name'],
                           name=checkpoint_name,
-                          classes=self.classes,
                           data=data,
                           data_provider=provider,
                           optimizer=opt,
                           epochs = int(max_epochs),
                           batch_size = int(batch_size),
                           train=train,
-                          epoch_interval=int(interval))
-    def select_optimizer(self, optimizer='gradient', lr=1e-3):
-        assert optimizer in OPTIMIZER.keys(), "[!] There is no such optimizer."
-        return {'opt': OPTIMIZER[optimizer](lr=lr),
-                'name' : optimizer,
-                'lr': lr,
-                'arg':None}
+                          step_interval=float(interval))
 
-    def model_validation(self):
-        assert self.data_type in DATA_TYPE, "Image, Point, Time-series are only allowed."
-        assert self.model_name is not None, "Must enter the model_name"
-        if self.data_type == 'I': # image
-            assert self.model_name in IMG_MODEL, "{} is not for {}".format(self.model_name, self.data_type)
-        elif self.data_type == 'P': # Point data
-            assert self.model_name in PIT_MODEL, "{} is not for {}".format(self.model_name, self.data_type)
-        else: # Time-series data
-            assert self.model_name in TMS_MODEL, "{} is not for {}".format(self.model_name, self.data_type)
+def select_optimizer(optimizer='gradient', lr=1e-3):
+    print(lr)
+    assert optimizer in OPTIMIZER.keys(), "[!] There is no such optimizer."
+    return {'opt': OPTIMIZER[optimizer](lr=lr),
+            'name' : optimizer,
+            'lr': lr,
+            'arg':None}
 
-    def load_model(self,
-                   model_name,          # model name
-                   name                 = None,  # additional_name
-                   dataset_name         = None,  # dataset name, open data e.g. mnist or hand-crafted dataset
-                   data_provider        = False, # if own dataset is given, flag it
-                   data                 = None,  # dictionary : {train_x:-, train_y:-, test_x:-, test_y:-(optional)}
-                   optimizer            = {'opt': keras.optimizers.SGD(lr=1e-3),
-                                           'name' : 'gradient',
-                                           'learning_rate': 1e-3,
-                                           'arg':None},
-                   visualize            = True,
-                   batch_size           = 64,
-                   epochs               = 20,
-                   checkpoint_dir       = "checkpoint",
-                   checkpoint_name      = None,
-                   train                = False,    # if True, Do train
-                   epoch_interval       = None,     # save interval
-                   step_interval        = 0.1,     # obtaining state rate per epoch
-                   pre_trained          = {'init':True,'freeze':False}      # by imagenet
-                   ):
-        # 1. validation model
-        self.model_validation()
-        # 2. call the instance of the network
-        model = MODEL[model_name](dataset_name=dataset_name,
-                                  num_classes=data['classes'],
-                                  pretrained=pre_trained['init'],
-                                  optimizer=optimizer,
-                                  batch_size = batch_size,
-                                  checkpoint_dir=checkpoint_dir,
-                                  freeze_pretrained = pre_trained['freeze'],
-                                  name = name
-                                  )
-        # 3. check and load the specified model
-        if not (train or test): # model_meta
-            print(model())
-        # 6.2 train the model.
-        if train:
-            if data is not None:
-                model.train(x=data['train_x'],
-                            y=data['train_y'],
-                            epochs=epochs,
-                            period=epoch_interval,
-                            step_interval=step_interval,
-                            save=True)
-            elif provider is not None:
-                g, steps = provider('train', batch_size)
-                g_, steps_ = provider('valid', batch_size)
-                model.train_with_provider(generator = g,
-                                          valid_generator = g_,
-                                          steps = steps,
-                                          valid_steps = steps_,
-                                          epochs = epochs,
-                                          period = epochs_interval,
-                                          num_x = provider.ntrain,
-                                          step_interval = step_interval,
-                                          save = True)
+def arg_inspection(data_type, model_name, step_interval):
+    assert step_interval >= 0. and step_interval <= 1.0, "[!] Ratio error : [0, 1] is allowed"
+    assert data_type in DATA_TYPE, "[!] Image, Point, Time-series are only allowed."
+    assert model_name is not None, "[!] Must enter the model_name"
+    if data_type == 'I': # image
+        assert model_name in IMG_MODEL, "[!]{} is not for {}".format(model_name, data_type)
+    elif data_type == 'P': # Point data
+        assert model_name in PIT_MODEL, "[!]{} is not for {}".format(model_name, data_type)
+    else: # Time-series data
+        assert model_name in TMS_MODEL, "[!]{} is not for {}".format(model_name, data_type)
 
-        # 6.3 test the model.
+def load_model(
+               model_name,          # model name
+               name                 = None,  # additional_name
+               dataset_name         = None,  # dataset name, open data e.g. mnist or hand-crafted dataset
+               data_provider        = None, # if own dataset is given, flag it
+               data                 = None,  # dictionary : {train_x:-, train_y:-, test_x:-, test_y:-(optional)}
+               optimizer            = {'opt': keras.optimizers.SGD(lr=1e-3),
+                                       'name' : 'gradient',
+                                       'lr': 1e-3,
+                                       'arg':None},
+               visualize            = True,
+               batch_size           = 64,
+               epochs               = 20,
+               checkpoint_dir       = "checkpoint",
+               checkpoint_name      = None,
+               train                = False,    # if True, Do train
+               epoch_interval       = 5,     # save interval
+               step_interval        = 0.1,     # obtaining state rate per epoch
+               pre_trained          = {'init':True,'freeze':False}      # by imagenet
+               ):
+    # 1. validation model
+    arg_inspection(data['data_type'], model_name, step_interval)
+    # 2. call the instance of the network
+    model = MODEL[model_name](dataset_name=dataset_name,
+                              num_classes=data['classes'],
+                              pretrained=pre_trained['init'],
+                              optimizer=optimizer,
+                              batch_size = batch_size,
+                              checkpoint_dir=checkpoint_dir,
+                              freeze_pretrained = pre_trained['freeze'],
+                              input_shape=data['input_shape'],
+                              name = name
+                              )
+    # 3. check and load the specified model
+    if not (train or test): # model_meta
+        print(model())
+    # 6.2 train the model.
+    if train:
+        if data_provider is None:
+            model.train(x=data['train_x'],
+                        y=data['train_y'],
+                        epochs=epochs,
+                        period=epoch_interval,
+                        step_interval=step_interval,
+                        save=True)
         else:
-            assert model.trained, " [@] Train model first."
-            if data is not None:
-                model.test(x = data['test_x'],
-                           y = data['test_y'],
-                           label_name = data['label'],
-                           visualize=visualize)
-            elif provider is not None:
-                g, steps = provider('test', batch_size)
-                model.test_with_provider(generator = g,
-                                         steps = steps,
-                                         label_name = data['label'],
-                                         visualize  = visualize)
+            g, steps = data_provider('train', batch_size)
+            g_, steps_ = data_provider('valid', batch_size)
+            model.train_with_generator(generator = g,
+                                      valid_generator = g_,
+                                      steps = steps,
+                                      valid_steps = steps_,
+                                      epochs = epochs,
+                                      period = epoch_interval,
+                                      num_x = data_provider.ntrain,
+                                      step_interval = step_interval,
+                                      save = True)
+
+    # 6.3 test the model.
+    else:
+        assert model.trained, " [@] Train model first."
+        if data_provider is None:
+            model.test(x = data['test_x'],
+                       y = data['test_y'],
+                       label_name = data['label'],
+                       visualize=visualize)
+        else:
+            g, steps = data_provider('test', batch_size)
+            model.test_with_generator(generator = g,
+                                     steps = steps,
+                                     label_name = data['label'],
+                                     visualize  = visualize)

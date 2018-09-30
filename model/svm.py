@@ -1,5 +1,13 @@
 from sklearn import svm
 from .model import NET
+from os import path, makedirs
+from copy import deepcopy
+
+import sys
+sys.path.append(path.abspath('..')) # refer to sibling folder
+
+from .ops import *
+from utils.util import pickle_save, pickle_load
 
 class SVM(NET):
 
@@ -10,13 +18,14 @@ class SVM(NET):
                 **kargs):
         model = 'svm'
         checkpoint_name = 'model'
-        self.model_name = '{}_{}'.format(dataset_name, name) if name is not None else dataset_name
-        checkpoint_dir = path.join(checkpoint_dir, model)
+        self.model_name = name
+        checkpoint_dir = path.join(checkpoint_dir,model,dataset_name)
         if not path.exists(checkpoint_dir):
             makedirs(checkpoint_dir)
         self.model_dir = path.join(checkpoint_dir, self.model_name)
         self.model_ckpt = path.join(self.model_dir, checkpoint_name)
         self.model_meta = path.join(self.model_dir, 'meta')
+        self.model_result = path.join('result', model)
 
         model_check = self.model_check()
 
@@ -29,7 +38,6 @@ class SVM(NET):
                                'meta':self.model_meta,
                                'dataset':dataset_name,
                                'trained':False}
-            self.trained = False
             self.build_model(self.model_conf)
             pickle_save(self.prog_info, self.model_meta)
 
@@ -48,11 +56,12 @@ class SVM(NET):
               x,
               y,
               save=True, **kargs):
-
+        print("[@] start training....")
         self.model.fit(x, y)
-        self.trained = True
+        self.model_conf['trained']= True
         if save:
             self.save()
+        print("[@] Training is done...")
 
     def train_with_provider(self, generator, epochs, save=True):
         pass
@@ -60,3 +69,7 @@ class SVM(NET):
     @property
     def prog_info(self):
         return deepcopy(self.model_conf)
+
+    @property
+    def trained(self):
+        return self.model_conf['trained']
