@@ -187,7 +187,7 @@ class MyFrame(wx.Frame):
         ### return dict
         ### max_epochs, learning_rate, seed, batch_size, interval,
         ### learning_rate, dataset_list, model_list, dataset_names, model_names,
-        ### trained_model_dict, trained_model_names_dict, checkpoint_name, solver_dict
+        ### trained_model_dict, trained_model_names_dict, checkpoint_name, solver_list
         page = self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY)
         page.setTrainSpec(train_spec)
 
@@ -198,7 +198,7 @@ class MyFrame(wx.Frame):
         ### return page, phase, spec
         ###             (train): max_epochs, learning_rate, seed, batch_size, interval,
         ###                     learning_rate, dataset_list, model_list, dataset_names, model_names,
-        ###                     trained_model_dict, trained_model_names_dict, checkpoint_name, solver_dict,
+        ###                     trained_model_dict, trained_model_names_dict, checkpoint_name, solver_list,
         ###
         ###                     model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
         ###                     max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
@@ -211,34 +211,36 @@ class MyFrame(wx.Frame):
             if phase == 'Train':
                 assert spec['dataset_name']
                 datasetID = self.getDataDict()[spec['dataset_name']]
-                args['dataset_spec'] = self.getDataSpec(datasetID)
+                dataset_spec = self.getDataSpec(datasetID)
                 
-                if args['trained_model_name'] is None:
+                if spec['trained_model_name'] is None:
                     modelID = self.getModelsDict()[0][spec['model_name']]
                     #modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 else:
                     modelID = self.getModelsDict()[1][spec['trained_model_name']]
                     #modelID = page.train_spec['trained_model_dict'][args['model_name']]
-                args['model_spec'] = self.getModelSpec(modelID)
-                #datasetID = page.train_spec['dataset_list'][page.train_spec['dataset_names'].index(args['dataset_name'])]
-                return args
-            elif phase == 'Test':
-                args['dataset_spec'] = self.getTestDataSpec(spec['upload_list'])
-                modelID = self.getModelsDict()[1][spec['trained_model_name']]
-                args['model_spec'] = self.getModelSpec(modelID)
+                model_spec = self.getModelSpec(modelID)
 
-                return args
+                args.update(spec['train_spec'])
+            elif phase == 'Test':
+                dataset_spec = self.getTestDataSpec(spec['upload_list'])
+                modelID = self.getModelsDict()[1][spec['model_name']][spec['trained_model_name']]
+                model_spec = self.getModelSpec(modelID)
+
+#                return args
                 #modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 #datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(args['dataset_name'])]
 
-            args['model_spec'] = self.getModelSpec(modelID)
+            args['model_spec'] = model_spec
+#            args['model_spec'] = self.getModelSpec(modelID)
             """
             return {'type':'None',
                     'n_layer':'None',
                     'input_size':'None',
                     'output_size':'None'}
             """
-            args['dataset_spec'] = self.getDataSpec(datasetID)
+            args['dataset_spec'] = dataset_spec 
+#            args['dataset_spec'] = self.getDataSpec(datasetID)
             """
             data_spec['name']
             data_spec['path']
@@ -249,7 +251,6 @@ class MyFrame(wx.Frame):
             data_spec['input_shapes']
             """
 
-            args['phase'] = phase
             print(args.keys())
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
@@ -559,10 +560,10 @@ class MyFrame(wx.Frame):
 
     def getTrainSpec(self):
         ### return dict
-        ### max_epochs, learning_rate, seed, batch_size, interval, checkpoint_name, solver_dict,
+        ### max_epochs, learning_rate, seed, batch_size, interval, checkpoint_name, solver_list,
         ### dataset_dict, model_dict, trained_model_dict
         train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'1000', \
-                'checkpoint_name': ".", "solver_dict":get_optimizer_list()}
+                'checkpoint_name': ".", "solver_list":get_optimizer_list()}
 
         train_spec['dataset_dict'] = self.getDataDict()
         train_spec['model_dict'], train_spec['trained_model_dict'] = self.getModelsDict()
@@ -571,7 +572,7 @@ class MyFrame(wx.Frame):
         ### return dict
         ### max_epochs, learning_rate, seed, batch_size, interval,
         ### learning_rate, dataset_list, model_list, dataset_names, model_names,
-        ### trained_model_dict, trained_model_names_dict, checkpoint_name, solver_dict
+        ### trained_model_dict, trained_model_names_dict, checkpoint_name, solver_list
         train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'1000'}
         train_spec['dataset_dict'] = {}
         for ID in self.childrenToList(self.data_tree, self.data_tree.GetRootItem()):
@@ -590,7 +591,7 @@ class MyFrame(wx.Frame):
 
         train_spec['checkpoint_name'] = "."
 
-        train_spec['solver_dict'] = get_optimizer_list()
+        train_spec['solver_list'] = get_optimizer_list()
 
         return train_spec
 
@@ -615,7 +616,7 @@ class MyFrame(wx.Frame):
         train_spec['trained_model_names_dict'] = trained_model_names_dict
         train_spec['checkpoint_name'] = ''
 
-        train_spec['solver_dict'] = get_optimizer_list()
+        train_spec['solver_list'] = get_optimizer_list()
 
         return train_spec
     
@@ -628,9 +629,10 @@ class MyFrame(wx.Frame):
         for childID in self.childrenToList(self.model_tree, self.model_tree.GetRootItem()):
             childName = self.model_tree.GetItemText(childID)
             model_dict[childName] = childID
+            trained_model_dict[childName] = {}
             for grandchildID in self.childrenToList(self.model_tree, childID):
                 grandchildName = self.model_tree.GetItemText(grandchildID)
-                trained_model_dict[grandchildName] = grandchildID
+                trained_model_dict[childName][grandchildName] = grandchildID
         return model_dict, trained_model_dict
 
     def getDataDict(self):

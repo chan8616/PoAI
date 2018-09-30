@@ -209,7 +209,7 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_6.Insert("New",0)
         
         self.combo_box_7.Delete(0)
-        for name in train_spec['solver_dict'].keys():
+        for name in train_spec['solver_list']:
             self.combo_box_7.Insert(name, 0)
 
         #self.text_ctrl_15.SetValue("")
@@ -311,10 +311,10 @@ class TrainSpecPage(wx.Panel):
     def OnModelSelected(self, event):
         model_name = event.GetString()
         for i in range(1, self.combo_box_6.GetCount()):
-            self.combo_box_6.Delete(0)
+            self.combo_box_6.Delete(1)
         #print(event.GetSelection())
-        for i, trained_model_name in enumerate(self.train_spec['trained_model_dict'][model_name].keys()):
-            self.combo_box_6.Insert(trained_model_name, i+1)
+        for trained_model_name in self.train_spec['trained_model_dict'][model_name].keys():
+            self.combo_box_6.Insert(trained_model_name, 1)
         #print(self.train_spec['trained_model_dict'].keys())
 
 #        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
@@ -324,8 +324,7 @@ class TrainSpecPage(wx.Panel):
         print("Dataset Selected")
         self.train_spec['checkpoint_name'] = event.GetString()
         #self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
-        if self.combo_box_6.GetSelection() == 0: # New
-            print("new selected")
+        if self.combo_box_6.GetSelection() == 0 or self.combo_box_6.GetSelection() == wx.NOT_FOUND: # New or another name
             if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
                 print("name founded")
                 try:
@@ -387,6 +386,7 @@ class TrainSpecPage(wx.Panel):
         ### return dict
         ### model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
         ### max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
+        spec = {}
 
         model_name_idx = self.combo_box_2.GetSelection()
         assert model_name_idx != wx.NOT_FOUND, "[!] select model"
@@ -400,16 +400,20 @@ class TrainSpecPage(wx.Panel):
         assert gpu_idx != wx.NOT_FOUND, "[!] select gpu"
         self.train_spec['gpu'] = self.combo_box_4.GetStringSelection()
 
-        train_model_name_idx = self.combo_box_6.GetSelection()
-        if train_model_name_idx == wx.NOT_FOUND:
-            print("select trained_model_name(combo box 6)")
-        else:
-            self.train_spec['trained_model_name'] = None \
-                if self.combo_box_6.GetSelection() == 0 else self.combo_box_6.GetStringSelection()
+        train_model_name = self.combo_box_6.GetValue()
+        assert train_model_name != "", "select trained_model or write checkpoint name(combo box 6)"
+        self.train_spec['trained_model_name'] = None \
+            if self.combo_box_6.GetSelection() == wx.NOT_FOUND \
+            else self.combo_box_6.GetStringSelection()
+
+        train_model_name_idx = self.combo_box_7.GetSelection()
+        assert train_model_name_idx != wx.NOT_FOUND, "select solver(combo box 7)"
+        self.train_spec['optimizer'] = self.combo_box_7.GetStringSelection()
+
         self.train_spec['checkpoint_name'] = self.combo_box_6.GetValue()
         self.train_spec['max_epochs'] = self.text_ctrl_16.GetLineText(0)
         self.train_spec['batch_size'] = self.text_ctrl_18.GetLineText(0)
-        self.train_spec['optimizer'] = self.text_ctrl_20.GetLineText(0)
+        #self.train_spec['optimizer'] = self.text_ctrl_20.GetLineText(0)
         self.train_spec['learning_rate'] = self.text_ctrl_21.GetLineText(0)
         self.train_spec['interval'] = self.text_ctrl_19.GetLineText(0)
         self.train_spec['seed'] = self.text_ctrl_22.GetLineText(0)
@@ -496,8 +500,9 @@ class TestSpecPage(wx.Panel):
     def setTestSpec(self, test_spec):
         self.test_spec = test_spec
         self.combo_box_5.Delete(0)
-        for trained_model_name in test_spec['trained_model_dict'].keys():
-            self.combo_box_5.Insert(trained_model_name, 0)
+        for model_name in test_spec['trained_model_dict'].keys():
+            for trained_model_name in test_spec['trained_model_dict'][model_name].keys():
+                self.combo_box_5.Insert(trained_model_name, 0)
         #self.text_ctrl_24.SetValue("")
         #self.text_ctrl_25.SetValue("")
 
@@ -510,7 +515,12 @@ class TestSpecPage(wx.Panel):
         ### model_name, upload_list
         idx = self.combo_box_5.GetSelection()
         assert idx != wx.NOT_FOUND, "[!] Not Found"
-        self.test_spec['trained_model_name'] = self.combo_box_5.GetStringSelection()
+        trained_model_name = self.combo_box_5.GetStringSelection()
+        for model_name in self.test_spec['model_dict'].keys():
+            if trained_model_name in self.test_spec['trained_model_dict'][model_name].keys():
+                self.test_spec['model_name'] = model_name
+                self.test_spec['trained_model_name'] = trained_model_name
+                break
         self.test_spec['upload_list'] = self.upload_list
         #self.test_spec += [self.text_ctrl_26.GetLineText(0)]
         #self.test_spec += [self.text_ctrl_27.GetLineText(0)]
