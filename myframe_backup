@@ -193,8 +193,7 @@ class MyFrame(wx.Frame):
 
     def OnRun(self, event):
         args = {}
-        page, phase, spec = self.notebook.getRunSpec()
-        args['page'], args['phase'] = page, phase
+        args.['page'], args['phase'], spec = self.notebook.getRunSpec()
         ### return page, phase, spec
         ###             (train): max_epochs, learning_rate, seed, batch_size, interval,
         ###                     learning_rate, dataset_list, model_list, dataset_names, model_names,
@@ -208,26 +207,22 @@ class MyFrame(wx.Frame):
         ###                     model_name, upload_list
 
         if spec is not None:
-            if phase == 'Train':
+            if args['phase'] == 'Train':
                 assert spec['dataset_name']
                 datasetID = self.getDataDict()[spec['dataset_name']]
                 args['dataset_spec'] = self.getDataSpec(datasetID)
                 
-                if args['trained_model_name'] is None:
-                    modelID = self.getModelsDict()[0][spec['model_name']]
+                if args['model_name'] is None:
+                    modelID = self.getmodelsDict()[0][spec['model_name']]
                     #modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 else:
-                    modelID = self.getModelsDict()[1][spec['trained_model_name']]
+                    modelID = self.getmodelsDict()[1][spec['trained_model_name']]
                     #modelID = page.train_spec['trained_model_dict'][args['model_name']]
-                args['model_spec'] = self.getModelSpec(modelID)
+                args['model_spec'] = self.getDataSpec(datasetID)
                 #datasetID = page.train_spec['dataset_list'][page.train_spec['dataset_names'].index(args['dataset_name'])]
-                return args
             elif phase == 'Test':
-                args['dataset_spec'] = self.getTestDataSpec(spec['upload_list'])
-                modelID = self.getModelsDict()[1][spec['trained_model_name']]
-                args['model_spec'] = self.getModelSpec(modelID)
-
-                return args
+                datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(args['dataset_name'])]
+                modelID = self.getmodelsDict()[1][spec['trained_model_name']]
                 #modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 #datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(args['dataset_name'])]
 
@@ -332,31 +327,34 @@ class MyFrame(wx.Frame):
 
     def getTrainDataSpec(self, dirpath):
         pass
-
     def getTestDataSpec(self, paths):
+        spec = {}
+        for path in paths:
+            if os.isdir(path):
+        import numpy as np
+
         data_spec = dict()
-        #data_spec['path'] = paths
+        data_name = self.data_tree.GetItemText(dataID)
+        data_path = self.data_tree.GetItemData(dataID)
+        data_spec['name'] = data_name
+        data_spec['path'] = data_path
+        
         ######################################################
         # Fix it if we can deal with various data in general.
         data_spec['data_type'] = 'I' # image
         data_spec['valid_rate'] = 0.05 # validation ratio
         ######################################################
 
-        data_spec['data'] = {'train':{'x':[], 'y':[]}, 'test':{'x':[], 'y':[]}}
+
+        childs = os.listdir(path)
+
         print("case 4")
-        for path in paths:
-            if os.path.isdir(path):
-                child = [os.path.join(path, child) for child in os.listdir(path)]
-                data_spec_ = self.getTestDataSpec(child)
-                print(data_spec_)
-                data_spec.update(data_spec_)
-            else:
-                data_spec['data']['test']['x'] += [path]
-    
+        data_spec['inputs']['test'] = [os.path.join(path, data) for data in os.listdir(path)]
+
         from PIL import Image
 
         #data = np.concatenate((train[:,0], test[:,0]), axis=0)
-        x_data = data_spec['data']['test']['x']
+        x_data = data_spec['inputs']['test']
         
         types = []
         input_shapes = []
@@ -377,6 +375,222 @@ class MyFrame(wx.Frame):
         data_spec['input_shapes'] = input_shapes
 
         return data_spec
+
+
+            else:
+                pass
+    
+    def txt2table(self, f):
+        title = f.readline().split()
+        # data
+        if len(title) == 1:
+        # data label
+        elif len(title) == 2:
+            pass
+        # data outputs...
+        else:
+            path_fun = lambda a: [path+'/'+a[0]] + a[1:] # data_file, label
+            datalabel = np.array([path_fun(x.split()) for x in f.read().splitlines()])
+            #x_train = train[:,0]
+            data_spec['inputs']['train'] = train[:,0]
+            y_train = train[:,1:]
+
+            datafeatures = np.array([path_fun(x.split()) for x in f.read().splitlines()])
+            pass
+
+    def getDataSpec_(self, paths):
+        #TODO : how about data aggregated into a single file like .csv, .txt, etc.
+        # return paths, input_types, input_shapes, input_data,
+        #       output_type, output_shape, output_labels
+        data_spec = {}
+        if type(paths) is not list:
+            ######################################################
+            # Open data setting
+            print('open data. need implement')
+            data_spec['paths'] = 'Open Data'
+            data_spec['input_types'] = ['not yet implemented']
+            data_spec['input_shapes'] = ['not yet implemented']
+            data_spec['inputs'] = {'train':{'x':[]}, 'test':{'x':[]}}
+            data_spec['output_type'] = 'not yet implemented'
+            data_spec['output_shape'] = 'not yet implemented'
+            data_spec['output_labels'] = ['not yet implemented']
+            data_spec['outputs'] = {'train':{'y':[]}, 'test':{'y':[]}}
+            data_spec['valid_rate'] = 'not yet implemented'
+            return  data_spec
+            ######################################################
+        else:
+            data_spec['paths'] = paths
+            data_spec['input_types'] = []
+            data_spec['input_shapes'] = []
+            data_spec['inputs'] = {'train':[], 'test':[]}
+            data_spec['output_type'] = None
+            data_spec['output_shape'] = None
+            data_spec['output_labels'] = []
+            data_spec['outputs'] = {'train':[]}, 'test':[]}
+
+            for path in paths:
+                if os.path.isdir(path):
+                    childs = os.listdir(path)
+                    if 'train.txt' in childs and 'test.txt' in childs:
+                        print('case1: train.txt, test.txt case')
+                        
+                        with open(os.path.join(path, 'train.txt'), 'r') as f:
+                            inputs, outputs = self.txt2table(f)
+                            data_spec['inputs']['train'] = inputs
+                            data_spec['outputs']['train'] = outputs
+                        with open(os.path.join(path, 'test.txt'), 'r') as f:
+                            test = np.array([path_fun(x.split()) for x in f.read().splitlines()])
+                            data_spec['inputs']['test'] = train[:,0]
+                            #x_test = test[:,0]
+                            y_test = test[:,1:]
+
+                        if y_train is [] and y_test is []:
+                        label_names = [str(label) for label in np.unique(y_train.tolist() + y_test.tolist())]
+
+                        data_spec['outputs']['train'] = np.array(list(map(lambda y: label_names.index(y), y_train)))
+                        data_spec['outputs']['test'] = np.array(list(map(lambda y: label_names.index(y), y_test)))
+                        data_spec['output_type'] = "P"
+                        data_spec['output_shape'] = (1,)
+                        data_spec['output_labels'] = label_names
+ 
+                    elif 'labels.txt' in childs and \
+                            os.path.isdir(os.path.join(os.getcwd(), 'train')) and \
+                            os.path.isdir(os.path.join(os.getcwd(), 'test')):
+                        print('case3: train/, test/ labels.txt with labels in txt')
+                        # train/, test/, labels.txt
+                        with open(os.path.join(path, 'labels.txt'), 'r') as f:
+                            label_names = np.array(f.read().splitlines())
+            
+                        #x_train = os.listdir(os.path.join(path, 'train'))
+                        x_train = [os.path.join(path, 'train', data) for data in os.listdir(os.path.join(path, 'train'))]
+                        y_train = np.zeros(len(x_train))
+                        trainpath_fun = lambda a: [path+a[0]] + a[1:]
+                        for i, x in enumerate(x_train):
+                            label_check = False
+                            for label, label_name in enumerate(label_names):
+                                if label_name in x:
+                                    label_check = True
+                                    y_train[i] = label
+                            if not label_check:
+                                print("Data without label %s"%x)
+                        train = {}
+                        train['x'] = x_train
+                        train['y'] = np.array(y_train, int)
+                        #train = np.concatenate(([x_train], [y_train]), axis=0).T
+            
+                        #x_test = os.listdir(os.path.join(path, 'test'))
+                        x_test = [os.path.join(path, 'test', data) for data in os.listdir(os.path.join(path, 'test'))]
+                        y_test = np.zeros(len(x_test))
+                        for i, x in enumerate(x_test):
+                            label_check = False
+                            for label, label_name in enumerate(label_names):
+                                if label_name in x:
+                                    label_check = True
+                                    y_test[i] = label
+                            if not label_check:
+                                print("Data without label %s"%x)
+                        data_spec['outputs']['train'] = np.array(list(map(lambda y: label_names.index(y), y_train)))
+                        data_spec['outputs']['test'] = np.array(list(map(lambda y: label_names.index(y), y_test)))
+                        data_spec['output_type'] = "P"
+                        data_spec['output_shape'] = (1,)
+                        data_spec['output_labels'] = label_names
+            
+                        test = {}
+                        test['x'] = x_test
+                        test['y'] = np.array(y_test, int)
+                        #test = np.concatenate(([x_test], [y_test]), axis=0).T
+            
+                    # train.txt, test.txt with label by folder
+                    elif 'train.txt' in childs and 'test.txt' in childs:
+                        print('case2')
+                        label_names = np.sort([ label for label in childs if os.path.isdir(os.path.join(path, label)) ])
+            #            print(label_names)
+            #            label_names = [ label for label in childs if os.path.isdir(os.path.join(path, label)) ]
+            #            print(label_names)
+            
+                        with open(os.path.join(path, 'train.txt'), 'r') as f:
+                            x_train = f.read().splitlines()
+            #                x_train = [os.path.join(path, f.read().splitlines()]
+                            y_train = np.zeros(len(x_train))
+                            for i, x in enumerate(x_train):
+                                label_check = False
+                                for label, label_name in enumerate(label_names):
+                                    if label_name in x:
+                                        label_check = True
+                                        x_train[i] = os.path.join(path, x_train[i])
+                                        y_train[i] = label
+                                if not label_check:
+                                    print("Data without label %s"%x)
+                        train = {}
+                        train['x'] = x_train
+                        train['y'] = np.array(y_train, int)
+                        #train = np.concatenate(([x_train], [y_train]), axis=0).T
+            
+                        with open(os.path.join(path, 'test.txt'), 'r') as f:
+                            #test = f.read().splitlines()
+                            x_test = f.read().splitlines()
+                            y_test = np.zeros(len(x_test))
+                            for i, x in enumerate(x_test):
+                                label_check = False
+                                for label, label_name in enumerate(label_names):
+                                    if label_name in x:
+                                        label_check = True
+                                        x_test[i] = os.path.join(path, x_test[i])
+                                        y_test[i] = label
+                                if not label_check:
+                                    print("Data without label %s"%x)
+                        test = {}
+                        test['x'] = x_test
+                        test['y'] = np.array(y_test, int)
+                        #test = np.concatenate(([x_test], [y_test]), axis=0).T
+            
+                    else:
+                        # only data case without label
+                        print("case 4")
+                        data_spec['inputs']['test'] = [os.path.join(path, data) for data in os.listdir(path)]
+            
+                    data_spec['label_names'] = label_names
+                    data_spec['output_size'] = str(len(label_names))
+                    data_spec['data'] = {'train':train, 'test':test}
+            
+                    from PIL import Image
+            
+                    #data = np.concatenate((train[:,0], test[:,0]), axis=0)
+                    x_data = np.concatenate([data['x'] for data in data_spec['data'].values()], axis=0)
+                    
+                    for x in x_data:
+                        fname, ext = os.path.splitext(x)
+                        if ext not in types:
+                            types.append(ext)
+            
+                        if ext == '.png' or ext == '.jpg':
+                            img = Image.open(x)
+                            input_shape = img.size
+                            if input_shape not in input_shapes:
+                                input_shapes.append(input_shape)
+                        else:
+                            print("We don't support type %s"%ext)
+                            print('Invalid Dataset folder %s'%path)
+                else:
+                    data_spec['data']['test']['x'] += path
+
+                    from PIL import Image
+
+                    fname, ext = os.path.splitext(path)
+                    if ext not in types:
+                        types.append(ext)
+        
+                    if ext == '.png' or ext == '.jpg':
+                        img = Image.open(x)
+                        input_shape = img.size
+                        if input_shape not in input_shapes:
+                            input_shapes.append(input_shape)
+                    else:
+                        print("We don't support type %s"%ext)
+            
+                data_spec['input_types'] = types
+                data_spec['input_shapes'] = input_shapes
+                return data_spec
 
     def getDataSpec(self, dataID):
         #TODO : how about data aggregated into a single file like .csv, .txt, etc.
@@ -625,12 +839,13 @@ class MyFrame(wx.Frame):
         ###         name:ID
         model_dict = {}
         trained_model_dict = {}
-        for childID in self.childrenToList(self.model_tree, self.model_tree.GetRootItem()):
-            childName = self.model_tree.GetItemText(childID)
-            model_dict[childName] = childID
-            for grandchildID in self.childrenToList(self.model_tree, childID):
-                grandchildName = self.model_tree.GetItemText(grandchildID)
-                trained_model_dict[grandchildName] = grandchildID
+        for ID in self.childrenToList(self.model_tree, self.model_tree.GetRootItem()):
+            name = self.model_tree.GetItemText(ID)
+            model_dict[name] = ID
+            trained_model_dict[name] = {}
+            for ID_ in self.childrenToList(self.model_tree, ID):
+                name_ = self.model_tree.GetItemText(ID)
+                trained_model_dict[name][name_] = ID_
         return model_dict, trained_model_dict
 
     def getDataDict(self):
@@ -645,7 +860,7 @@ class MyFrame(wx.Frame):
     def getTestSpec(self):
         ### return dict
         ### model_dict, trained_model_dict
-        test_spec = {'default_dataset_path':self.data_tree.GetItemData(self.data_tree.GetRootItem())}
+        test_spec = {}
         test_spec['model_dict'], test_spec['trained_model_dict'] = self.getModelsDict()
         return test_spec
         

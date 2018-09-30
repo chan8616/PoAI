@@ -42,7 +42,6 @@ OPEN_DATA	run.py	/^OPEN_DATA = {'mnist':call_mnist,$/;"	v
 OPEN_IMG	run.py	/^OPEN_IMG = ('mnist', 'cifar10')$/;"	v
 OPEN_PIT	run.py	/^OPEN_PIT = ('wine', 'iris')$/;"	v
 OPEN_TMS	run.py	/^OPEN_TMS = ('bearing')$/;"	v
-OPTIMIZER	model/ops.py	/^OPTIMIZER = {'adam':tf.train.AdamOptimizer,$/;"	v
 OPTIMIZER	run.py	/^OPTIMIZER = {'adam':keras.optimizers.Adam,$/;"	v
 OnButton_1	MyDialog_old.py	/^    def OnButton_1(self, event):$/;"	m	class:MyDialog
 OnCheckpointnameSelected	mynotebook.py	/^    def OnCheckpointnameSelected(self, event):$/;"	m	class:TrainSpecPage
@@ -53,6 +52,8 @@ OnClosed	myframeevent.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrameEve
 OnDataSpec	myframe.py	/^    def OnDataSpec(self, item):$/;"	m	class:MyFrame
 OnDataSpec	myframeevent.py	/^    def OnDataSpec(self, item):$/;"	m	class:MyFrameEvent
 OnDatasetSelected	mynotebook.py	/^    def OnDatasetSelected(self, event):$/;"	m	class:TrainSpecPage
+OnDirDialog	mynotebook.py	/^    def OnDirDialog(self, event):$/;"	m	class:TestSpecPage
+OnFileDialog	mynotebook.py	/^    def OnFileDialog(self, event):$/;"	m	class:TestSpecPage
 OnInit	MyDialog_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	app.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	app_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
@@ -126,7 +127,7 @@ __init__	model/model.py	/^    def __init__(self,$/;"	m	class:NET
 __init__	model/resnet.py	/^    def __init__(self, **kargs):$/;"	m	class:RESNET152
 __init__	model/resnet.py	/^    def __init__(self, weights=None, axis=-1, momentum = 0.9, beta_init='zero', gamma_init='one', **kwargs):$/;"	m	class:Scale
 __init__	model/rf.py	/^    def __init__(self,$/;"	m	class:RF
-__init__	model/simple.py	/^    def __init__(self,$/;"	m	class:LOGISTIC
+__init__	model/simple.py	/^    def __init__(self, **kargs):$/;"	m	class:LOGISTIC
 __init__	model/svm.py	/^    def __init__(self,$/;"	m	class:SVM
 __init__	model/vgg19.py	/^    def __init__(self, **kargs):$/;"	m	class:VGGNET19
 __init__	myframe.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
@@ -136,11 +137,10 @@ __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:DataSpe
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:ModelSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:TestSpecPage
 __init__	mynotebook.py	/^    def __init__(self, parent, id):$/;"	m	class:TrainSpecPage
-__init__	run.py	/^    def __init__(self, **kargs):$/;"	m	class:Run
+__init__	run.py	/^    def __init__(self,$/;"	m	class:Run
 __init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrame
 __init__	test.py	/^    def __init__(self, *args, **kwds):$/;"	m	class:MyFrameEvent
 __init__	utils/data.py	/^    def __init__(self,$/;"	m	class:DATA_PROVIDER
-__init__	utils/string.py	/^    def __init__(self, country_code=1):$/;"	m	class:string
 __init__	utils/util.py	/^    def __init__(self, log_area):$/;"	m	class:Redirection
 __init__	utils/util.py	/^    def __init__(self, model_name, batch_size, ntrain, step_interval=0.1):$/;"	m	class:LossHistory
 __set_properties	MyDialog_old.py	/^    def __set_properties(self):$/;"	m	class:MyDialog	file:
@@ -174,7 +174,7 @@ build_model	model/lstm.py	/^    def build_model(self, conf):$/;"	m	class:LSTM
 build_model	model/model.py	/^    def build_model(self):$/;"	m	class:NET
 build_model	model/resnet.py	/^    def build_model(self, conf):$/;"	m	class:RESNET152
 build_model	model/rf.py	/^    def build_model(self, conf):$/;"	m	class:RF
-build_model	model/simple.py	/^    def build_model(self):$/;"	m	class:LOGISTIC
+build_model	model/simple.py	/^    def build_model(self, conf):$/;"	m	class:LOGISTIC
 build_model	model/svm.py	/^    def build_model(self, conf):$/;"	m	class:SVM
 build_model	model/vgg19.py	/^    def build_model(self, conf):$/;"	m	class:VGGNET19
 button_1_clicked	gui_old.py	/^    def button_1_clicked(self, e):$/;"	m	class:MyFrame
@@ -192,7 +192,6 @@ child_path	Dataset/dist.py	/^    child_path = os.path.join(cifar_path, child)$/;
 childrenToList	myframe.py	/^    def childrenToList(self, tree, item):$/;"	m	class:MyFrame
 cifar1_path	Dataset/dist.py	/^cifar1_path = os.path.join(cwd, 'cifar_class')$/;"	v
 cifar_path	Dataset/dist.py	/^cifar_path = os.path.join(cwd, 'cifar_png')$/;"	v
-classifier	model/simple.py	/^    def classifier(self, reuse=False):$/;"	m	class:LOGISTIC
 close	test.py	/^    def close(self,event):$/;"	m	class:MyFrameEvent
 conf_mtx	model/model.py	/^def conf_mtx(y_true, y_pred, label_names=None):$/;"	f
 conv_block	model/resnet.py	/^def conv_block(input_tensor, kernel_size, filters, stage, block, strides=(2, 2)):$/;"	f
@@ -223,23 +222,28 @@ file_path	Dataset/dist.py	/^            file_path = os.path.join(child_path, fil
 flush	utils/util.py	/^    def flush(self):$/;"	m	class:Redirection
 generate_arrays_from_file	utils/data.py	/^    def generate_arrays_from_file(self, mode, batch_size, steps, with_y=True):$/;"	m	class:DATA_PROVIDER
 generate_arrays_from_mem	utils/data.py	/^    def generate_arrays_from_mem(self, mode, batch_size, steps, with_y=True):$/;"	m	class:DATA_PROVIDER
+getDataDict	myframe.py	/^    def getDataDict(self):$/;"	m	class:MyFrame
 getDataSpec	myframe.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyFrame
 getDataSpec	myframeevent.py	/^    def getDataSpec(self, dataID):$/;"	m	class:MyFrameEvent
 getDataSpec_	myframe.py	/^    def getDataSpec_(self, dataID):$/;"	m	class:MyFrame
 getModelSpec	myframe.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrame
 getModelSpec	myframeevent.py	/^    def getModelSpec(self, modelID):$/;"	m	class:MyFrameEvent
 getModelSpec_	myframe.py	/^    def getModelSpec_(self, modelID):$/;"	m	class:MyFrame
+getModelsDict	myframe.py	/^    def getModelsDict(self):$/;"	m	class:MyFrame
 getRunSpec	mynotebook.py	/^    def getRunSpec(self):$/;"	m	class:MyNotebook
 getStatistics	MyFrame_old.py	/^    def getStatistics(self, dirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
 getStatistics	gui_old_old.py	/^    def getStatistics(self, rootdirPath):$/;"	m	class:MyFrame
+getTestDataSpec	myframe.py	/^    def getTestDataSpec(self, paths):$/;"	m	class:MyFrame
 getTestSpec	myframe.py	/^    def getTestSpec(self):$/;"	m	class:MyFrame
 getTestSpec	mynotebook.py	/^    def getTestSpec(self):$/;"	m	class:TestSpecPage
+getTrainDataSpec	myframe.py	/^    def getTrainDataSpec(self, dirpath):$/;"	m	class:MyFrame
 getTrainSpec	myframe.py	/^    def getTrainSpec(self):$/;"	m	class:MyFrame
 getTrainSpec	mynotebook.py	/^    def getTrainSpec(self):$/;"	m	class:TrainSpecPage
 get_config	model/resnet.py	/^    def get_config(self):$/;"	m	class:Scale
 get_data_list	run.py	/^def get_data_list():$/;"	f
 get_model_list	run.py	/^def get_model_list():$/;"	f
+get_optimizer_list	run.py	/^def get_optimizer_list():$/;"	f
 gpu_inspection	utils/util.py	/^def gpu_inspection():$/;"	f
 identity_block	model/resnet.py	/^def identity_block(input_tensor, kernel_size, filters, stage, block):$/;"	f
 image_load	utils/util.py	/^def image_load(file_path, resize=0):            # load image as float numpy array$/;"	f
@@ -299,7 +303,6 @@ setTestSpec_dataset	mynotebook.py	/^    def setTestSpec_dataset(self):$/;"	m	cla
 setTrainSpec	mynotebook.py	/^    def setTrainSpec(self, train_spec):$/;"	m	class:TrainSpecPage
 setTrainSpec_checkpoint_name	mynotebook.py	/^    def setTrainSpec_checkpoint_name(self):$/;"	m	class:TrainSpecPage
 shuffle	utils/util.py	/^def shuffle(x, y):$/;"	f
-string	utils/string.py	/^class string:$/;"	c
 test	model/lstm.py	/^    def test(self, x, y=None):$/;"	m	class:LSTM
 test	model/model.py	/^    def test(self, x, y=None, label_name=None, visualize=False):$/;"	m	class:NET
 test_with_provider	model/model.py	/^    def test_with_provider(self, generator, steps, label_name=None, visualize=False):$/;"	m	class:NET
