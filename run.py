@@ -51,7 +51,7 @@ def get_model_list():
 
 def get_data_list():
     return OPEN_DATA
-def get_optimizer_lisT():
+def get_optimizer_list():
     return OPTIMIZER
 # TODO:
 

@@ -1,5 +1,8 @@
 import wx
 import wx.lib.inspection
+import wx.lib.agw.multidirdialog as MDD
+
+import os
 
 
 class DataSpecPage(wx.Panel):
@@ -167,13 +170,14 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_3 = wx.ComboBox(self, wx.ID_ANY, choices=["3"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.combo_box_4 = wx.ComboBox(self, wx.ID_ANY, choices=["4"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.combo_box_6 = wx.ComboBox(self, wx.ID_ANY, choices=["6"], style = wx.CB_DROPDOWN)
+        self.combo_box_7 = wx.ComboBox(self, wx.ID_ANY, choices=["7"], style = wx.CB_DROPDOWN)
         #self.combo_box_6 = wx.ComboBox(self, wx.ID_ANY, choices=["6"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         #self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, "15")
         self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, "26")
 
         self.text_ctrl_18 = wx.TextCtrl(self, wx.ID_ANY, "18")
         self.text_ctrl_19 = wx.TextCtrl(self, wx.ID_ANY, "19")
-        self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, "20")
+        #self.text_ctrl_20 = wx.TextCtrl(self, wx.ID_ANY, "20")
         self.text_ctrl_21 = wx.TextCtrl(self, wx.ID_ANY, "21")
         self.text_ctrl_22 = wx.TextCtrl(self, wx.ID_ANY, "22")
 
@@ -184,11 +188,13 @@ class TrainSpecPage(wx.Panel):
         self.train_spec = train_spec
 
         self.combo_box_2.Delete(0)
-        for i, model_name in enumerate(train_spec['model_names']):
+        #for i, model_name in enumerate(train_spec['model_names']):
+        for i, model_name in enumerate(train_spec['model_dict'].keys()):
             self.combo_box_2.Insert(model_name, 0)
 
         self.combo_box_3.Delete(0)
-        for i, dataset_name in enumerate(train_spec['dataset_names']):
+        #for i, dataset_name in enumerate(train_spec['dataset_names']):
+        for i, dataset_name in enumerate(train_spec['dataset_dict'].keys()):
             self.combo_box_3.Insert(dataset_name, 0)
 
         from utils.util import gpu_inspection
@@ -201,6 +207,10 @@ class TrainSpecPage(wx.Panel):
 
         self.combo_box_6.Delete(0)
         self.combo_box_6.Insert("New",0)
+        
+        self.combo_box_7.Delete(0)
+        for name in train_spec['solver_dict'].keys():
+            self.combo_box_7.Insert(name, 0)
 
         #self.text_ctrl_15.SetValue("")
         #self.text_ctrl_15.write(train_spec['checkpoint_name'])
@@ -208,8 +218,8 @@ class TrainSpecPage(wx.Panel):
         self.text_ctrl_16.write(train_spec['max_epochs'])
         self.text_ctrl_18.SetValue("")
         self.text_ctrl_18.write(train_spec['batch_size'])
-        self.text_ctrl_20.SetValue("")
-        self.text_ctrl_20.write(train_spec['optimizer'])
+        #self.text_ctrl_20.SetValue("")
+        #self.text_ctrl_20.write(train_spec['optimizer'])
         self.text_ctrl_21.SetValue("")
         self.text_ctrl_21.write(train_spec['learning_rate'])
         self.text_ctrl_19.SetValue("")
@@ -248,7 +258,7 @@ class TrainSpecPage(wx.Panel):
         #grid_sizer_3.Add(self.text_ctrl_14, (2, 1), (1, 18), wx.EXPAND, 0)
         grid_sizer_3.Add(self.text_ctrl_19, (2, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
 
-        label_15 = wx.StaticText(self, wx.ID_ANY, _("Checkpoint name"))
+        label_15 = wx.StaticText(self, wx.ID_ANY, _("Checkpoint name (Keep training or New one)"))
         label_15.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_15, (4, 1), (1, 10), 0, 0)
 
@@ -257,7 +267,8 @@ class TrainSpecPage(wx.Panel):
         grid_sizer_3.Add(label_20, (4, 21), (1, 10), 0, 0)
         #grid_sizer_3.Add(self.text_ctrl_15, (5, 1), (1, 18), wx.EXPAND, 0)
         grid_sizer_3.Add(self.combo_box_6, (5, 1), (1, 18), wx.EXPAND, 0)
-        grid_sizer_3.Add(self.text_ctrl_20, (5, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
+        grid_sizer_3.Add(self.combo_box_7, (5, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
+        #grid_sizer_3.Add(self.text_ctrl_20, (5, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
 
         label_16 = wx.StaticText(self, wx.ID_ANY, _("Training epochs"))
         label_16.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
@@ -301,10 +312,10 @@ class TrainSpecPage(wx.Panel):
         model_name = event.GetString()
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(0)
-        print(event.GetSelection())
-        for i, trained_model_name in enumerate(self.train_spec['trained_model_names_dict'][model_name]):
+        #print(event.GetSelection())
+        for i, trained_model_name in enumerate(self.train_spec['trained_model_dict'][model_name].keys()):
             self.combo_box_6.Insert(trained_model_name, i+1)
-        print(self.train_spec['trained_model_names_dict'])
+        #print(self.train_spec['trained_model_dict'].keys())
 
 #        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
 #        self.setTrainSpec_checkpoint_name()
@@ -373,6 +384,9 @@ class TrainSpecPage(wx.Panel):
         #self.text_ctrl_15.write(self.train_spec['checkpoint_name'])
 
     def getTrainSpec(self):
+        ### return dict
+        ### model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
+        ### max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
 
         model_name_idx = self.combo_box_2.GetSelection()
         assert model_name_idx != wx.NOT_FOUND, "[!] select model"
@@ -388,7 +402,7 @@ class TrainSpecPage(wx.Panel):
 
         train_model_name_idx = self.combo_box_6.GetSelection()
         if train_model_name_idx == wx.NOT_FOUND:
-            print("select combo box 6")
+            print("select trained_model_name(combo box 6)")
         else:
             self.train_spec['trained_model_name'] = None \
                 if self.combo_box_6.GetSelection() == 0 else self.combo_box_6.GetStringSelection()
@@ -405,13 +419,15 @@ class TestSpecPage(wx.Panel):
     def __init__(self, parent, id):
         super(TestSpecPage, self).__init__(parent, id)
 
+        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
         self.button_1 = wx.Button(self, wx.ID_ANY, _("Browse"))
         self.text_ctrl_24 = wx.TextCtrl(self, wx.ID_ANY, "24")
         self.button_2 = wx.Button(self, wx.ID_ANY, _("Browse"))
         self.text_ctrl_25 = wx.TextCtrl(self, wx.ID_ANY, "25")
         self.text_ctrl_26 = wx.TextCtrl(self, wx.ID_ANY, "26")
         self.text_ctrl_27 = wx.TextCtrl(self, wx.ID_ANY, "27")
-        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.text_ctrl_28 = wx.TextCtrl(self, wx.ID_ANY, "28")
+        self.upload_list = None
 
         self.__do_layout()
         self.__do_binds()
@@ -424,13 +440,13 @@ class TestSpecPage(wx.Panel):
         grid_sizer_4.Add(label_14, (1, 1), (1, 10), 0, 0)
         grid_sizer_4.Add(self.combo_box_5, (2, 1), (1, 21), wx.EXPAND, 0)
 
-        label_24 = wx.StaticText(self, wx.ID_ANY, _("Upload image"))
+        label_24 = wx.StaticText(self, wx.ID_ANY, _("Upload images"))
         label_24.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         grid_sizer_4.Add(label_24, (3, 1), (1, 10), 0, 0)
         grid_sizer_4.Add(self.button_1, (5, 1), (1, 4), 0, 0)
         grid_sizer_4.Add(self.text_ctrl_24, (5, 5), (1, 21), wx.EXPAND | wx.RIGHT, 30)
 
-        label_25 = wx.StaticText(self, wx.ID_ANY, _("Upload folder"))
+        label_25 = wx.StaticText(self, wx.ID_ANY, _("Upload folders"))
         label_25.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
         grid_sizer_4.Add(label_25, (7, 1), (1, 10), 0, 0)
         grid_sizer_4.Add(self.button_2, (9, 1), (1, 4), 0, 0)
@@ -454,30 +470,52 @@ class TestSpecPage(wx.Panel):
         self.SetSizer(grid_sizer_4)
 
     def __do_binds(self):
-        pass
+        self.button_1.Bind(wx.EVT_BUTTON, self.OnFileDialog)
+        self.button_2.Bind(wx.EVT_BUTTON, self.OnDirDialog)
+
+    def OnFileDialog(self, event):
+        dlg = wx.FileDialog(self, "", defaultDir=self.test_spec['default_dataset_path'],
+                wildcard="(*.*)|*.*",
+                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            self.upload_list = dlg.GetFilenames()
+            self.text_ctrl_28.SetValue(str(self.upload_list))
+
+    def OnDirDialog(self, event):
+        #dlg = MDD.MultiDirDialog(None, title="", defaultPath="",#self.test_spec['default_dataset_path'],
+        #    agwStyle=MDD.DD_MULTIPLE | MDD.DD_DIR_MUST_EXIST)
+        dlg = wx.DirDialog(self, "", defaultPath=self.test_spec['default_dataset_path'],
+            style=wx.DD_DIR_MUST_EXIST)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            #self.upload_list = dlg.GetPaths()
+            self.upload_list = [dlg.GetPath()]
+            self.text_ctrl_28.SetValue(str(self.upload_list))
 
     def setTestSpec(self, test_spec):
         self.test_spec = test_spec
         self.combo_box_5.Delete(0)
-        for i, model_name in enumerate(test_spec['trained_model_list_names']):
-            self.combo_box_5.Insert(model_name, 0)
+        for trained_model_name in test_spec['trained_model_dict'].keys():
+            self.combo_box_5.Insert(trained_model_name, 0)
         #self.text_ctrl_24.SetValue("")
         #self.text_ctrl_25.SetValue("")
 
-    def setTestSpec_dataset(self):
-        self.test_spec['dataset_path']
-        self.test_spec['dataset_name']
+#    def setTestSpec_dataset(self):
+#        self.test_spec['dataset_path']
+#        self.test_spec['dataset_name']
 
     def getTestSpec(self):
-        spec = []
+        ### return dict
+        ### model_name, upload_list
         idx = self.combo_box_5.GetSelection()
         assert idx != wx.NOT_FOUND, "[!] Not Found"
-        spec += [self.combo_box_5.GetStringSelection()]
-        spec += self.test_spec['dataset_path']
-        spec += [self.text_ctrl_26.GetLineText(0)]
-        spec += [self.text_ctrl_27.GetLineText(0)]
+        self.test_spec['trained_model_name'] = self.combo_box_5.GetStringSelection()
+        self.test_spec['upload_list'] = self.upload_list
+        #self.test_spec += [self.text_ctrl_26.GetLineText(0)]
+        #self.test_spec += [self.text_ctrl_27.GetLineText(0)]
 
-        return spec
+        return self.test_spec
 
 class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
     def __init__(self, *args, **kwds):
@@ -532,13 +570,30 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         return data_spec_panel
 
     def getRunSpec(self):
+        ### return page, phase, args
+        ###             (train): max_epochs, learning_rate, seed, batch_size, interval,
+        ###                     learning_rate, dataset_list, model_list, dataset_names, model_names,
+        ###                     trained_model_dict, trained_model_names_dict, checkpoint_name, solver_dict,
+        ###
+        ###                     model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
+        ###                     max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
+        ###
+        ###             (test): model_list, model_names, trained_model_list_names,
+        ###             
+        ###                     model_name, upload_list
+
         page = self.GetPage(self.GetSelection())
         if isinstance(page, TrainSpecPage):
             phase = 'Train'
             spec = page.getTrainSpec()
+            ### return dict
+            ### model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
+            ### max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
         elif isinstance(page, TestSpecPage):
             phase = 'Test'
             spec = page.getTestSpec()
+            ### return dict
+            ### model_name, upload_list
         else:
             return None
 
