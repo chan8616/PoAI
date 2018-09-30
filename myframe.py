@@ -160,20 +160,26 @@ class MyFrame(wx.Frame):
         itemID = event.GetItem()
         self.data_tree.DeleteChildren(itemID)
         self.extendTree(self.data_tree, itemID)
+        if self.data_tree.GetItemData(itemID) is \
+                self.data_tree.GetItemData(self.data_tree.GetRootItem()):
+            self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
     def modelTreeOnExpand(self, event):
         itemID = event.GetItem()
         self.model_tree.DeleteChildren(itemID)
         self.extendTree(self.model_tree, itemID)
+        if self.model_tree.GetItemData(itemID) is \
+                self.model_tree.GetItemData(self.model_tree.GetRootItem()):
+            self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), True)
     def refresh_trees(self):
-        #self.buildTree(self.data_tree, self.datasetDir)
-        #self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
+        self.data_tree.DeleteChildren(self.data_tree.GetRootItem())
         self.extendTree(self.data_tree, self.data_tree.GetRootItem)
+        self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
         self.data_tree.Expand(self.data_tree.GetRootItem())
 
-        #self.buildTree(self.data_tree, self.datasetDir)
-        #self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
+        self.model_tree.DeleteChildren(self.model_tree.GetRootItem())
         self.extendTree(self.model_tree, self.model_tree.GetRootItem)
-        self.data_tree.Expand(self.data_tree.GetRootItem())
+        self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), True)
+        self.model_tree.Expand(self.model_tree.GetRootItem())
 
 
     def OnToolBar(self, event):
@@ -729,6 +735,11 @@ class MyFrame(wx.Frame):
         return list
 
     def buildTree(self, tree, rootDir, treeRoot=None):
+        #        rootID = tree.AddRoot(os.path.basename(rootDir))
+#        tree.SetItemData(rootID, rootDir)
+#        self.extendTree(tree, rootID)
+#        print(rootID, tree.GetItemData(rootID))
+
         if treeRoot is None: treeRoot = tree.GetRootItem()
 
         def itemExist(tree, data, rootID):
@@ -745,6 +756,7 @@ class MyFrame(wx.Frame):
             self.extendTree(tree, rootID)
         else:
             print("tree item is already exist!")
+        print(rootID, tree.GetItemData(rootID))
 
     # input tree, root name, child list
     def appendTree(self, tree, parentID, childdict, model=False):
