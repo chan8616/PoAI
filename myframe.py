@@ -229,7 +229,7 @@ class MyFrame(wx.Frame):
                     modelID = self.getModelsDict()[0][spec['model_name']]
                     #modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 else:
-                    modelID = self.getModelsDict()[1][spec['trained_model_name']]
+                    modelID = self.getModelsDict()[1][spec['model_name']][spec['trained_model_name']]
                     #modelID = page.train_spec['trained_model_dict'][args['model_name']]
                 model_spec = self.getModelSpec(modelID)
 
@@ -237,15 +237,15 @@ class MyFrame(wx.Frame):
                 dataset_spec = self.getTestDataSpec(spec['upload_list'])
                 modelID = self.getModelsDict()[1][spec['model_name']][spec['trained_model_name']]
                 model_spec = self.getModelSpec(modelID)
-
-#                return args
-                #modelID = page.test_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
-                #datasetID = page.test_spec['dataset_list'][page.test_spec['dataset_names'].index(args['dataset_name'])]
+                args.update({'gpu':"cpu"})
 
             args['model_spec'] = model_spec
 #            args['model_spec'] = self.getModelSpec(modelID)
             """
-            return {'type':'None',
+            return {'name',
+                    'path',
+                    'trained':pickle_load,
+                    'type':'None',
                     'n_layer':'None',
                     'input_size':'None',
                     'output_size':'None'}
@@ -265,12 +265,13 @@ class MyFrame(wx.Frame):
             print(args.keys())
             print(dataset_spec.keys())
             print(dataset_spec['data'].keys())
+            print(model_spec)
             print(model_spec.keys())
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
         #        self.input_shape, self.output_size = spec[1:]
-            print(**args)
+            #print(**args)
             Run(**args)
             self.refresh_trees()
             pass
@@ -573,17 +574,20 @@ class MyFrame(wx.Frame):
         spec = {}
         name = self.model_tree.GetItemText(modelID)
         path = self.model_tree.GetItemData(modelID)
-        trained = None \
+        trained = pickle_load(os.path.join(path, "meta")) \
             if os.path.exists(os.path.join(path, "meta.pickle")) else \
-            pickle_load(os.path.join(path, "meta"))
+            None 
+            
 
         spec['name'] = name
         spec['path'] = path
         spec['trained'] = trained
-        return spec.update({'type':'None',
-                'n_layer':'None',
-                'input_size':'None',
-                'output_size':'None'})
+        spec.update({'type':'None',
+            'n_layer':'None',
+            'input_size':'None',
+            'output_size':'None'})
+        print(spec)
+        return spec
 #    def setModelSpec(self):
 #        pass
 

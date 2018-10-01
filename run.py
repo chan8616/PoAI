@@ -94,20 +94,35 @@ class Run(object):
     def __init__(self,
                 phase,
                 model_name,
-                gpu,
-                learning_rate,
-                checkpoint_name,
-                batch_size,
-                optimizer,
-                interval,
-                max_epochs,
+                model_spec,
                 dataset_spec,
+                gpu,
+                #                learning_rate,
+                #                checkpoint_name,
+                #                batch_size,
+                #                optimizer,
+                #                interval,
+                #                max_epochs,
                 **kargs):
         """
             **kargs : for advanced_option (NotImplemented)
         """
+
         # mode, model, data, gpu, checkpoint, max_epochs, batch_size, optimizer, lr, interval, random_seed
             # ['vgg19', {'dataset_name':'cifar10'}, '0', 'init', '5', '32', 'gradient','0.0001', '1', '0']#spec[1:]
+
+        
+        train = True if phase is 'Train' else False
+        if train:
+            learning_rate=kargs['learning_rate']
+            checkpoint_name=kargs['checkpoint_name']
+            batch_size=kargs['batch_size']
+            optimizer=kargs['optimizer']
+            interval=kargs['interval']
+            max_epochs=kargs['max_epochs']
+        else:
+            optimizer=model_spec['trained']
+
 
 
         if gpu.isdigit() :
@@ -117,7 +132,6 @@ class Run(object):
             #TODO
             print('cpu is selected')
 
-        train = True if phase else False
 
         opt = select_optimizer(optimizer, float(learning_rate))
         data, provider = data_select(dataset_spec)
