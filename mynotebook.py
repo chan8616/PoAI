@@ -528,19 +528,20 @@ class TestSpecPage(wx.Panel):
     def getTestSpec(self):
         ### return dict
         ### model_name, upload_list
+        spec = {}
         idx = self.combo_box_5.GetSelection()
         assert idx != wx.NOT_FOUND, "[!] Not Found"
         trained_model_name = self.combo_box_5.GetStringSelection()
         for model_name in self.test_spec['model_dict'].keys():
             if trained_model_name in self.test_spec['trained_model_dict'][model_name].keys():
-                self.test_spec['model_name'] = model_name
-                self.test_spec['trained_model_name'] = trained_model_name
+                spec['model_name'] = model_name
+                spec['trained_model_name'] = trained_model_name
                 break
-        self.test_spec['upload_list'] = self.upload_list
+        spec['upload_list'] = self.upload_list
         #self.test_spec += [self.text_ctrl_26.GetLineText(0)]
         #self.test_spec += [self.text_ctrl_27.GetLineText(0)]
 
-        return self.test_spec
+        return spec
 
 class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
     def __init__(self, *args, **kwds):

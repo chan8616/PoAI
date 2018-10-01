@@ -13,7 +13,7 @@ import sys
 # begin wxGlade: extracode
 # end wxGlade
 from mynotebook import MyNotebook
-from utils.util import Redirection
+from utils.util import Redirection, pickle_load
 
 from run import Run
 from run import get_model_list, get_data_list, get_optimizer_list
@@ -270,7 +270,7 @@ class MyFrame(wx.Frame):
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
         #        self.input_shape, self.output_size = spec[1:]
-
+            print(**args)
             Run(**args)
             self.refresh_trees()
             pass
@@ -340,7 +340,8 @@ class MyFrame(wx.Frame):
         item = tree.GetFocusedItem()
 
         if tree.GetItemParent(item) == tree.GetRootItem() or \
-           tree.GetItemParent(tree.GetItemParent(item)) == tree.GetRootItem():
+           tree.GetItemParent(tree.GetItemParent(item)) == tree.GetRootItem() or \
+           tree.GetItemParent(tree.GetItemParent(tree.GetItemParent(item))) == tree.GetRootItem():
             if item not in self.item_to_page:
                 OnSpecFun(item)
             else:
@@ -569,10 +570,20 @@ class MyFrame(wx.Frame):
         return data_spec
 
     def getModelSpec(self, modelID):
-        return {'type':'None',
+        spec = {}
+        name = self.model_tree.GetItemText(modelID)
+        path = self.model_tree.GetItemData(modelID)
+        trained = None \
+            if os.path.exists(os.path.join(path, "meta.pickle")) else \
+            pickle_load(os.path.join(path, "meta"))
+
+        spec['name'] = name
+        spec['path'] = path
+        spec['trained'] = trained
+        return spec.update({'type':'None',
                 'n_layer':'None',
                 'input_size':'None',
-                'output_size':'None'}
+                'output_size':'None'})
 #    def setModelSpec(self):
 #        pass
 

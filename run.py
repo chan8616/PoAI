@@ -140,8 +140,9 @@ def select_optimizer(optimizer='gradient', lr=1e-3):
             'lr': lr,
             'arg':None}
 
-def arg_inspection(data_type, model_name, step_interval):
-    assert step_interval >= 0. and step_interval <= 1.0, "[!] Ratio error : [0, 1] is allowed"
+def arg_inspection(train, data_type, model_name, step_interval):
+    if train:
+        assert step_interval >= 0. and step_interval <= 1.0, "[!] Ratio error : [0, 1] is allowed"
     assert data_type in DATA_TYPE, "[!] Image, Point, Time-series are only allowed."
     assert model_name is not None, "[!] Must enter the model_name"
     if data_type == 'I': # image
@@ -172,7 +173,7 @@ def load_model(
                pre_trained          = {'init':True,'freeze':False}      # by imagenet
                ):
     # 1. validation model
-    arg_inspection(data['data_type'], model_name, step_interval)
+    arg_inspection(train, data['data_type'], model_name, step_interval)
     # 2. call the instance of the network
     model = MODEL[model_name](dataset_name=dataset_name,
                               num_classes=data['classes'],
