@@ -498,8 +498,8 @@ class TestSpecPage(wx.Panel):
                 style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
 
         if dlg.ShowModal() == wx.ID_OK:
-            self.upload_list = dlg.GetFilenames()
-            self.text_ctrl_28.SetValue(str(self.upload_list))
+            self.upload_list = dlg.GetPaths()
+            self.text_ctrl_28.SetValue(str(dlg.GetFilenames()))
 
     def OnDirDialog(self, event):
         #dlg = MDD.MultiDirDialog(None, title="", defaultPath="",#self.test_spec['default_dataset_path'],
