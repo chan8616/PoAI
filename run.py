@@ -113,6 +113,7 @@ class Run(object):
 
         
         train = True if phase is 'Train' else False
+        
         if train:
             learning_rate=kargs['learning_rate']
             checkpoint_name=kargs['checkpoint_name']
@@ -121,9 +122,8 @@ class Run(object):
             interval=kargs['interval']
             max_epochs=kargs['max_epochs']
         else:
+            #TODO
             optimizer=model_spec['trained']
-
-
 
         if gpu.isdigit() :
             print('gpu [{}] is selected'.format(gpu))
