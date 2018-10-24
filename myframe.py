@@ -307,8 +307,6 @@ class MyFrame(wx.Frame):
     def OnTrainedSpec(self, item):
         trained_spec = self.getTrainSpec()
         trained_spec.update(self.getModelSpec(item))
-        for k, v in trained_spec.items():
-            print(k, v)
         page = self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY)
         page.setTrainSpec(trained_spec)
 
@@ -563,6 +561,7 @@ class MyFrame(wx.Frame):
             dial = wx.MessageDialog(None, 'Invalid Dataset folder \n%s'%data_path, 'Error',
                 wx.OK | wx.ICON_ERROR)
             dial.ShowModal()
+            self.data_tree.Delete(dataID)
             assert False, 'Invalid Dataset folder %s'%data_path
 
         data_spec['label_names'] = label_names
@@ -597,19 +596,19 @@ class MyFrame(wx.Frame):
     def getModelSpec(self, modelID):
         spec = {}
         dataID = self.model_tree.GetItemParent(modelID)
-        moduleID = self.model_tree.GetItemParent(dataID)
-        model_name = self.model_tree.GetItemText(moduleID)
         name = self.model_tree.GetItemText(modelID)
         path = self.model_tree.GetItemData(modelID)
         trained = pickle_load(os.path.join(path, "meta")) \
             if os.path.exists(os.path.join(path, "meta.pickle")) else \
             None 
             
-        spec['model_name'] = model_name
         spec['name'] = name
         spec['path'] = path
         if trained is not None:
             spec['trained'] = trained
+            moduleID = self.model_tree.GetItemParent(dataID)
+            model_name = self.model_tree.GetItemText(moduleID)
+            spec['model_name'] = model_name
         spec.update({'type':'None',
             'n_layer':'None',
             'input_size':'None',
