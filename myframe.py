@@ -308,8 +308,7 @@ class MyFrame(wx.Frame):
         trained_spec = self.getTrainSpec()
         trained_spec.update(self.getModelSpec(item))
         for k, v in trained_spec.items():
-            pass
-            #print(k, v)
+            print(k, v)
         page = self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY)
         page.setTrainSpec(trained_spec)
 
