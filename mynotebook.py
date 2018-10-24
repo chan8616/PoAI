@@ -221,6 +221,9 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_7.Delete(0)
         for name in train_spec['solver_list']:
             self.combo_box_7.Insert(name, 0)
+        if 'trained' in train_spec:
+            idx = self.combo_box_7.FindString(train_spec['trained']['optimizer'])
+            self.combo_box_7.SetSelection(idx)
 
         #self.text_ctrl_15.SetValue("")
         #self.text_ctrl_15.write(train_spec['checkpoint_name'])
@@ -329,6 +332,7 @@ class TrainSpecPage(wx.Panel):
 
         model_name = event.GetString()
         self.SetCheckpoint(model_name)
+
         return
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(1)
@@ -343,26 +347,6 @@ class TrainSpecPage(wx.Panel):
     def OnDatasetSelect(self, event):
         if self.ModelSelected() != wx.NOT_FOUND:
             self.SetCheckpointname()
-        return
-        print("Dataset Selected")
-        self.train_spec['checkpoint_name'] = event.GetString()
-        #self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
-        if self.combo_box_6.GetSelection() == 0 or self.combo_box_6.GetSelection() == wx.NOT_FOUND: # New or another name
-            if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
-                print("name founded")
-                try:
-                    num = int(self.train_spec['checkpoint_name'].split("_")[-1])
-                    idx = self.train_spec['ckeckpoint_name'].rfind("_")
-                    self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'][:idx]
-                    print("num founded")
-                except ValueError:
-                    num = 1
-                    print("num not founded")
-                while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
-                    print("name founded")
-                    self.train_spec['checkpoint_name'] += "_" + str(num)
-                    num += 1
-            self.setTrainSpec_checkpoint_name()
     
     def SetCheckpoint(self, model_name):
         for i in range(1, self.combo_box_6.GetCount()):
@@ -372,20 +356,20 @@ class TrainSpecPage(wx.Panel):
             self.combo_box_6.Insert(trained_model_name, 1)
 
     def SetCheckpointname(self):
-        print('setcheckpointname', self.combo_box_6.GetSelection())
+        #print('setcheckpointname', self.combo_box_6.GetSelection())
         if self.combo_box_6.GetSelection() == 0 or self.combo_box_6.GetSelection() == wx.NOT_FOUND: # New or another name
             if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
-                print("name founded")
+                #print("name founded")
                 try:
                     num = int(self.train_spec['checkpoint_name'].split("_")[-1])
                     idx = self.train_spec['ckeckpoint_name'].rfind("_")
                     self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'][:idx]
-                    print("num founded")
+                    #print("num founded")
                 except ValueError:
                     num = 1
-                    print("num not founded")
+                    #print("num not founded")
                 while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
-                    print("name founded")
+                    #print("name founded")
                     self.train_spec['checkpoint_name'] += "_" + str(num)
                     num += 1
             self.setTrainSpec_checkpoint_name()
