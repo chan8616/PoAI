@@ -191,11 +191,19 @@ class TrainSpecPage(wx.Panel):
         #for i, model_name in enumerate(train_spec['model_names']):
         for i, model_name in enumerate(train_spec['model_dict'].keys()):
             self.combo_box_2.Insert(model_name, 0)
+        if 'trained' in train_spec:
+            idx = self.combo_box_2.FindString(train_spec['model_name'])
+            self.combo_box_2.SetSelection(idx)
+            self.SetCheckpoint(train_spec['model_name'])
 
         self.combo_box_3.Delete(0)
         #for i, dataset_name in enumerate(train_spec['dataset_names']):
         for i, dataset_name in enumerate(train_spec['dataset_dict'].keys()):
             self.combo_box_3.Insert(dataset_name, 0)
+        if 'trained' in train_spec:
+            idx = self.combo_box_3.FindString(train_spec['trained']['dataset'])
+            self.combo_box_3.SetSelection(idx)
+            self.train_spec['checkpoint_name'] = train_spec['trained']['dataset']
 
         from utils.util import gpu_inspection
 
@@ -207,6 +215,8 @@ class TrainSpecPage(wx.Panel):
 
         self.combo_box_6.Delete(0)
         self.combo_box_6.Insert("New",0)
+        if 'trained' in train_spec:
+            self.SetCheckpointname()
         
         self.combo_box_7.Delete(0)
         for name in train_spec['solver_list']:
@@ -215,15 +225,15 @@ class TrainSpecPage(wx.Panel):
         #self.text_ctrl_15.SetValue("")
         #self.text_ctrl_15.write(train_spec['checkpoint_name'])
         self.text_ctrl_16.SetValue("")
-        self.text_ctrl_16.write(train_spec['max_epochs'])
+        self.text_ctrl_16.write(train_spec['max_epochs'] if 'trained' not in train_spec else str(train_spec['trained']['epochs']))
         self.text_ctrl_18.SetValue("")
-        self.text_ctrl_18.write(train_spec['batch_size'])
+        self.text_ctrl_18.write(train_spec['batch_size'] if 'trained' not in train_spec else str(train_spec['trained']['batch_size']))
         #self.text_ctrl_20.SetValue("")
         #self.text_ctrl_20.write(train_spec['optimizer'])
         self.text_ctrl_21.SetValue("")
-        self.text_ctrl_21.write(train_spec['learning_rate'])
+        self.text_ctrl_21.write(train_spec['learning_rate'] if 'trained' not in train_spec else str(train_spec['trained']['learning_rate']))
         self.text_ctrl_19.SetValue("")
-        self.text_ctrl_19.write(train_spec['interval'])
+        self.text_ctrl_19.write(train_spec['interval'])# if 'trained' not in train_spec else str(train_spec['trained']['learning_rate']))
         self.text_ctrl_22.SetValue("")
         self.text_ctrl_22.write(train_spec['seed'])
 #
@@ -305,11 +315,21 @@ class TrainSpecPage(wx.Panel):
         self.SetSizer(grid_sizer_3)
 
     def __do_binds(self):
-        self.combo_box_2.Bind(wx.EVT_COMBOBOX, self.OnModelSelected)
-        self.combo_box_3.Bind(wx.EVT_COMBOBOX, self.OnDatasetSelected)
+        self.combo_box_2.Bind(wx.EVT_COMBOBOX, self.OnModelSelect)
+        self.combo_box_3.Bind(wx.EVT_COMBOBOX, self.OnDatasetSelect)
 
-    def OnModelSelected(self, event):
+    def ModelSelected(self):
+        return self.combo_box_2.GetSelection()
+    def DatasetSelected(self):
+        return self.combo_box_3.GetSelection()
+
+    def OnModelSelect(self, event):
+        if self.DatasetSelected() != wx.NOT_FOUND:
+            self.SetCheckpointname()
+
         model_name = event.GetString()
+        self.SetCheckpoint(model_name)
+        return
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(1)
         #print(event.GetSelection())
@@ -320,10 +340,39 @@ class TrainSpecPage(wx.Panel):
 #        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
 #        self.setTrainSpec_checkpoint_name()
 
-    def OnDatasetSelected(self, event):
+    def OnDatasetSelect(self, event):
+        if self.ModelSelected() != wx.NOT_FOUND:
+            self.SetCheckpointname()
+        return
         print("Dataset Selected")
         self.train_spec['checkpoint_name'] = event.GetString()
         #self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'].split("_")[0] + "_" + event.GetString().split("_")[0]
+        if self.combo_box_6.GetSelection() == 0 or self.combo_box_6.GetSelection() == wx.NOT_FOUND: # New or another name
+            if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
+                print("name founded")
+                try:
+                    num = int(self.train_spec['checkpoint_name'].split("_")[-1])
+                    idx = self.train_spec['ckeckpoint_name'].rfind("_")
+                    self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'][:idx]
+                    print("num founded")
+                except ValueError:
+                    num = 1
+                    print("num not founded")
+                while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
+                    print("name founded")
+                    self.train_spec['checkpoint_name'] += "_" + str(num)
+                    num += 1
+            self.setTrainSpec_checkpoint_name()
+    
+    def SetCheckpoint(self, model_name):
+        for i in range(1, self.combo_box_6.GetCount()):
+            self.combo_box_6.Delete(1)
+        #print(event.GetSelection())
+        for trained_model_name in self.train_spec['trained_model_dict'][model_name].keys():
+            self.combo_box_6.Insert(trained_model_name, 1)
+
+    def SetCheckpointname(self):
+        print('setcheckpointname', self.combo_box_6.GetSelection())
         if self.combo_box_6.GetSelection() == 0 or self.combo_box_6.GetSelection() == wx.NOT_FOUND: # New or another name
             if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
                 print("name founded")
@@ -577,7 +626,6 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
     def createTrainSpecPanel(self, parent, id):
         self.train_spec_count += 1
         train_spec_panel = TrainSpecPage(parent, id)
-        print(train_spec_panel)
         self.AddPage(train_spec_panel, _("Train Spec %d"%self.train_spec_count), select=True)
         return train_spec_panel
 
