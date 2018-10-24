@@ -70,14 +70,17 @@ class MyFrame(wx.Frame):
         self.datasetDir = os.path.join(self.cwd, "Dataset")
         if not os.path.exists(self.datasetDir):
             os.makedirs(self.datasetDir)
+        # data folder tree
         self.buildTree(self.data_tree, self.datasetDir)
+        # open data
         self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
         self.data_tree.Expand(self.data_tree.GetRootItem())
 
         # load model tree (in Modules folder)
         self.modelDir = os.path.join(self.cwd, "model")
         self.buildTree(self.model_tree, self.modelDir)
-        self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), True)
+        # model library
+        self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), model=True)
         self.model_tree.Expand(self.model_tree.GetRootItem())
 
 #        # load pretrained model tree (in checkpoint folder)
@@ -438,7 +441,7 @@ class MyFrame(wx.Frame):
         childs = os.listdir(data_path)
         # Data/, train.txt, test.txt
         if 'Data' in childs and 'train.txt' in childs and 'test.txt' in childs:
-            print('case1')
+            #print('case1')
             path_fun = lambda a: [data_path+'/'+a[0]] + a[1:] # data_file, label
             with open(os.path.join(data_path, 'train.txt'), 'r') as f:
                 train = np.array([path_fun(x.split()) for x in f.read().splitlines()])
@@ -456,7 +459,7 @@ class MyFrame(wx.Frame):
             test['y'] = np.array(list(map(lambda x: label_names.index(x), y_test)))
         # train/, test/, labels.txt
         elif 'train' in childs and 'test' in childs and 'labels.txt' in childs:
-            print('case2')
+            #print('case2')
             with open(os.path.join(data_path, 'labels.txt'), 'r') as f:
                 label_names = np.array(f.read().splitlines())
 
@@ -496,7 +499,7 @@ class MyFrame(wx.Frame):
 
         # [label]/, ... , train.txt, test.txt
         elif 'train.txt' in childs and 'test.txt' in childs:
-            print('case3')
+            #print('case3')
             label_names = np.sort([ label for label in childs if os.path.isdir(os.path.join(data_path, label)) ])
 #            print(label_names)
 #            label_names = [ label for label in childs if os.path.isdir(os.path.join(data_path, label)) ]
@@ -539,6 +542,9 @@ class MyFrame(wx.Frame):
             #test = np.concatenate(([x_test], [y_test]), axis=0).T
 
         else:
+            dial = wx.MessageDialog(None, 'Invalid Dataset folder \n%s'%data_path, 'Error',
+                wx.OK | wx.ICON_ERROR)
+            dial.ShowModal()
             assert False, 'Invalid Dataset folder %s'%data_path
 
         data_spec['label_names'] = label_names
@@ -791,6 +797,7 @@ class MyFrame(wx.Frame):
                 else:
                     childID = tree.AppendItem(parentID, child)
                     tree.SetItemData(childID, value)
+                    tree.SetItemBold(childID, True)
                 # print(child, childID, tree.GetItemData(childID))
         elif type(childdict) == list:
             for value in childdict:
@@ -808,7 +815,9 @@ class MyFrame(wx.Frame):
                 else:
                     childID = tree.AppendItem(parentID, value)
                     tree.SetItemData(childID, value)
+                    tree.SetItemBold(childID, True)
                 # print(value, childID, tree.GetItemData(childID))
+
     def extendTree(self, tree, parentID):
         parentPath = tree.GetItemData(parentID)
 
