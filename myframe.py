@@ -304,6 +304,17 @@ class MyFrame(wx.Frame):
 
         self.item_to_page[item] = page
 
+    def OnTrainedSpec(self, item):
+        trained_spec = self.getTrainSpec()
+        trained_spec.update(self.getModelSpec(item))
+        for k, v in trained_spec.items():
+            pass
+            #print(k, v)
+        page = self.notebook.createTrainSpecPanel(self.notebook, wx.ID_ANY)
+        page.setTrainSpec(trained_spec)
+
+        self.item_to_page[item] = page
+
     def isDataset(self, item):
         return self.data_tree.GetItemParent(item) == \
                 self.data_tree.GetRootItem()
@@ -340,12 +351,20 @@ class MyFrame(wx.Frame):
 
     def modelTreeOnActivated(self, event):
         #self.treeOnActivated(self.model_tree, self.OnModelSpec)
-        tree, OnSpecFun = self.model_tree, self.OnModelSpec
+        tree = self.model_tree 
         item = tree.GetFocusedItem()
+        root = tree.GetRootItem()
+        Parent = lambda x: tree.GetItemParent(x)
 
-        if tree.GetItemParent(item) == tree.GetRootItem() or \
-           tree.GetItemParent(tree.GetItemParent(item)) == tree.GetRootItem() or \
-           tree.GetItemParent(tree.GetItemParent(tree.GetItemParent(item))) == tree.GetRootItem():
+        if item != root:
+            if Parent(item) == root:
+                OnSpecFun = self.OnModelSpec
+            elif Parent(Parent(Parent(item))) == root:
+                #OnSpecFun = self.OnModelSpec
+                OnSpecFun = self.OnTrainedSpec
+            else:
+                return
+
             if item not in self.item_to_page:
                 OnSpecFun(item)
             else:
@@ -578,16 +597,20 @@ class MyFrame(wx.Frame):
 
     def getModelSpec(self, modelID):
         spec = {}
+        dataID = self.model_tree.GetItemParent(modelID)
+        moduleID = self.model_tree.GetItemParent(dataID)
+        model_name = self.model_tree.GetItemText(moduleID)
         name = self.model_tree.GetItemText(modelID)
         path = self.model_tree.GetItemData(modelID)
         trained = pickle_load(os.path.join(path, "meta")) \
             if os.path.exists(os.path.join(path, "meta.pickle")) else \
             None 
             
-
+        spec['model_name'] = model_name
         spec['name'] = name
         spec['path'] = path
-        spec['trained'] = trained
+        if trained is not None:
+            spec['trained'] = trained
         spec.update({'type':'None',
             'n_layer':'None',
             'input_size':'None',
@@ -602,7 +625,7 @@ class MyFrame(wx.Frame):
         ### max_epochs, learning_rate, seed, batch_size, interval, checkpoint_name, solver_list,
         ### dataset_dict, model_dict, trained_model_dict
         train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'.1', \
-                'checkpoint_name': ".", "solver_list":get_optimizer_list()}
+                'checkpoint_name': "checkpoint", "solver_list":get_optimizer_list()}
 
         train_spec['dataset_dict'] = self.getDataDict()
         train_spec['model_dict'], train_spec['trained_model_dict'] = self.getModelsDict()
@@ -628,7 +651,7 @@ class MyFrame(wx.Frame):
                 name_ = self.model_tree.GetItemText(ID)
                 train_spec['trained_model_dict'][name][name_] = ID_
 
-        train_spec['checkpoint_name'] = "."
+        train_spec['checkpoint_name'] = "checkpoint"
 
         train_spec['solver_list'] = get_optimizer_list()
 
@@ -781,7 +804,7 @@ class MyFrame(wx.Frame):
 
     # input tree, root name, child list
     def appendTree(self, tree, parentID, childlist, model=False):
-        for value in childdict:
+        for value in childlist:
             if model:
                 checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
                 if os.path.exists(checkpointdirpath) and \
@@ -789,14 +812,16 @@ class MyFrame(wx.Frame):
                     trainedmodelpath = os.path.join(checkpointdirpath, value)
                     childID = tree.AppendItem(parentID, value)
                     tree.SetItemData(childID, trainedmodelpath)
+                    #tree.SetItemBold(childID, True)
                     self.extendTree(tree, childID)
                 else:
                     childID = tree.AppendItem(parentID, value)
                     tree.SetItemData(childID, value)
+                    #tree.SetItemBold(childID, True)
             else:
                 childID = tree.AppendItem(parentID, value)
                 tree.SetItemData(childID, value)
-                tree.SetItemBold(childID, True)
+                #tree.SetItemBold(childID, True)
             # print(value, childID, tree.GetItemData(childID))
 
     def extendTree(self, tree, parentID):

@@ -8,6 +8,7 @@ CheckInfo	MyDialog_old.py	/^    def CheckInfo(self):$/;"	m	class:MyDialog
 DATA_PROVIDER	utils/data.py	/^class DATA_PROVIDER(object):$/;"	c
 DATA_TYPE	run.py	/^DATA_TYPE = ('I', 'P', "T") # Image, Point, Time-series$/;"	v
 DataSpecPage	mynotebook.py	/^class DataSpecPage(wx.Panel):$/;"	c
+DatasetSelected	mynotebook.py	/^    def DatasetSelected(self):$/;"	m	class:TrainSpecPage
 FILE_FORMAT	model/ops.py	/^FILE_FORMAT = ['jpg', 'jpeg', 'png', 'bmp']$/;"	v
 GetInfo	MyDialog_old.py	/^    def GetInfo(self, Info):$/;"	m	class:MyDialog
 IMAGE_SIZE	run.py	/^IMAGE_SIZE = 224      # Fixed$/;"	v
@@ -17,6 +18,7 @@ LOGISTIC	model/simple.py	/^class LOGISTIC(NET):$/;"	c
 LSTM	model/lstm.py	/^class LSTM(NET):$/;"	c
 LossHistory	utils/util.py	/^class LossHistory(tf.keras.callbacks.Callback):$/;"	c
 MODEL	run.py	/^MODEL = {'logistic':LOGISTIC, 'res152':RESNET152, 'vgg19':VGGNET19,$/;"	v
+ModelSelected	mynotebook.py	/^    def ModelSelected(self):$/;"	m	class:TrainSpecPage
 ModelSpecPage	mynotebook.py	/^class ModelSpecPage(wx.Panel):$/;"	c
 MyApp	MyDialog_old.py	/^class MyApp(wx.App):$/;"	c
 MyApp	app.py	/^class MyApp(wx.App):$/;"	c
@@ -51,7 +53,7 @@ OnClosed	myframe.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrame
 OnClosed	myframeevent.py	/^    def OnClosed(self, event):$/;"	m	class:MyFrameEvent
 OnDataSpec	myframe.py	/^    def OnDataSpec(self, item):$/;"	m	class:MyFrame
 OnDataSpec	myframeevent.py	/^    def OnDataSpec(self, item):$/;"	m	class:MyFrameEvent
-OnDatasetSelected	mynotebook.py	/^    def OnDatasetSelected(self, event):$/;"	m	class:TrainSpecPage
+OnDatasetSelect	mynotebook.py	/^    def OnDatasetSelect(self, event):$/;"	m	class:TrainSpecPage
 OnDirDialog	mynotebook.py	/^    def OnDirDialog(self, event):$/;"	m	class:TestSpecPage
 OnFileDialog	mynotebook.py	/^    def OnFileDialog(self, event):$/;"	m	class:TestSpecPage
 OnInit	MyDialog_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
@@ -62,7 +64,7 @@ OnInit	gui_old_old.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnInit	test.py	/^    def OnInit(self):$/;"	m	class:MyApp
 OnLoad	myframe.py	/^    def OnLoad(self, event):$/;"	m	class:MyFrame
 OnLoad	myframeevent.py	/^    def OnLoad(self, event):$/;"	m	class:MyFrameEvent
-OnModelSelected	mynotebook.py	/^    def OnModelSelected(self, event):$/;"	m	class:TrainSpecPage
+OnModelSelect	mynotebook.py	/^    def OnModelSelect(self, event):$/;"	m	class:TrainSpecPage
 OnModelSpec	myframe.py	/^    def OnModelSpec(self, item):$/;"	m	class:MyFrame
 OnModelSpec	myframeevent.py	/^    def OnModelSpec(self, item):$/;"	m	class:MyFrameEvent
 OnNew	myframe.py	/^    def OnNew(self, event):$/;"	m	class:MyFrame
@@ -79,6 +81,7 @@ OnToolBar	myframeevent.py	/^    def OnToolBar(self, event):$/;"	m	class:MyFrameE
 OnTrainSpec	myframe.py	/^    def OnTrainSpec(self, event):$/;"	m	class:MyFrame
 OnTrainSpec	myframeevent.py	/^    def OnTrainSpec(self, event):$/;"	m	class:MyFrameEvent
 OnTrainStart	myframeevent.py	/^    def OnTrainStart(self, event):$/;"	m	class:MyFrameEvent
+OnTrainedSpec	myframe.py	/^    def OnTrainedSpec(self, item):$/;"	m	class:MyFrame
 PIT_MODEL	run.py	/^PIT_MODEL = ('logistic','svm','randomforest')$/;"	v
 RESNET152	model/resnet.py	/^class RESNET152(NET):$/;"	c
 RF	model/rf.py	/^class RF(NET):$/;"	c
@@ -87,6 +90,7 @@ ResNet152	model/resnet.py	/^def ResNet152(include_top=True, weights=None,$/;"	f
 Run	run.py	/^class Run(object):$/;"	c
 SVM	model/svm.py	/^class SVM(NET):$/;"	c
 Scale	model/resnet.py	/^class Scale(Layer):$/;"	c
+SetCheckpointname	mynotebook.py	/^    def SetCheckpointname(self):$/;"	m	class:TrainSpecPage
 SetDataset	MyFrame_old.py	/^    def SetDataset(self, treeItem):$/;"	m	class:MyFrame
 TMS_MODEL	run.py	/^TMS_MODEL = ('lstm','gru','ae_lstm')$/;"	v
 TestSpecPage	mynotebook.py	/^class TestSpecPage(wx.Panel):$/;"	c
@@ -166,7 +170,7 @@ app	app_old.py	/^    app = MyApp(0)$/;"	v
 app	gui_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	gui_old_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	test.py	/^    app = MyApp(0)$/;"	v	class:MyApp
-appendTree	myframe.py	/^    def appendTree(self, tree, parentID, childdict, model=False):$/;"	m	class:MyFrame
+appendTree	myframe.py	/^    def appendTree(self, tree, parentID, childlist, model=False):$/;"	m	class:MyFrame
 arg_inspection	run.py	/^def arg_inspection(train, data_type, model_name, step_interval):$/;"	f
 build	model/resnet.py	/^    def build(self, input_shape):$/;"	m	class:Scale
 buildTree	MyFrame_old.py	/^    def buildTree(self, tree, rootdirPath, treeRoot=None):$/;"	m	class:MyFrame
