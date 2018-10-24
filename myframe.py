@@ -780,43 +780,24 @@ class MyFrame(wx.Frame):
         print(rootID, tree.GetItemData(rootID))
 
     # input tree, root name, child list
-    def appendTree(self, tree, parentID, childdict, model=False):
-        if type(childdict) == dict:
-            for child, value in childdict.items():
-                if model:
-                    checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
-                    if os.path.exists(checkpointdirpath) and \
-                            os.path.exists(os.path.join(checkpointdirpath, child)):
-                        trainedmodelpath = os.path.join(checkpointdirpath, child)
-                        childID = tree.AppendItem(parentID, child)
-                        tree.SetItemData(childID, trainedmodelpath)
-                        self.extendTree(tree, childID)
-                    else:
-                        childID = tree.AppendItem(parentID, child)
-                        tree.SetItemData(childID, value)
-                else:
-                    childID = tree.AppendItem(parentID, child)
-                    tree.SetItemData(childID, value)
-                    tree.SetItemBold(childID, True)
-                # print(child, childID, tree.GetItemData(childID))
-        elif type(childdict) == list:
-            for value in childdict:
-                if model:
-                    checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
-                    if os.path.exists(checkpointdirpath) and \
-                            os.path.exists(os.path.join(checkpointdirpath, value)):
-                        trainedmodelpath = os.path.join(checkpointdirpath, value)
-                        childID = tree.AppendItem(parentID, value)
-                        tree.SetItemData(childID, trainedmodelpath)
-                        self.extendTree(tree, childID)
-                    else:
-                        childID = tree.AppendItem(parentID, value)
-                        tree.SetItemData(childID, value)
+    def appendTree(self, tree, parentID, childlist, model=False):
+        for value in childdict:
+            if model:
+                checkpointdirpath = os.path.join(os.getcwd(), "checkpoint")
+                if os.path.exists(checkpointdirpath) and \
+                        os.path.exists(os.path.join(checkpointdirpath, value)):
+                    trainedmodelpath = os.path.join(checkpointdirpath, value)
+                    childID = tree.AppendItem(parentID, value)
+                    tree.SetItemData(childID, trainedmodelpath)
+                    self.extendTree(tree, childID)
                 else:
                     childID = tree.AppendItem(parentID, value)
                     tree.SetItemData(childID, value)
-                    tree.SetItemBold(childID, True)
-                # print(value, childID, tree.GetItemData(childID))
+            else:
+                childID = tree.AppendItem(parentID, value)
+                tree.SetItemData(childID, value)
+                tree.SetItemBold(childID, True)
+            # print(value, childID, tree.GetItemData(childID))
 
     def extendTree(self, tree, parentID):
         parentPath = tree.GetItemData(parentID)

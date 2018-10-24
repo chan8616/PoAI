@@ -167,12 +167,12 @@ app	gui_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	gui_old_old.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 app	test.py	/^    app = MyApp(0)$/;"	v	class:MyApp
 appendTree	myframe.py	/^    def appendTree(self, tree, parentID, childdict, model=False):$/;"	m	class:MyFrame
-arg_inspection	run.py	/^def arg_inspection(data_type, model_name, step_interval):$/;"	f
+arg_inspection	run.py	/^def arg_inspection(train, data_type, model_name, step_interval):$/;"	f
 build	model/resnet.py	/^    def build(self, input_shape):$/;"	m	class:Scale
 buildTree	MyFrame_old.py	/^    def buildTree(self, tree, rootdirPath, treeRoot=None):$/;"	m	class:MyFrame
 buildTree	gui_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
 buildTree	gui_old_old.py	/^    def buildTree(self, rootdirPath):$/;"	m	class:MyFrame
-buildTree	myframe.py	/^    def buildTree(self, tree, rootDir):$/;"	m	class:MyFrame
+buildTree	myframe.py	/^    def buildTree(self, tree, rootDir, treeRoot=None):$/;"	m	class:MyFrame
 buildTree	myframeevent.py	/^    def buildTree(self, tree, rootDir, treeRoot=None):$/;"	m	class:MyFrameEvent
 build_model	model/lstm.py	/^    def build_model(self, conf):$/;"	m	class:LSTM
 build_model	model/model.py	/^    def build_model(self):$/;"	m	class:NET
@@ -255,6 +255,7 @@ isDataset	myframe.py	/^    def isDataset(self, item):$/;"	m	class:MyFrame
 isOnTestSpec	mynotebook.py	/^    def isOnTestSpec(self):$/;"	m	class:MyNotebook
 isOnTrainSpec	mynotebook.py	/^    def isOnTrainSpec(self):$/;"	m	class:MyNotebook
 itemExist	MyFrame_old.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrame.buildTree
+itemExist	myframe.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrame.buildTree
 itemExist	myframeevent.py	/^        def itemExist(tree, data, rootID):$/;"	f	function:MyFrameEvent.buildTree
 label	utils/data.py	/^    def label(self):$/;"	m	class:DATA_PROVIDER
 label2txt	model/ops.py	/^def label2txt(label, txt_name, dataset, file_name=None):$/;"	f
