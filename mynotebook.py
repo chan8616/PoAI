@@ -337,8 +337,9 @@ class TrainSpecPage(wx.Panel):
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(1)
         #print(event.GetSelection())
-        for trained_model_name in self.train_spec['trained_model_dict'][model_name].keys():
-            self.combo_box_6.Insert(trained_model_name, 1)
+        for data_name in self.train_spec['trained_model_dict'][model_name].keys():
+            for trained_model_name in self.train_spec['trained_model_dict'][model_name][data_name].keys():
+                self.combo_box_6.Insert(data_name + '/' + trained_model_name, 1)
         #print(self.train_spec['trained_model_dict'].keys())
 
 #        self.train_spec['checkpoint_name'] = event.GetString().split("_")[0] + "_" + self.train_spec['checkpoint_name'].split("_")[-1]
@@ -346,14 +347,17 @@ class TrainSpecPage(wx.Panel):
 
     def OnDatasetSelect(self, event):
         if self.ModelSelected() != wx.NOT_FOUND:
+            self.train_spec['checkpoint_name'] = event.GetString()
             self.SetCheckpointname()
     
     def SetCheckpoint(self, model_name):
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(1)
         #print(event.GetSelection())
-        for trained_model_name in self.train_spec['trained_model_dict'][model_name].keys():
-            self.combo_box_6.Insert(trained_model_name, 1)
+        for data_name in self.train_spec['trained_model_dict'][model_name].keys():
+            for trained_model_name in self.train_spec['trained_model_dict'][model_name][data_name].keys():
+                self.combo_box_6.Insert(trained_model_name, 1)
+                #self.combo_box_6.Insert(data_name + '/' + trained_model_name, 1)
 
     def SetCheckpointname(self):
         #print('setcheckpointname', self.combo_box_6.GetSelection())
@@ -471,14 +475,14 @@ class TestSpecPage(wx.Panel):
     def __init__(self, parent, id):
         super(TestSpecPage, self).__init__(parent, id)
 
-        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY)
-        self.button_1 = wx.Button(self, wx.ID_ANY, _("Browse"))
-        self.text_ctrl_24 = wx.TextCtrl(self, wx.ID_ANY, "24")
-        self.button_2 = wx.Button(self, wx.ID_ANY, _("Browse"))
-        self.text_ctrl_25 = wx.TextCtrl(self, wx.ID_ANY, "25")
-        self.text_ctrl_26 = wx.TextCtrl(self, wx.ID_ANY, "26")
-        self.text_ctrl_27 = wx.TextCtrl(self, wx.ID_ANY, "27")
-        self.text_ctrl_28 = wx.TextCtrl(self, wx.ID_ANY, "28")
+        self.combo_box_5 = wx.ComboBox(self, wx.ID_ANY, choices=["5"], style = wx.CB_DROPDOWN | wx.CB_READONLY) # model select
+        self.button_1 = wx.Button(self, wx.ID_ANY, _("Browse")) # file browser
+        self.button_2 = wx.Button(self, wx.ID_ANY, _("Browse")) # folder browser
+        self.text_ctrl_24 = wx.TextCtrl(self, wx.ID_ANY, "24") # file names
+        self.text_ctrl_25 = wx.TextCtrl(self, wx.ID_ANY, "25") # path
+        self.text_ctrl_26 = wx.TextCtrl(self, wx.ID_ANY, "26") # number of images
+        self.text_ctrl_27 = wx.TextCtrl(self, wx.ID_ANY, "27") # image sizes
+        self.text_ctrl_28 = wx.TextCtrl(self, wx.ID_ANY, "28") # image types
         self.upload_list = None
 
         self.__do_layout()
@@ -490,33 +494,49 @@ class TestSpecPage(wx.Panel):
         label_14 = wx.StaticText(self, wx.ID_ANY, _("Model select"))
         label_14.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_4.Add(label_14, (1, 1), (1, 10), 0, 0)
-        grid_sizer_4.Add(self.combo_box_5, (2, 1), (1, 21), wx.EXPAND, 0)
+        grid_sizer_4.Add(self.combo_box_5, (1, 11), (1, 21), wx.EXPAND | wx.RIGHT, 30)
 
         label_24 = wx.StaticText(self, wx.ID_ANY, _("Upload images"))
-        label_24.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        grid_sizer_4.Add(label_24, (3, 1), (1, 10), 0, 0)
-        grid_sizer_4.Add(self.button_1, (5, 1), (1, 4), 0, 0)
-        grid_sizer_4.Add(self.text_ctrl_24, (5, 5), (1, 21), wx.EXPAND | wx.RIGHT, 30)
+        label_24.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, "Ubuntu"))
+        grid_sizer_4.Add(label_24, (3, 1), (1, 7), 0, 0)
+        grid_sizer_4.Add(self.button_1, (3, 8), (1, 4), 0, 0)
 
-        label_25 = wx.StaticText(self, wx.ID_ANY, _("Upload folders"))
-        label_25.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, ""))
-        grid_sizer_4.Add(label_25, (7, 1), (1, 10), 0, 0)
-        grid_sizer_4.Add(self.button_2, (9, 1), (1, 4), 0, 0)
-        grid_sizer_4.Add(self.text_ctrl_25, (9, 5), (1, 21), wx.EXPAND | wx.RIGHT, 30)
+        label_30 = wx.StaticText(self, wx.ID_ANY, _("Upload folders"))
+        label_30.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, "Ubuntu"))
+        grid_sizer_4.Add(label_30, (5, 1), (1, 7), 0, 0)
+        grid_sizer_4.Add(self.button_2, (5, 8), (1, 4), 0, 0)
 
-        label_26 = wx.StaticText(self, wx.ID_ANY, _("Number of images use from the file"))
+        label_29 = wx.StaticText(self, wx.ID_ANY, _("File names"))
+        label_29.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
+        grid_sizer_4.Add(label_29, (7, 1), (1, 10), 0, 0)
+        grid_sizer_4.Add(self.text_ctrl_24, (7, 11), (1, 21), wx.EXPAND | wx.RIGHT, 30)
+
+        label_25 = wx.StaticText(self, wx.ID_ANY, _("File path"))
+        label_25.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
+        grid_sizer_4.Add(label_25, (9, 1), (1, 10), 0, 0)
+        grid_sizer_4.Add(self.text_ctrl_25, (9, 11), (1, 21), wx.EXPAND | wx.RIGHT, 30)
+
+        #label_26 = wx.StaticText(self, wx.ID_ANY, _("Number of images use from the file"))
+        label_26 = wx.StaticText(self, wx.ID_ANY, _("Number of data"))
         label_26.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
-        grid_sizer_4.Add(label_26, (11, 1), (1, 11), 0, 0)
-        grid_sizer_4.Add(self.text_ctrl_26, (13, 1), (1, 25), wx.EXPAND | wx.RIGHT, 30)
+        grid_sizer_4.Add(label_26, (11, 1), (1, 10), 0, 0)
+        grid_sizer_4.Add(self.text_ctrl_26, (11, 11), (1, 21), wx.EXPAND | wx.RIGHT, 30)
 
-        label_27 = wx.StaticText(self, wx.ID_ANY, _("Leave blank to use all"))
-        label_27.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.LIGHT, 0, ""))
-        grid_sizer_4.Add(label_27, (14, 1), (1, 10), 0, 0)
+        #label_27 = wx.StaticText(self, wx.ID_ANY, _("Leave blank to use all"))
+        #label_27 = wx.StaticText(self, wx.ID_ANY, _("Leave blank to use all"))
+        #label_27.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.LIGHT, 0, ""))
+        #grid_sizer_4.Add(label_27, (14, 1), (1, 10), 0, 0)
 
-        label_28 = wx.StaticText(self, wx.ID_ANY, _("Number of images to show per category"))
+        #label_28 = wx.StaticText(self, wx.ID_ANY, _("Number of images to show per category"))
+        label_28 = wx.StaticText(self, wx.ID_ANY, _("data sizes"))
         label_28.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
-        grid_sizer_4.Add(label_28, (15, 1), (1, 14), 0, 0)
-        grid_sizer_4.Add(self.text_ctrl_27, (17, 1), (1, 25), wx.EXPAND | wx.RIGHT, 30)
+        grid_sizer_4.Add(label_28, (15, 1), (1, 10), 0, 0)
+        grid_sizer_4.Add(self.text_ctrl_27, (15, 11), (1, 21), wx.EXPAND | wx.RIGHT, 30)
+
+        label_27 = wx.StaticText(self, wx.ID_ANY, _("data type"))
+        label_27.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
+        grid_sizer_4.Add(label_27, (13, 1), (1, 10), 0, 0)
+        grid_sizer_4.Add(self.text_ctrl_28, (13, 11), (1, 21), wx.EXPAND | wx.RIGHT, 30)
 
         grid_sizer_4.AddGrowableCol(20)
         self.SetSizer(grid_sizer_4)
@@ -532,7 +552,8 @@ class TestSpecPage(wx.Panel):
 
         if dlg.ShowModal() == wx.ID_OK:
             self.upload_list = dlg.GetPaths()
-            self.text_ctrl_28.SetValue(str(dlg.GetFilenames()))
+            self.text_ctrl_24.SetValue(str(dlg.GetFilenames()))
+            self.text_ctrl_25.SetValue("")
 
     def OnDirDialog(self, event):
         #dlg = MDD.MultiDirDialog(None, title="", defaultPath="",#self.test_spec['default_dataset_path'],
@@ -543,14 +564,23 @@ class TestSpecPage(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             #self.upload_list = dlg.GetPaths()
             self.upload_list = [dlg.GetPath()]
-            self.text_ctrl_28.SetValue(str(self.upload_list))
+            self.text_ctrl_24.SetValue("")
+            self.text_ctrl_25.SetValue(str(dlg.GetPath()))
 
     def setTestSpec(self, test_spec):
         self.test_spec = test_spec
+
+        self.text_ctrl_24.SetValue("")
+        self.text_ctrl_25.SetValue("")
+        self.text_ctrl_26.SetValue("")
+        self.text_ctrl_27.SetValue("")
+        self.text_ctrl_28.SetValue("")
+
         self.combo_box_5.Delete(0)
         for model_name in test_spec['trained_model_dict'].keys():
-            for trained_model_name in test_spec['trained_model_dict'][model_name].keys():
-                self.combo_box_5.Insert(trained_model_name, 0)
+            for data_name in test_spec['trained_model_dict'][model_name].keys():
+                for trained_model_name in test_spec['trained_model_dict'][model_name][data_name].keys():
+                    self.combo_box_5.Insert(model_name + '/' + data_name + '/' + trained_model_name, 0)
         #self.text_ctrl_24.SetValue("")
         #self.text_ctrl_25.SetValue("")
 
@@ -565,11 +595,7 @@ class TestSpecPage(wx.Panel):
         idx = self.combo_box_5.GetSelection()
         assert idx != wx.NOT_FOUND, "[!] Not Found"
         trained_model_name = self.combo_box_5.GetStringSelection()
-        for model_name in self.test_spec['model_dict'].keys():
-            if trained_model_name in self.test_spec['trained_model_dict'][model_name].keys():
-                spec['model_name'] = model_name
-                spec['trained_model_name'] = trained_model_name
-                break
+        spec['model_name'], spec['data_name'], spec['trained_model_name'] = trained_model_name.split('/')
         spec['upload_list'] = self.upload_list
         #self.test_spec += [self.text_ctrl_26.GetLineText(0)]
         #self.test_spec += [self.text_ctrl_27.GetLineText(0)]
@@ -602,7 +628,6 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
     def createTestSpecPanel(self, parent, id):
         self.test_spec_count += 1
         test_spec_panel = TestSpecPage(parent, id)
-        print(test_spec_panel, dict)
         self.AddPage(test_spec_panel, _("Test Spec %d"%self.test_spec_count), select=True)
         return test_spec_panel
 

@@ -145,10 +145,11 @@ def call_iris(train_ratio=0.7, meta=False):
 
 class DATA_PROVIDER(object):
     def __init__(self,
-                 train_x,
-                 train_y,
-                 test_x,
+                 train_x=None,
+                 train_y=None,
+                 test_x=None,
                  test_y = None,
+                 train=True,
                  valid_x = None,
                  valid_y = None,
                  label_info = None,
@@ -159,35 +160,38 @@ class DATA_PROVIDER(object):
                  valid_split = 0.0):
         self.x, self.y, self.is_file, self.data_type, self.input_size = {}, {}, {}, data_type, input_size
         self.label_info = label_info
-        if shuffle:
-            train_x, train_y = _shuffle(train_x, train_y)
+        if train:
+            if shuffle:
+                train_x, train_y = _shuffle(train_x, train_y)
 
-        if valid_x is not None and valid_y is not None:
-            self.x['valid'] = valid_x
-            self.y['valid'] = one_hot(valid_y, classes=num_classes)
-            self.is_file['valid'] = True if type(valid_x[0]) == str else False
+            if valid_x is not None and valid_y is not None:
+                self.x['valid'] = valid_x
+                self.y['valid'] = one_hot(valid_y, classes=num_classes)
+                self.is_file['valid'] = True if type(valid_x[0]) == str else False
 
-            valid = 0
-        elif valid_split > 0.:
-            assert valid_split < 1.0
-            valid = int(len(train_x)*valid_split)
-            self.x['valid'] = train_x[:valid]
-            self.y['valid'] = one_hot(train_y[:valid], classes=num_classes)
-            self.is_file['valid'] = True if type(train_x[0]) == np.str_ else False
-        print(train_y, test_y)
-        self.x['train'] = train_x[valid:]
-        self.y['train'] = one_hot(train_y[valid:], classes=num_classes)
-        self.x['test'] = test_x
-        self.y['test'] = test_y
-        print(self.x['train'][0])
-        print(self.x['test'][0])
-        print(self.x['valid'][0])
+                valid = 0
+            elif valid_split > 0.:
+                assert valid_split < 1.0
+                valid = int(len(train_x)*valid_split)
+                self.x['valid'] = train_x[:valid]
+                self.y['valid'] = one_hot(train_y[:valid], classes=num_classes)
+                self.is_file['valid'] = True if type(train_x[0]) == np.str_ else False
+            print(train_y)
+            self.x['train'] = train_x[valid:]
+            self.y['train'] = one_hot(train_y[valid:], classes=num_classes)
+            self.is_file['train'] = True if type(self.x['train'][0]) == np.str_ else False
+            print(self.is_file, type(self.x['train'][0]))
+            self.x['test'] = test_x
+            self.y['test'] = test_y
+            self.is_file['test'] = True if type(self.x['test'][0]) == np.str_ else False
+        else:
+            assert test_x is not None, "[!] test data"
+            self.x['test'] = test_x
+            self.y['test'] = test_y
+            self.is_file['test'] = True if type(self.x['test'][0]) == np.str_ else False
 
         # inspecting data
         # data is given as file path #TODO : what if the data is some string?
-        self.is_file['train'] = True if type(self.x['train'][0]) == np.str_ else False
-        self.is_file['test'] = True if type(self.x['test'][0]) == np.str_ else False
-        print(self.is_file, type(self.x['train'][0]))
     @property
     def label(self):
         return self.label_info if self.label_info is not None else \
