@@ -14,16 +14,19 @@ from utils.data import *
 from utils.util import *
 
 from sklearn.metrics import confusion_matrix
-import pandas as pd
-import seaborn as sns
+# import pandas as pd
+# import seaborn as sns
 
 def conf_mtx(y_true, y_pred, label_names=None):
     mtx = confusion_matrix(y_true, y_pred)
     if label_names is None or len(mtx) != len(label_names):
-        label_names = list(np.arange(len(mtx)))
-    cm = pd.DataFrame(mtx,columns=label_names,index=label_names)
-    sns.heatmap(cm, annot=True)
-
+        label_names = list(np.arange(len(y_true)))
+    print(mtx)
+    # cm = pd.DataFrame(mtx,columns=label_names,index=label_names)
+    # try:
+    # heatmap = sns.heatmap(cm, annot=True, fmt='d')
+    # except:
+    #     raise ValueError("Confusion matrix values must be integers.")
 """
     #1 By dictionary
         Train Data path : [Project Folder]/dataset/[data name]/Data/[Class name]/[Data_name].[format]
@@ -123,39 +126,44 @@ class NET(object):
         from math import log10
         idx = int(log10(len(y_pred)))+1
         classes = int(log10(y_pred_score.shape[1]))+1
+        model_result = './log'
         if y is not None:
             if x.shape[0] == 1: # A image
                 print("The prediction is [{}], result : [{}]".format(np.argmax(y_pred), np.argmax(y_pred)==y))
             else:
-                if not path.exists(self.model_result):
-                    makedirs(self.model_result)
-                with open(path.join(self.model_result, self.model_name+'_eval.txt')) as f:
-                    f.write('{} | {} | {} | {}'.foramt('order'.rjust(idx),
+                if not path.exists(model_result):
+                    makedirs(model_result)
+                with open(path.join(model_result, self.model_name+'_eval.txt'), 'w') as f:
+                    f.write('{} | {} | {} | {}\n'.format('order'.rjust(idx),
                                                        'pred'.rjust(classes),
                                                        'label'.rjust(classes),
                                                        'Correct'))
-                    f.write('-' * (max(idx,5) + 3*3+7 + max(classes,4)+max(classes,5)))
+                    f.write('-' * (max(idx,5) + 3*3+7 + max(classes,4)+max(classes,5))+'\n')
                     for i,v in enumerate(y_pred):
                         cor = 'True' if v == y[i] else 'False'
-                        f.write('{} | {} | {} | {}'.format(str(i).zfill(idx).rjust(5),
+                        f.write('{} | {} | {} | {}\n'.format(str(i).zfill(idx).rjust(5),
                                                            str(v).zfill(classes).rjust(4),
                                                            str(y[i]).zfill(classes).rjust(5),
                                                            cor.rjust(7)))
                     f.write('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
             print('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
             if visualize:
-                conf_mtx(y, self.predict(x), label_name)
+                y = np.squeeze(y)
+                y_pred = np.argmax(self.predict(x), axis=1)
+                if len(y.shape) > 1: #
+                    y = np.argmax(y, axis=1)
+                conf_mtx(y, y_pred, label_name)
         else:
             if x.shape[0] == 1: # A image
                 print("The result is [{}]".format(np.argmax(y_pred)))
             else:
-                if not path.exists(self.model_result):
-                    makedirs(self.model_result)
-                with open(path.join(self.model_result, self.model_name+'_predict.txt')) as f:
-                    f.write('{} | {}'.foramt('order'.rjust(idx), 'pred'.rjust(classes)))
-                    f.write('-' * (max(idx,5) + 3 + max(classes,4)))
+                if not path.exists(model_result):
+                    makedirs(model_result)
+                with open(path.join(model_result, self.model_name+'_predict.txt'), 'w') as f:
+                    f.write('{} | {}\n'.format('order'.rjust(idx), 'pred'.rjust(classes)))
+                    f.write('-' * (max(idx,5) + 3 + max(classes,4))+'\n')
                     for i,v in enumerate(y_pred):
-                        f.write('{} | {}'.format(str(i).zfill(idx).rjust(5), str(v).zfill(classes).rjust(4)))
+                        f.write('{} | {}\n'.format(str(i).zfill(idx).rjust(5), str(v).zfill(classes).rjust(4)))
                     f.write('The number of samples : [{}]'.format(y_pred.shape[0]))
             print('The number of samples : [{}]'.format(y_pred.shape[0]))
 

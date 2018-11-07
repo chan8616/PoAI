@@ -37,7 +37,6 @@ class LOGISTIC(NET):
     def build_model(self, conf):
 
         input_ = Input(shape=(conf['input_shape']), name='data')
-        print(conf['input_shape'])
         x = Flatten()(input_)
         x = Dense(512, activation='relu', name='lin')(x)
         y_pred = Dense(self.num_classes, activation='softmax', name='prediction')(x)

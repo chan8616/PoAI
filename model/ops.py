@@ -69,8 +69,8 @@ def txt2label(file_path, istrain):
             aassert (len(label[line]) == len(label[line-1]), "inconsistency detected on {}th line.".format(line))
             line += 1
     # line = len(label[0])
-    print("label", label)
-    print(file_path)
+    # print("label", label)
+    # print(file_path)
     classes_path = os.path.join('/', *file_path.split('/')[:-1], 'classes')
     if istrain:
         # classes = sorted(list(set([lb[i] for lb in label ]) for i in range(line)))

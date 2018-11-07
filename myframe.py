@@ -175,12 +175,12 @@ class MyFrame(wx.Frame):
             self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), True)
     def refresh_trees(self):
         self.data_tree.DeleteChildren(self.data_tree.GetRootItem())
-        self.extendTree(self.data_tree, self.data_tree.GetRootItem)
+        self.extendTree(self.data_tree, self.data_tree.GetRootItem())
         self.appendTree(self.data_tree, self.data_tree.GetRootItem(), get_data_list())
         self.data_tree.Expand(self.data_tree.GetRootItem())
 
         self.model_tree.DeleteChildren(self.model_tree.GetRootItem())
-        self.extendTree(self.model_tree, self.model_tree.GetRootItem)
+        self.extendTree(self.model_tree, self.model_tree.GetRootItem())
         self.appendTree(self.model_tree, self.model_tree.GetRootItem(), get_model_list(), True)
         self.model_tree.Expand(self.model_tree.GetRootItem())
 
@@ -232,13 +232,13 @@ class MyFrame(wx.Frame):
                     modelID = self.getModelsDict()[0][spec['model_name']]
                     #modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 else:
-                    modelID = self.getModelsDict()[1][spec['model_name']][spec['trained_model_name']]
+                    modelID = self.getModelsDict()[1][spec['model_name']][spec['data_name']][spec['trained_model_name']]
                     #modelID = page.train_spec['trained_model_dict'][args['model_name']]
                 model_spec = self.getModelSpec(modelID)
 
             elif phase == 'Test':
                 dataset_spec = self.getTestDataSpec(spec['upload_list'])
-                modelID = self.getModelsDict()[1][spec['model_name']][spec['trained_model_name']]
+                modelID = self.getModelsDict()[1][spec['model_name']][spec['data_name']][spec['trained_model_name']]
                 model_spec = self.getModelSpec(modelID)
                 args.update({'gpu':"cpu"})
 
@@ -265,16 +265,24 @@ class MyFrame(wx.Frame):
             data_spec['input_shapes']
             """
 
-            print(args.keys())
-            print(dataset_spec.keys())
-            print(dataset_spec['data'].keys())
-            print(model_spec)
-            print(model_spec.keys())
+            #print(args.keys())
+            #print(dataset_spec.keys())
+            #print(dataset_spec['data'].keys())
+            #print(model_spec)
+            #print(model_spec.keys())
 #        self.model_name, self.dataset_name, gpu_selected, \
         #        self.checkpoint, self.epochs, self.batch_size, self.optimizer, \
         #        self.learning_rate, self.interval, self.random_seed \
         #        self.input_shape, self.output_size = spec[1:]
-            #print(**args)
+
+#            print("\nrun args\n", args.keys())
+#            def keys(d):
+#                for k, v in d.items():
+#                    if isinstance(v, dict):
+#                        print(k, v.keys())
+#                        keys(v)
+#            keys(args)
+#            print("\n")
             Run(**args)
             self.refresh_trees()
             pass
@@ -317,7 +325,7 @@ class MyFrame(wx.Frame):
                 self.data_tree.GetRootItem()
 
     def treeOnActivated(self, tree, OnSpecFun):
-        print('TreeOnActivated')
+        #print('TreeOnActivated')
         item = tree.GetFocusedItem()
 
         if tree.GetItemParent(item) == tree.GetRootItem():
@@ -384,16 +392,14 @@ class MyFrame(wx.Frame):
         ######################################################
 
         data_spec['data'] = {'train':{'x':[], 'y':[]}, 'test':{'x':[], 'y':[]}}
-        print("case 4")
+        #print("case 4")
         for path in paths:
             if os.path.isdir(path):
                 child = [os.path.join(path, child) for child in os.listdir(path)]
                 data_spec_ = self.getTestDataSpec(child)
-                print(data_spec_)
                 data_spec.update(data_spec_)
             else:
                 data_spec['data']['test']['x'] += [path]
-    
         from PIL import Image
 
         #data = np.concatenate((train[:,0], test[:,0]), axis=0)
@@ -412,7 +418,8 @@ class MyFrame(wx.Frame):
                 if input_shape not in input_shapes:
                     input_shapes.append(input_shape)
             else:
-                print("We don't support type %s"%ext)
+                print("We don't support type %s in %s"%(ext, x))
+                data_spec['data']['test']['x'].remove(x)
 
         data_spec['input_types'] = types
         data_spec['input_shapes'] = input_shapes
@@ -613,7 +620,7 @@ class MyFrame(wx.Frame):
             'n_layer':'None',
             'input_size':'None',
             'output_size':'None'})
-        print(spec)
+        #print(spec)
         return spec
 #    def setModelSpec(self):
 #        pass
@@ -690,9 +697,12 @@ class MyFrame(wx.Frame):
             childName = self.model_tree.GetItemText(childID)
             model_dict[childName] = childID
             trained_model_dict[childName] = {}
-            for grandchildID in self.childrenToList(self.model_tree, childID):
+            for grandchildID in self.childrenToList(self.model_tree, childID):  # dataset
                 grandchildName = self.model_tree.GetItemText(grandchildID)
-                trained_model_dict[childName][grandchildName] = grandchildID
+                trained_model_dict[childName][grandchildName] = {}
+                for grandgrandchildID in self.childrenToList(self.model_tree, grandchildID): # trained model
+                    grandgrandchildName = self.model_tree.GetItemText(grandgrandchildID)
+                    trained_model_dict[childName][grandchildName][grandgrandchildName] = grandgrandchildID
         return model_dict, trained_model_dict
 
     def getDataDict(self):
@@ -735,7 +745,7 @@ class MyFrame(wx.Frame):
             trained_model_list_ = self.childrenToList(self.model_tree, model)
             trained_model_list_names += [self.model_tree.GetItemText(x) for x in trained_model_list_]
             trained_model_list += trained_model_list_
-            print(model, model_name, trained_model_list_names, trained_model_list)
+            #print(model, model_name, trained_model_list_names, trained_model_list)
         test_spec['trained_model_list_names'] = trained_model_list_names
         return test_spec
 
@@ -798,7 +808,7 @@ class MyFrame(wx.Frame):
             self.extendTree(tree, rootID)
         else:
             print("tree item is already exist!")
-        print(rootID, tree.GetItemData(rootID))
+        #print(rootID, tree.GetItemData(rootID))
 
     # input tree, root name, child list
     def appendTree(self, tree, parentID, childlist, model=False):
