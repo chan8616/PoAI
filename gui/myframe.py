@@ -7,6 +7,8 @@ import wx
 import wx.aui
 import os
 import sys
+import gettext
+_ = gettext.gettext
 # begin wxGlade: dependencies
 # end wxGlade
 

@@ -4,6 +4,8 @@ import wx.lib.agw.multidirdialog as MDD
 
 import os
 
+import gettext
+_ = gettext.gettext
 
 class DataSpecPage(wx.Panel):
     def __init__(self, parent, id):
@@ -362,20 +364,23 @@ class TrainSpecPage(wx.Panel):
     def SetCheckpointname(self):
         #print('setcheckpointname', self.combo_box_6.GetSelection())
         if self.combo_box_6.GetSelection() == 0 or self.combo_box_6.GetSelection() == wx.NOT_FOUND: # New or another name
-            if self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
+            #print("checkpoint name", self.train_spec['checkpoint_name'])
+            while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) is not wx.NOT_FOUND:
                 #print("name founded")
                 try:
                     num = int(self.train_spec['checkpoint_name'].split("_")[-1])
-                    idx = self.train_spec['ckeckpoint_name'].rfind("_")
+                    idx = self.train_spec['checkpoint_name'].rfind("_")
                     self.train_spec['checkpoint_name'] = self.train_spec['checkpoint_name'][:idx]
-                    #print("num founded")
+                    #print("num founded", num, idx)
                 except ValueError:
-                    num = 1
+                    num = 0
                     #print("num not founded")
-                while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
-                    #print("name founded")
-                    self.train_spec['checkpoint_name'] += "_" + str(num)
-                    num += 1
+                num += 1
+                self.train_spec['checkpoint_name'] += "_" + str(num)
+#                while self.combo_box_6.FindString(self.train_spec['checkpoint_name']) != wx.NOT_FOUND:
+#                    print("name founded")
+#                    self.train_spec['checkpoint_name'] += "_" + str(num)
+#                    num += 1
             self.setTrainSpec_checkpoint_name()
 
     def OnCheckpointnameSelected(self, event):
@@ -667,12 +672,14 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
 
         page = self.GetPage(self.GetSelection())
         if isinstance(page, TrainSpecPage):
+            print("Train Start")
             phase = 'Train'
             spec = page.getTrainSpec()
             ### return dict
             ### model_name, dataset_name, gpu, trained_model_name, checkpoint_name,
             ### max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
         elif isinstance(page, TestSpecPage):
+            print("Test Start")
             phase = 'Test'
             spec = page.getTestSpec()
             ### return dict
