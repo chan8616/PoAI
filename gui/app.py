@@ -8,7 +8,8 @@
 # Manual changes will be overwritten without warning!
 
 import wx
-import gettext
+import sys
+sys.path.insert(0, 'gui')
 from myframe import MyFrame
 #from myframeevent import MyFrameEvent
 

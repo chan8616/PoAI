@@ -145,7 +145,7 @@ class Run(object):
             interval=kargs['interval']
             max_epochs=kargs['max_epochs']
         else:
-            data['name'], checkpoint_name = model_spec['trained']['model_dir'].split('/')[2:]
+            dataset_spec['name'], checkpoint_name = model_spec['trained']['model_dir'].split('/')[2:]
             max_epochs=model_spec['trained']['epochs']
             batch_size=model_spec['trained']['batch_size']
             interval=1
@@ -160,7 +160,7 @@ class Run(object):
 
         opt = select_optimizer(optimizer,float(learning_rate)) if train else None
         load_model(model_name=model_name,
-                  dataset_name=data['name'],
+                  dataset_name=dataset_spec['name'],
                   name=checkpoint_name,
                   data=data,
                   data_provider=provider,
