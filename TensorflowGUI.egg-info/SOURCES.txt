@@ -3,6 +3,7 @@ setup.py
 TensorflowGUI.egg-info/PKG-INFO
 TensorflowGUI.egg-info/SOURCES.txt
 TensorflowGUI.egg-info/dependency_links.txt
+TensorflowGUI.egg-info/requires.txt
 TensorflowGUI.egg-info/top_level.txt
 bin/TensorflowGUI
 gui/__init__.py
