@@ -36,51 +36,54 @@ def conf_mtx(y_true, y_pred, label_names=None):
     Checkpoint directory : [Project Folder]/checkpoint/[Model_name]/[Epoch or Iteration].ckpt
 
 """
+
 class NET(object):
     def __init__(self,
-                 dataset_name,
-                 num_classes,
-                 pretrained,
-                 optimizer, # it contains information about optimizer
-                 batch_size,
-                 checkpoint_dir,
                  model,
-                 freeze_pretrained,
                  init,
-                 name,
-                 input_shape,
+                 dataset_name = None,
+                 num_classes = None,
+                 pretrained = None,
+                 optimizer = None, # it contains information about optimizer
+                 batch_size = None,
+                 checkpoint_dir = None,
+                 freeze_pretrained = None,
+                 name = None,
+                 input_shape = None,
                  checkpoint_name = 'model',
-                 additional_layer = [1024]
+                 model_ckpt = None
                  ):
 
-        self.add_layer= additional_layer
-        # 1. Define a name and a checkpoint path of the model
 
-        self.model_name = name
-        checkpoint_dir = path.join(checkpoint_dir, model, dataset_name)
-        if not path.exists(checkpoint_dir):
-            makedirs(checkpoint_dir)
-        self.model_dir = path.join(checkpoint_dir, self.model_name)
-        self.model_ckpt = path.join(self.model_dir, checkpoint_name+'.h5')
+        # 1. Define a name and a checkpoint path of the model
+        if model_ckpt:
+            assert os.path.exists(model_ckpt), '[!] Wrong checkpoint file path : [{}]'.format(model_ckpt)
+            assert model_ckpt.split('.')[-1] == 'h5', "[!] Wrong file ext : [{}]".format(model_ckpt.split('.')[-1])
+            self.model_ckpt = model_ckpt
+            self.model_dir  = path_parent(model_ckpt, 1)
+            self.model_name = os.path.basename(self.model_dir)
+        else:
+            self.model_name = name
+            checkpoint_dir = path.join(checkpoint_dir, model, dataset_name)
+            if not path.exists(checkpoint_dir):
+                makedirs(checkpoint_dir)
+            self.model_dir = path.join(checkpoint_dir, self.model_name)
+            self.model_ckpt = path.join(self.model_dir, checkpoint_name+'.h5')
         self.model_meta = path.join(self.model_dir, 'meta')
-        self.num_classes = num_classes
 
         # 2. Check if the model is saved
         model_check = self.model_check()
-
-        # 3. Set initialization policy
-        weight_init = init[0] if pretrained and not model_check else init[1]
-
-        # 4. Set some arguments of the models
-        self.optimizer = optimizer['opt']
-
-        # 5. Set configurations for building model and callbacks
 
         # 6. Build or load the model
         if model_check:
             # model_conf overwritten from the initiative.
             self.model, self.model_conf, self.epochs = self.restore()
         else:
+            # 3. Set initialization policy
+            weight_init = init[0] if pretrained and not model_check else init[1]
+            # 4. Set some arguments of the models
+            self.optimizer = optimizer['opt']
+            self.num_classes = num_classes
             self.model_conf = {'name':self.model_name,
                                'model_dir':self.model_dir,
                                'ckpt_path':self.model_ckpt,
@@ -94,6 +97,7 @@ class NET(object):
                                'learning_rate':optimizer['lr'],
                                'optimizer_arg':optimizer['arg']}
             self.epochs = 0
+            # 5. Set configurations for building model and callbacks
             self.build_model(self.model_conf)
             # save model's configuration
             pickle_save(self.prog_info, self.model_meta)
@@ -170,7 +174,49 @@ class NET(object):
     def test_with_generator(self, generator, steps, label_name=None, visualize=False):
         y_pred_score = self.predict_with_generator(generator, steps)
         y_pred = np.argmax(y_pred_score, axis=1)
-
+        from math import log10
+        idx = int(log10(len(y_pred)))+1
+        classes = int(log10(y_pred_score.shape[1]))+1
+        model_result = './log'
+        if y is not None:
+            if x.shape[0] == 1: # A image
+                print("The prediction is [{}], result : [{}]".format(np.argmax(y_pred), np.argmax(y_pred)==y))
+            else:
+                if not path.exists(model_result):
+                    makedirs(model_result)
+                with open(path.join(model_result, self.model_name+'_eval.txt'), 'w') as f:
+                    f.write('{} | {} | {} | {}\n'.format('order'.rjust(idx),
+                                                       'pred'.rjust(classes),
+                                                       'label'.rjust(classes),
+                                                       'Correct'))
+                    f.write('-' * (max(idx,5) + 3*3+7 + max(classes,4)+max(classes,5))+'\n')
+                    for i,v in enumerate(y_pred):
+                        cor = 'True' if v == y[i] else 'False'
+                        f.write('{} | {} | {} | {}\n'.format(str(i).zfill(idx).rjust(5),
+                                                           str(v).zfill(classes).rjust(4),
+                                                           str(y[i]).zfill(classes).rjust(5),
+                                                           cor.rjust(7)))
+                    f.write('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
+            print('The number of samples : [{}], Accuracy : [{:.4f}]'.format(y_pred.shape[0], self.accuracy(x,y)))
+            if visualize:
+                y = np.squeeze(y)
+                y_pred = np.argmax(self.predict(x), axis=1)
+                if len(y.shape) > 1: #
+                    y = np.argmax(y, axis=1)
+                conf_mtx(y, y_pred, label_name)
+        else:
+            if x.shape[0] == 1: # A image
+                print("The result is [{}]".format(np.argmax(y_pred)))
+            else:
+                if not path.exists(model_result):
+                    makedirs(model_result)
+                with open(path.join(model_result, self.model_name+'_predict.txt'), 'w') as f:
+                    f.write('{} | {}\n'.format('order'.rjust(idx), 'pred'.rjust(classes)))
+                    f.write('-' * (max(idx,5) + 3 + max(classes,4))+'\n')
+                    for i,v in enumerate(y_pred):
+                        f.write('{} | {}\n'.format(str(i).zfill(idx).rjust(5), str(v).zfill(classes).rjust(4)))
+                    f.write('The number of samples : [{}]'.format(y_pred.shape[0]))
+            print('The number of samples : [{}]'.format(y_pred.shape[0]))
     def merge_callbacks(self, conf):
         name, batch_size = self.model_conf['name'], self.model_conf['batch_size']
 
@@ -292,3 +338,7 @@ class NET(object):
     @property
     def trained(self):
         return True if self.epochs > 0 else False
+
+    @property
+    def image_shape(self):
+        return self.model_conf['input_shape']

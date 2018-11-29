@@ -64,8 +64,7 @@ class RF(NET):
         print("[@] Training is done...")
 
     def train_with_provider(self, generator, epochs, save=True):
-        pass
-
+        assert False, "[!] It does not support data_provider"
 
     @property
     def prog_info(self):

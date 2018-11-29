@@ -16,6 +16,9 @@ import sys
 import urllib
 
 
+def path_parent(_path, level=1):
+    assert level > 0
+    return os.sep.join(_path.split(os.sep)[:-level])
 
 
 def _download(url, directory, file_name=None):
@@ -61,7 +64,9 @@ def pickle_load(file_name):
         return pickle.load(f, encoding='bytes')
 
 def image_load(file_path, resize=0):            # load image as float numpy array
-    img = Image.open(file_path).resize((resize,resize)) if resize > 0 else Image.open(file_path)
+    img = Image.open(file_path)
+    if resize > 0:
+        img = img.resize((resize, resize))
     return np.array(img).astype(float)/255.
 
 def aassert(statement, message=''): #TODO

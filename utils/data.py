@@ -128,7 +128,7 @@ def call_iris(train_ratio=0.7, meta=False):
     if meta:
         return {'ntrain':len(train_data),
                 'ntest':len(test_data),
-                'classes':4,
+                'classes':3,
                 'label_names':['Setosa', 'Versicolour', 'Virginica'],
                 'input_shape':(4,),
                 'data_type':'P'}
@@ -137,7 +137,7 @@ def call_iris(train_ratio=0.7, meta=False):
                 'train_y':train_label,
                 'test_x':test_data,
                 'test_y':test_label,
-                'classes':4,
+                'classes':3,
                 'label_names':['Setosa', 'Versicolour', 'Virginica'],
                 'input_shape':(4,),
                 'data_type':'P'}
