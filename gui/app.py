@@ -9,7 +9,6 @@
 
 import wx
 import sys
-import gettext
 sys.path.insert(0, 'gui')
 from myframe import MyFrame
 #from myframeevent import MyFrameEvent
