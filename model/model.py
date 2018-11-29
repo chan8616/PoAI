@@ -78,6 +78,7 @@ class NET(object):
         if model_check:
             # model_conf overwritten from the initiative.
             self.model, self.model_conf, self.epochs = self.restore()
+            self.num_classes = num_classes
         else:
             # 3. Set initialization policy
             weight_init = init[0] if pretrained and not model_check else init[1]
@@ -95,7 +96,8 @@ class NET(object):
                                'batch_size':batch_size,
                                'optimizer':optimizer['name'],
                                'learning_rate':optimizer['lr'],
-                               'optimizer_arg':optimizer['arg']}
+                               'optimizer_arg':optimizer['arg'],
+                               'num_classes':num_classes}
             self.epochs = 0
             # 5. Set configurations for building model and callbacks
             self.build_model(self.model_conf)
