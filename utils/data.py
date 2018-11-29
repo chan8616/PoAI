@@ -25,7 +25,7 @@ def one_hot(y, classes=None):
 
 def call_mnist(meta=False):
     from tensorflow.python.keras.datasets.mnist import load_data
-    (train_data, train_label), (test_data, test_label) = load_data(path='/tmp/mnist.npz')
+    (train_data, train_label), (test_data, test_label) = load_data()#path='/tmp/mnist.npz') from window, cause error.
     train_data, train_label = _shuffle(train_data, train_label)
     if meta:
         return {'ntrain':len(train_data),

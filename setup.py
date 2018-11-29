@@ -7,6 +7,8 @@ setup(name='TensorflowGUI',
     scripts=['bin/TensorflowGUI'],
     install_requires=[
         'tensorflow==1.8',
+        'h5py',
+        'wxpython', 
         'Pillow',
         'matplotlib',
         'sklearn'],
