@@ -46,21 +46,20 @@ class MyFrame(wx.Frame):
         wxglade_tmp_menu.Append(wx.ID_ANY, _("Test Spec"), "")
         #wxglade_tmp_menu.Append(wx.ID_ANY, _("Run"), "")
         self.frame_menubar.Append(wxglade_tmp_menu, _("Models"))
-        #self.SetMenuBar(self.frame_menubar)
+        self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
 
         # Tool Bar
         self.tool_bar = wx.ToolBar(self, wx.ID_ANY)
         self.SetToolBar(self.tool_bar)
-        #self.tool_new = self.tool_bar.AddTool(1, _("New"), wx.Bitmap("./icons/add.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("New"), "")
-        #self.tool_load = self.tool_bar.AddTool(2, _("Load"), wx.Bitmap("./icons/upload.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Load"), "")
-        #self.tool_save = self.tool_bar.AddTool(3, _("Save"), wx.Bitmap("./icons/diskette(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
-        #self.tool_bar.AddSeparator()
+        self.tool_new = self.tool_bar.AddTool(1, _("New"), wx.Bitmap("./icons/add.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("New"), "")
+        self.tool_load = self.tool_bar.AddTool(2, _("Load"), wx.Bitmap("./icons/upload.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Load"), "")
+        self.tool_save = self.tool_bar.AddTool(3, _("Save"), wx.Bitmap("./icons/diskette(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
+        self.tool_bar.AddSeparator()
         self.tool_train_spec = self.tool_bar.AddTool(4, _("Train Spec"), wx.Bitmap("./icons/3d-modeling.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
-        self.tool_bar.AddSeparator()
-        self.tool_test = self.tool_bar.AddTool(6, _("Test Spec"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test Spec"), "")
-        self.tool_bar.AddSeparator()
         self.tool_run = self.tool_bar.AddTool(5, _("Run"), wx.Bitmap("./icons/play(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
+        self.tool_bar.AddSeparator()
+        self.tool_test = self.tool_bar.AddTool(6, _("Test"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
         self.tool_bar.EnableTool(self.tool_run.GetId(), False)
         # Tool Bar end
 
@@ -139,9 +138,9 @@ class MyFrame(wx.Frame):
 
     def __do_binds(self):
         # tool bar
-        #self.tool_bar.Bind(wx.EVT_TOOL, self.OnNew, id=self.tool_new.GetId())
-        #self.tool_bar.Bind(wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
-        #self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnNew, id=self.tool_new.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
+        self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainSpec, id=self.tool_train_spec.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnRun, id=self.tool_run.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTestSpec, id=self.tool_test.GetId())
@@ -230,7 +229,7 @@ class MyFrame(wx.Frame):
                 assert spec['dataset_name']
                 datasetID = self.getDataDict()[spec['dataset_name']]
                 dataset_spec = self.getDataSpec(datasetID)
-                
+
                 if spec['trained_model_name'] is None:
                     modelID = self.getModelsDict()[0][spec['model_name']]
                     #modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
@@ -256,7 +255,7 @@ class MyFrame(wx.Frame):
                     'input_size':'None',
                     'output_size':'None'}
             """
-            args['dataset_spec'] = dataset_spec 
+            args['dataset_spec'] = dataset_spec
 #            args['dataset_spec'] = self.getDataSpec(datasetID)
             """
             data_spec['name']
@@ -359,7 +358,7 @@ class MyFrame(wx.Frame):
 
     def modelTreeOnActivated(self, event):
         #self.treeOnActivated(self.model_tree, self.OnModelSpec)
-        tree = self.model_tree 
+        tree = self.model_tree
         item = tree.GetFocusedItem()
         root = tree.GetRootItem()
         Parent = lambda x: tree.GetItemParent(x)
@@ -407,7 +406,7 @@ class MyFrame(wx.Frame):
 
         #data = np.concatenate((train[:,0], test[:,0]), axis=0)
         x_data = data_spec['data']['test']['x']
-        
+
         types = []
         input_shapes = []
         for x in x_data:
@@ -458,6 +457,7 @@ class MyFrame(wx.Frame):
             t = data_info['data_type']
             data_spec['input_types'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
             data_spec['input_shapes'] = str(data_info['input_shape'])[1:-1]
+            data_spec['input_shape'] = list(data_info['input_shape'])
             return  data_spec
             ######################################################
 
@@ -585,6 +585,7 @@ class MyFrame(wx.Frame):
 
         types = []
         input_shapes = []
+        input_shape = []
         for x in x_data:
             fname, ext = os.path.splitext(x)
             if ext not in types:
@@ -595,11 +596,13 @@ class MyFrame(wx.Frame):
                 input_shape = str(img.shape)[1:-1]
                 if input_shape not in input_shapes:
                     input_shapes.append(input_shape)
+                    input_shape.append(img.shape)
             else:
                 print("We don't support type %s"%ext)
 
         data_spec['input_types'] = types
         data_spec['input_shapes'] = input_shapes
+        data_spec['input_shape'] = input_shape
 
         return data_spec
 
@@ -610,8 +613,8 @@ class MyFrame(wx.Frame):
         path = self.model_tree.GetItemData(modelID)
         trained = pickle_load(os.path.join(path, "meta")) \
             if os.path.exists(os.path.join(path, "meta.pickle")) else \
-            None 
-            
+            None
+
         spec['name'] = name
         spec['path'] = path
         if trained is not None:
@@ -624,6 +627,11 @@ class MyFrame(wx.Frame):
             'input_size':'None',
             'output_size':'None'})
         #print(spec)
+        spec = get_model_list(name)
+        t = spec['input_type']
+        spec['input_type'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
+        print(get_model_list(name))
+        return get_model_list(name)
         return spec
 #    def setModelSpec(self):
 #        pass
@@ -632,13 +640,13 @@ class MyFrame(wx.Frame):
         ### return dict
         ### max_epochs, learning_rate, seed, batch_size, interval, checkpoint_name, solver_list,
         ### dataset_dict, model_dict, trained_model_dict
-        train_spec = {'max_epochs': '10000', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'.1', \
+        train_spec = {'max_epochs': '10', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'.1', \
                 'checkpoint_name': "checkpoint", "solver_list":get_optimizer_list()}
 
         train_spec['dataset_dict'] = self.getDataDict()
         train_spec['model_dict'], train_spec['trained_model_dict'] = self.getModelsDict()
         return train_spec
-        
+
         ### return dict
         ### max_epochs, learning_rate, seed, batch_size, interval,
         ### learning_rate, dataset_list, model_list, dataset_names, model_names,
@@ -689,7 +697,7 @@ class MyFrame(wx.Frame):
         train_spec['solver_list'] = get_optimizer_list()
 
         return train_spec
-    
+
     def getModelsDict(self):
         ### return dict, dict
         ### name:ID, name:dict
@@ -714,8 +722,8 @@ class MyFrame(wx.Frame):
         dataset_dict = {}
         for ID in self.childrenToList(self.data_tree, self.data_tree.GetRootItem()):
             name = self.data_tree.GetItemText(ID)
-            dataset_dict[name] = ID 
-        return dataset_dict 
+            dataset_dict[name] = ID
+        return dataset_dict
 
     def getTestSpec(self):
         ### return dict
@@ -723,7 +731,7 @@ class MyFrame(wx.Frame):
         test_spec = {'default_dataset_path':self.data_tree.GetItemData(self.data_tree.GetRootItem())}
         test_spec['model_dict'], test_spec['trained_model_dict'] = self.getModelsDict()
         return test_spec
-        
+
         ### return dict
         ### model_list, model_names, trained_model_list_names
         test_spec['model_dict'] = {}

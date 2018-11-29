@@ -86,10 +86,10 @@ class DataSpecPage(wx.Panel):
 #        grid_sizer_1.Add(label_6, (6, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
 #        grid_sizer_1.Add(self.text_ctrl_8, (6, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
-        #label_8 = wx.StaticText(self, wx.ID_ANY, _("Maximum Samples per Class"), style=wx.ALIGN_LEFT)
-        #label_8.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
-        #grid_sizer_1.Add(label_8, (7, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
-        #grid_sizer_1.Add(self.text_ctrl_7, (7, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        # label_8 = wx.StaticText(self, wx.ID_ANY, _("Maximum Samples per Class"), style=wx.ALIGN_LEFT)
+        # label_8.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
+        # grid_sizer_1.Add(label_8, (7, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.text_ctrl_7, (7, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
         self.SetSizer(grid_sizer_1)
 #        grid_sizer_1.AddGrowableRow(18)
@@ -110,7 +110,7 @@ class ModelSpecPage(wx.Panel):
 
     def setModelSpec(self, model_spec):
         self.text_ctrl_9.SetValue("")
-        self.text_ctrl_9.write(model_spec['type'])
+        self.text_ctrl_9.write(model_spec['network_type'])
         self.text_ctrl_10.SetValue("")
         self.text_ctrl_10.write(model_spec['input_type'])
 #        self.text_ctrl_11.SetValue("")
@@ -218,7 +218,7 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_6.Insert("New",0)
         if 'trained' in train_spec:
             self.SetCheckpointname()
-        
+
         self.combo_box_7.Delete(0)
         for name in train_spec['solver_list']:
             self.combo_box_7.Insert(name, 0)
@@ -350,7 +350,7 @@ class TrainSpecPage(wx.Panel):
         if self.ModelSelected() != wx.NOT_FOUND:
             self.train_spec['checkpoint_name'] = event.GetString()
             self.SetCheckpointname()
-    
+
     def SetCheckpoint(self, model_name):
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(1)
@@ -666,7 +666,7 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         ###                     max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
         ###
         ###             (test): model_list, model_names, trained_model_list_names,
-        ###             
+        ###
         ###                     model_name, upload_list
 
         page = self.GetPage(self.GetSelection())
