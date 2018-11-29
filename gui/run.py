@@ -11,8 +11,10 @@ from tensorflow import keras
 """
 
 from model.simple import LOGISTIC # simple classifier
-from model.vgg19 import VGGNET19
-from model.resnet import RESNET152
+from model.vgg import VGGNET19, VGGNET16
+from model.resnet import RESNET50, RESNET101, RESNET152
+from model.densenet import DENSENET121, DENSENET169, DENSENET201
+from model.inception import INCEPTIONV3
 from model.svm import SVM
 from model.rf import RF
 #TODO:
@@ -35,11 +37,43 @@ OPEN_DATA = {'mnist':call_mnist,
 """
     model list
 """
-IMG_MODEL = ('logistic', 'res152', 'vgg19')
+IMG_MODEL = ('logistic',
+             'resnet50',
+             'resnet101',
+             'resnet152',
+             'densenet121',
+             'densenet169',
+             'densenet201',
+             'inception_v3',
+             'vgg16',
+             'vgg19')
 PIT_MODEL = ('logistic','svm','randomforest')
 TMS_MODEL = ('lstm','gru','ae_lstm')
-MODEL = {'logistic':LOGISTIC, 'res152':RESNET152, 'vgg19':VGGNET19,
-         'svm':SVM, 'randomforest':RF}
+_CLASSIFICATION_ = ('logistic',
+             'resnet50',
+             'resnet101',
+             'resnet152',
+             'densenet121',
+             'densenet169',
+             'densenet201',
+             'inception_v3',
+             'vgg16',
+             'vgg19',
+             'logistic',
+             'svm',
+             'randomforest')
+MODEL = {'logistic':LOGISTIC,
+         'vgg16':VGGNET16,
+         'vgg19':VGGNET19,
+         'resnet50':RESNET50,
+         'resnet101':RESNET101,
+         'resnet152':RESNET152,
+         'densenet121':DENSENET121,
+         'densenet169':DENSENET169,
+         'densenet201':DENSENET201,
+         'inception_v3':INCEPTIONV3,
+         'svm':SVM,
+         'randomforest':RF}
          # 'lstm':None, 'gru':None, 'ae_lstm':None}
 OPTIMIZER = {'adam':keras.optimizers.Adam,
              'gradient':keras.optimizers.SGD,
@@ -53,7 +87,19 @@ def get_model_list(name=None):
         return model_list
     else:
         assert name in model_list, "[!] There is no such model."
-        return MODEL[name]
+        if name in IMG_MODEL:
+            Type = 'I'
+        elif name in PIT_MODEL:
+            Type = 'P'
+        elif name in TMS_MODEL:
+            Type = 'S'
+        else:
+            assert False, "[!] Not Supported"
+        if name in _CLASSIFICATION_:
+            Task = 'Classification'
+        else:
+            assert False, "[!] Not Supported"
+        return {'input_type':Type, 'network_type':Task}
 def get_data_list(name=None):
     data_list = list(OPEN_DATA.keys())
     if name is None:
@@ -74,27 +120,22 @@ def get_optimizer_list(name=None):
     MACRO
 """
 DATA_TYPE = ('I', 'P', "T") # Image, Point, Time-series
-IMAGE_SIZE = 224      # Fixed
-def data_select(dataset, train=True):
-    spec = {'data_type':dataset['data_type'],
-            'input_shape' : (IMAGE_SIZE, IMAGE_SIZE, 3),
-            'classes':None,
-            'label_names' : None}
+def data_select(dataset, input_size, train=True):
     try:
-        spec['name'] = dataset['name']
-    except KeyError: # a file only
+        dataset['name']
+    except:
         test_images = dataset['data']['test']['x']
-        spec['test_x'] = np.array([image_load(img) for img in test_images]).astype(np.float32)
-        spec['test_y'] = None
-        return spec, None
+        data = {'test_x':np.array([image_load(img) for img in test_images]).astype(np.float32),
+                'test_y':None}
+        return data, None
     if dataset['name'] in OPEN_DATA.keys(): # data is provided
         return OPEN_DATA[dataset['name']](), None
     else:    # own dataset
         if train:
             DP = lambda : DATA_PROVIDER(train_x=dataset['data']['train']['x'],
                                         train_y=dataset['data']['train']['y'],
-                                        input_size = IMAGE_SIZE,
-                                        data_type = dataset['type'],
+                                        input_size = input_size[0],
+                                        data_type = dataset['data_type'],
                                         valid_split = float(dataset['valid_rate']),
                                         num_classes=int(dataset['output_size']),
                                         train=train)
@@ -106,11 +147,11 @@ def data_select(dataset, train=True):
                 dataset['data']['test']['y'] = None
             DP = lambda x, y: DATA_PROVIDER(test_x=dataset['data']['test']['x'],
                                             test_y=dataset['data']['test']['y'],
-                                            input_size = IMAGE_SIZE,
-                                            data_type=dataset['type'],
+                                            input_size = input_size[0],
+                                            data_type=dataset['data_type'],
                                             train=train)
         data_provider = DP()
-        return spec, data_provider
+        return None, data_provider
 
 class Run(object):
     def __init__(self,
@@ -119,8 +160,8 @@ class Run(object):
                 model_spec,
                 dataset_spec,
                 gpu,
-                #                learning_rate,
-                #                checkpoint_name,
+                learning_rate = 1e-3,
+                checkpoint_name = '',
                 #                batch_size,
                 #                optimizer,
                 #                interval,
@@ -130,52 +171,63 @@ class Run(object):
             **kargs : for advanced_option (NotImplemented)
         """
 
-        # mode, model, data, gpu, checkpoint, max_epochs, batch_size, optimizer, lr, interval, random_seed
-            # ['vgg19', {'dataset_name':'cifar10'}, '0', 'init', '5', '32', 'gradient','0.0001', '1', '0']#spec[1:]
-
-
-        train = True if phase is 'Train' else False
-        data, provider = data_select(dataset_spec, train)
-
-        if train:
-            learning_rate=kargs['learning_rate']
-            checkpoint_name=kargs['checkpoint_name']
-            batch_size=kargs['batch_size']
-            optimizer=kargs['optimizer']
-            interval=kargs['interval']
-            max_epochs=kargs['max_epochs']
-        else:
-            dataset_spec['name'], checkpoint_name = model_spec['trained']['model_dir'].split('/')[2:]
-            max_epochs=model_spec['trained']['epochs']
-            batch_size=model_spec['trained']['batch_size']
-            interval=1
-
+        is_train = True if phase is 'Train' else False
+        is_trained = True if 'trained' in model_spec.keys() else False
+        # print(kargs)
+        print(model_spec)
+        # print(dataset_spec)
+        # assert False
+        # data, provider = data_select(dataset_spec, train)
         if gpu.isdigit() :
             print('gpu [{}] is selected'.format(gpu))
             os.environ['CUDA_VISIBLE_DEVICES'] = gpu
         else:
-            #TODO
             print('cpu is selected')
+            os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 
+        if is_train:
+            interval=float(kargs['interval'])
+            max_epochs=int(kargs['max_epochs'])
+            if is_trained:
+                model_ckpt = model_spec['trained']['ckpt_path']
+                load_model(model_ckpt = model_ckpt,
+                           model_name = model_name,
+                           curr_data = dataset_spec,
+                           epochs = max_epochs,
+                           step_interval = interval,
+                           is_train = is_train)
+            else:
+                batch_size=int(kargs['batch_size'])
+                optimizer=kargs['optimizer']
+                load_model(model_name = model_name,
+                           base_data_spec = dataset_spec,
+                           curr_data = dataset_spec,
+                           name = checkpoint_name,
+                           opt_arg = [optimizer, float(learning_rate)],
+                           epochs = max_epochs,
+                           batch_size = batch_size,
+                           is_train = is_train,
+                           step_interval = interval)
+        else:
+            assert is_trained, "[!] train first"
+            model_ckpt = model_spec['trained']['ckpt_path']
+            load_model(model_ckpt = model_ckpt,
+                       model_name = model_name,
+                       curr_data = dataset_spec,
+                       is_train = is_train)
 
-        opt = select_optimizer(optimizer,float(learning_rate)) if train else None
-        load_model(model_name=model_name,
-                  dataset_name=dataset_spec['name'],
-                  name=checkpoint_name,
-                  data=data,
-                  data_provider=provider,
-                  optimizer=opt,
-                  epochs = int(max_epochs),
-                  batch_size = int(batch_size),
-                  train=train,
-                  step_interval=float(interval))
 
 def select_optimizer(optimizer='gradient', lr=1e-3):
-    assert optimizer in OPTIMIZER.keys(), "[!] There is no such optimizer."
-    return {'opt': OPTIMIZER[optimizer](lr=lr),
-            'name' : optimizer,
-            'lr': lr,
-            'arg':None}
+    if optimizer in OPTIMIZER.keys():
+        return {'opt': OPTIMIZER[optimizer](lr=lr),
+                'name' : optimizer,
+                'lr': lr,
+                'arg':None}
+    else:
+        return {'opt': keras.optimizers.SGD(lr=1e-3),
+                'name' : 'gradient',
+                'lr': lr,
+                'arg':None}
 
 def arg_inspection(train, data_type, model_name, step_interval):
     if train:
@@ -190,44 +242,55 @@ def arg_inspection(train, data_type, model_name, step_interval):
         assert model_name in TMS_MODEL, "[!] {} is not for {}".format(model_name, data_type)
 
 def load_model(
-               model_name,          # model name
+               curr_data,           # input data
+               model_name           = None, # model name
+               base_data_spec       = None, # base dataset spec
                name                 = None,  # additional_name
-               dataset_name         = None,  # dataset name, open data e.g. mnist or hand-crafted dataset
-               data_provider        = None, # if own dataset is given, flag it
-               data                 = None,  # dictionary : {train_x:-, train_y:-, test_x:-, test_y:-(optional)}
-               optimizer            = None,
+               # dataset_name         = None,  # dataset name, open data e.g. mnist or hand-crafted dataset
+               # data_provider        = None, # if own dataset is given, flag it
+               # data                 = None,  # dictionary : {train_x:-, train_y:-, test_x:-, test_y:-(optional)}
+               opt_arg              = None,  # optimizer arguments [optimizer name, learning_rate]
                visualize            = False,
                batch_size           = 64,
                epochs               = 20,
                checkpoint_dir       = "checkpoint",
                checkpoint_name      = None,
-               train                = False,    # if True, Do train
+               is_train             = False,    # if True, Do train
                epoch_interval       = 5,     # save interval
-               step_interval        = 0.1,     # obtaining state rate per epoch
-               pre_trained          = {'init':True,'freeze':False}      # by imagenet
+               step_interval        = 1.0,     # obtaining state rate per epoch
+               pre_trained          = {'init':True,'freeze':False},      # by imagenet
+               model_ckpt           = None # if trained.
                ):
-    optimizer = optimizer if optimizer is not None else {'opt': keras.optimizers.SGD(lr=1e-3),
-                                       'name' : 'gradient',
-                                       'lr': 1e-3,
-                                       'arg':None}
+
+
+    # 0. set an optimizer
+    try:
+        optimizer = select_optimizer(opt_arg[0], float(opt_arg[1]))
+    except:
+        optimizer = select_optimizer()
 
     # 1. validation model
-    arg_inspection(train, data['data_type'], model_name, step_interval)
+    arg_inspection(is_train, curr_data['data_type'], model_name, step_interval)
+
     # 2. call the instance of the network
-    model = MODEL[model_name](dataset_name=dataset_name,
-                              num_classes=data['classes'],
-                              pretrained=pre_trained['init'],
-                              optimizer=optimizer,
-                              batch_size = batch_size,
-                              checkpoint_dir=checkpoint_dir,
-                              freeze_pretrained = pre_trained['freeze'],
-                              input_shape=data['input_shape'],
-                              name = name
-                              )
-    # 3. check and load the specified model
-    #if not (train or test): # model_meta
+    if model_ckpt:
+        model = MODEL[model_name](model_ckpt=model_ckpt)
+    else:
+        model = MODEL[model_name](dataset_name=base_data_spec['name'], #
+                                  num_classes=int(base_data_spec['output_size']),
+                                  pretrained=pre_trained['init'],
+                                  optimizer=optimizer,
+                                  batch_size = batch_size,
+                                  checkpoint_dir=checkpoint_dir, #
+                                  freeze_pretrained = pre_trained['freeze'],
+                                  input_shape=base_data_spec['input_shape'],
+                                  name = name)
+
+    # 3. arrange dataset
+    data, data_provider = data_select(curr_data, model.image_shape, is_train)
+
     # 6.2 train the model.
-    if train:
+    if is_train:
         if data_provider is None:
             model.train(x=data['train_x'],
                         y=data['train_y'],
@@ -250,15 +313,15 @@ def load_model(
 
     # 6.3 test the model.
     else:
-        assert model.trained, " [@] Train model first."
+        assert model.trained, " [@] Train the model first (Recommend removing the model checkpoint dir)."
         if data_provider is None:
             model.test(x = data['test_x'],
                        y = data['test_y'],
-                       label_name = data['label_names'],
+                       # label_name = data['label_names'],
                        visualize=visualize)
         else:
             g, steps = data_provider('test', batch_size)
             model.test_with_generator(generator = g,
                                      steps = steps,
-                                     label_name = data['label_names'],
+                                     # label_name = data['label_names'],
                                      visualize  = visualize)
