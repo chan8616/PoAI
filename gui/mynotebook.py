@@ -17,8 +17,8 @@ class DataSpecPage(wx.Panel):
         self.text_ctrl_5 = wx.TextCtrl(self, wx.ID_ANY, "5", style=wx.TE_READONLY)
         self.text_ctrl_6 = wx.TextCtrl(self, wx.ID_ANY, "6", style=wx.TE_READONLY)
 #        self.combo_box_1 = wx.ComboBox(self, wx.ID_ANY, choices=["combo_box_1"], style=wx.CB_DROPDOWN)
-        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "8")
-        self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "7")
+        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, "8", style=wx.TE_READONLY)
+        self.text_ctrl_7 = wx.TextCtrl(self, wx.ID_ANY, "7", style=wx.TE_READONLY)
 
         self.__do_layout()
 
@@ -35,7 +35,7 @@ class DataSpecPage(wx.Panel):
         self.text_ctrl_6.SetValue("")
         self.text_ctrl_6.write(str(data_spec['input_types']))
         self.text_ctrl_8.SetValue("")
-        self.text_ctrl_8.write(str(len(data_spec['data']['test']) / len(data_spec['data']['train'])))
+        self.text_ctrl_8.write(str(len(data_spec['data']['test']['x']) / len(data_spec['data']['train']['x'])))
 
 #        self.text_ctrl_2.SetValue("")
 #        self.text_ctrl_2.write(data_spec['path'])
@@ -87,10 +87,10 @@ class DataSpecPage(wx.Panel):
         grid_sizer_1.Add(label_6, (6, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.text_ctrl_8, (6, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
-        label_8 = wx.StaticText(self, wx.ID_ANY, _("Maximum Samples per Class"), style=wx.ALIGN_LEFT)
-        label_8.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
-        grid_sizer_1.Add(label_8, (7, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.text_ctrl_7, (7, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
+        # label_8 = wx.StaticText(self, wx.ID_ANY, _("Maximum Samples per Class"), style=wx.ALIGN_LEFT)
+        # label_8.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
+        # grid_sizer_1.Add(label_8, (7, 1), (1, 10), wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.text_ctrl_7, (7, 11), (1, 27), wx.EXPAND | wx.RIGHT, 20)
 
         self.SetSizer(grid_sizer_1)
 #        grid_sizer_1.AddGrowableRow(18)
@@ -219,7 +219,7 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_6.Insert("New",0)
         if 'trained' in train_spec:
             self.SetCheckpointname()
-        
+
         self.combo_box_7.Delete(0)
         for name in train_spec['solver_list']:
             self.combo_box_7.Insert(name, 0)
@@ -351,7 +351,7 @@ class TrainSpecPage(wx.Panel):
         if self.ModelSelected() != wx.NOT_FOUND:
             self.train_spec['checkpoint_name'] = event.GetString()
             self.SetCheckpointname()
-    
+
     def SetCheckpoint(self, model_name):
         for i in range(1, self.combo_box_6.GetCount()):
             self.combo_box_6.Delete(1)
@@ -667,7 +667,7 @@ class MyNotebook(wx.lib.agw.aui.auibook.AuiNotebook):
         ###                     max_ecpochs, batch_size, optimizer, learning_rate, interval, speed
         ###
         ###             (test): model_list, model_names, trained_model_list_names,
-        ###             
+        ###
         ###                     model_name, upload_list
 
         page = self.GetPage(self.GetSelection())
