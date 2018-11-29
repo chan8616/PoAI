@@ -619,8 +619,8 @@ class MyFrame(wx.Frame):
             moduleID = self.model_tree.GetItemParent(dataID)
             model_name = self.model_tree.GetItemText(moduleID)
             spec['model_name'] = model_name
-        spec.update({'type':'None',
-            'n_layer':'None',
+        spec.update({'type':'Supervised - Classification',
+            'input_type':'Image',
             'input_size':'None',
             'output_size':'None'})
         #print(spec)
