@@ -1,9 +1,5 @@
 from setuptools import setup
 import os
-import pip
-pip.main(['install', '-U', '-f',
-    'https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04',
-    'wxPython'])
 
 setup(name='TensorflowGUI',
     version='0.1',
@@ -12,6 +8,7 @@ setup(name='TensorflowGUI',
     install_requires=[
         'tensorflow==1.8',
         'h5py',
+        'wxpython', 
         'Pillow',
         'matplotlib',
         'sklearn'],
