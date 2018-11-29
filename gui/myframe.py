@@ -46,20 +46,21 @@ class MyFrame(wx.Frame):
         wxglade_tmp_menu.Append(wx.ID_ANY, _("Test Spec"), "")
         #wxglade_tmp_menu.Append(wx.ID_ANY, _("Run"), "")
         self.frame_menubar.Append(wxglade_tmp_menu, _("Models"))
-        self.SetMenuBar(self.frame_menubar)
+        #self.SetMenuBar(self.frame_menubar)
         # Menu Bar end
 
         # Tool Bar
         self.tool_bar = wx.ToolBar(self, wx.ID_ANY)
         self.SetToolBar(self.tool_bar)
-        self.tool_new = self.tool_bar.AddTool(1, _("New"), wx.Bitmap("./icons/add.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("New"), "")
-        self.tool_load = self.tool_bar.AddTool(2, _("Load"), wx.Bitmap("./icons/upload.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Load"), "")
-        self.tool_save = self.tool_bar.AddTool(3, _("Save"), wx.Bitmap("./icons/diskette(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
-        self.tool_bar.AddSeparator()
+        #self.tool_new = self.tool_bar.AddTool(1, _("New"), wx.Bitmap("./icons/add.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("New"), "")
+        #self.tool_load = self.tool_bar.AddTool(2, _("Load"), wx.Bitmap("./icons/upload.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Load"), "")
+        #self.tool_save = self.tool_bar.AddTool(3, _("Save"), wx.Bitmap("./icons/diskette(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
+        #self.tool_bar.AddSeparator()
         self.tool_train_spec = self.tool_bar.AddTool(4, _("Train Spec"), wx.Bitmap("./icons/3d-modeling.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
-        self.tool_run = self.tool_bar.AddTool(5, _("Run"), wx.Bitmap("./icons/play(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
         self.tool_bar.AddSeparator()
-        self.tool_test = self.tool_bar.AddTool(6, _("Test"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
+        self.tool_test = self.tool_bar.AddTool(6, _("Test Spec"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test Spec"), "")
+        self.tool_bar.AddSeparator()
+        self.tool_run = self.tool_bar.AddTool(5, _("Run"), wx.Bitmap("./icons/play(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
         self.tool_bar.EnableTool(self.tool_run.GetId(), False)
         # Tool Bar end
 
@@ -138,9 +139,9 @@ class MyFrame(wx.Frame):
 
     def __do_binds(self):
         # tool bar
-        self.tool_bar.Bind(wx.EVT_TOOL, self.OnNew, id=self.tool_new.GetId())
-        self.tool_bar.Bind(wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
-        self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
+        #self.tool_bar.Bind(wx.EVT_TOOL, self.OnNew, id=self.tool_new.GetId())
+        #self.tool_bar.Bind(wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
+        #self.tool_bar.Bind(wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTrainSpec, id=self.tool_train_spec.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnRun, id=self.tool_run.GetId())
         self.tool_bar.Bind(wx.EVT_TOOL, self.OnTestSpec, id=self.tool_test.GetId())
