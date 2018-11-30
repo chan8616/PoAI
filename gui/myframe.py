@@ -105,9 +105,10 @@ class MyFrame(wx.Frame):
         # AuiNotebook end
 
         # log window
-        self.text_log = self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "log\n", style=wx.HSCROLL | wx.TE_LEFT | wx.TE_MULTILINE | wx.TE_READONLY)
+        self.text_log = self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.HSCROLL | wx.TE_LEFT | wx.TE_MULTILINE | wx.TE_READONLY)
         self.redir = Redirection(self.text_log)
         sys.stdout = self.redir
+        sys.stderr = self.redir
         # log window end
 
         self.__set_properties()
@@ -236,13 +237,14 @@ class MyFrame(wx.Frame):
                     modelID = self.getModelsDict()[0][spec['model_name']]
                     #modelID = page.train_spec['model_list'][page.train_spec['model_names'].index(args['dataset_name'])]
                 else:
-                    modelID = self.getModelsDict()[1][spec['model_name']][spec['data_name']][spec['trained_model_name']]
+                    modelID = self.getModelsDict()[1][spec['model_name']][spec['dataset_name']][spec['trained_model_name']]
                     #modelID = page.train_spec['trained_model_dict'][args['model_name']]
                 model_spec = self.getModelSpec(modelID)
 
             elif phase == 'Test':
                 dataset_spec = self.getTestDataSpec(spec['upload_list'])
-                modelID = self.getModelsDict()[1][spec['model_name']][spec['data_name']][spec['trained_model_name']]
+                print(spec)
+                modelID = self.getModelsDict()[1][spec['model_name']][spec['dataset_name']][spec['trained_model_name']]
                 model_spec = self.getModelSpec(modelID)
                 args.update({'gpu':"cpu"})
 
@@ -292,7 +294,6 @@ class MyFrame(wx.Frame):
             pass
 
 
-            return Run(**args)
         else:
             # self.tool_bar.EnableTool(self.tool_run.GetId(), False)
             pass
@@ -467,6 +468,7 @@ class MyFrame(wx.Frame):
 
 
         childs = os.listdir(data_path)
+
         # Data/, train.txt, test.txt
         if 'Data' in childs and 'train.txt' in childs and 'test.txt' in childs:
             #print('case1')
@@ -598,7 +600,6 @@ class MyFrame(wx.Frame):
                 input_shape = str(img.shape)[1:-1]
                 if input_shape not in input_shapes:
                     input_shapes.append(input_shape)
-                    input_shape.append(img.shape)
             else:
                 print("We don't support type %s"%ext)
 
@@ -617,22 +618,17 @@ class MyFrame(wx.Frame):
             if os.path.exists(os.path.join(path, "meta.pickle")) else \
             None
 
-        spec['name'] = name
-        spec['path'] = path
+        #spec['name'] = name
+        #spec['path'] = path
         if trained is not None:
             spec['trained'] = trained
             moduleID = self.model_tree.GetItemParent(dataID)
             model_name = self.model_tree.GetItemText(moduleID)
             spec['model_name'] = model_name
-        spec.update({'type':'Supervised - Classification',
-            'input_type':'Image',
-            'input_size':'None',
-            'output_size':'None'})
-        #print(spec)
-        spec = get_model_list(name)
-        t = spec['input_type']
-        spec['input_type'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
-        return get_model_list(name)
+        else:
+            spec = get_model_list(name)
+            t = spec['input_type']
+            spec['input_type'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
         return spec
 #    def setModelSpec(self):
 #        pass
@@ -642,7 +638,7 @@ class MyFrame(wx.Frame):
         ### max_epochs, learning_rate, seed, batch_size, interval, checkpoint_name, solver_list,
         ### dataset_dict, model_dict, trained_model_dict
         train_spec = {'max_epochs': '10', 'learning_rate':'1e-3', 'seed':'0', 'batch_size':'32', 'interval':'.1', \
-                'checkpoint_name': "checkpoint", "solver_list":get_optimizer_list()}
+                'checkpoint_name': "", "solver_list":get_optimizer_list()}
 
         train_spec['dataset_dict'] = self.getDataDict()
         train_spec['model_dict'], train_spec['trained_model_dict'] = self.getModelsDict()

@@ -204,7 +204,6 @@ class TrainSpecPage(wx.Panel):
         if 'trained' in train_spec:
             idx = self.combo_box_3.FindString(train_spec['trained']['dataset'])
             self.combo_box_3.SetSelection(idx)
-            self.train_spec['checkpoint_name'] = train_spec['trained']['dataset']
 
         from utils.util import gpu_inspection
 
@@ -217,7 +216,8 @@ class TrainSpecPage(wx.Panel):
         self.combo_box_6.Delete(0)
         self.combo_box_6.Insert("New",0)
         if 'trained' in train_spec:
-            self.SetCheckpointname()
+            self.train_spec['checkpoint_name'] = train_spec['trained']['name']
+            self.setTrainSpec_checkpoint_name()
 
         self.combo_box_7.Delete(0)
         for name in train_spec['solver_list']:
@@ -599,7 +599,7 @@ class TestSpecPage(wx.Panel):
         idx = self.combo_box_5.GetSelection()
         assert idx != wx.NOT_FOUND, "[!] Not Found"
         trained_model_name = self.combo_box_5.GetStringSelection()
-        spec['model_name'], spec['data_name'], spec['trained_model_name'] = trained_model_name.split('/')
+        spec['model_name'], spec['dataset_name'], spec['trained_model_name'] = trained_model_name.split('/')
         spec['upload_list'] = self.upload_list
         #self.test_spec += [self.text_ctrl_26.GetLineText(0)]
         #self.test_spec += [self.text_ctrl_27.GetLineText(0)]

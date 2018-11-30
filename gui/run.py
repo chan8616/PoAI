@@ -174,7 +174,6 @@ class Run(object):
         is_train = True if phase is 'Train' else False
         is_trained = True if 'trained' in model_spec.keys() else False
         # print(kargs)
-        print(model_spec)
         # print(dataset_spec)
         # assert False
         # data, provider = data_select(dataset_spec, train)
