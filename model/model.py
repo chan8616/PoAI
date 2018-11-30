@@ -226,8 +226,8 @@ class NET(object):
 
         return [ # keras.callbacks.Tensorboard(log_dir=conf['log_dir']),
             LossHistory(name, batch_size, conf['ntrain'], conf['step_interval']),
-            keras.callbacks.EarlyStopping(monitor='val_loss',
-                                          patience=conf['patience']),
+            #            keras.callbacks.EarlyStopping(monitor='val_loss',
+            #                                          patience=conf['patience']),
             keras.callbacks.ModelCheckpoint(filepath=conf['ckpt_path'],
                                             monitor='val_loss',
                                             save_best_only=conf['save_best_only'],
