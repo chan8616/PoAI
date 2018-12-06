@@ -626,8 +626,6 @@ class MyFrame(wx.Frame):
             spec['model_name'] = model_name
         else:
             spec = get_model_list(name)
-            t = spec['input_type']
-            spec['input_type'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
         return spec
 #    def setModelSpec(self):
 #        pass
