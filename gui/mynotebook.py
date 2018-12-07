@@ -212,6 +212,7 @@ class TrainSpecPage(wx.Panel):
         for gpu in range(num_gpus): # -1 means CPU
             self.combo_box_4.Insert(str(gpu),0)
         self.combo_box_4.Insert('cpu', 0)
+        self.combo_box_4.SetSelection(0)
 
         self.combo_box_6.Delete(0)
         self.combo_box_6.Insert("New",0)
@@ -225,6 +226,8 @@ class TrainSpecPage(wx.Panel):
         if 'trained' in train_spec:
             idx = self.combo_box_7.FindString(train_spec['trained']['optimizer'])
             self.combo_box_7.SetSelection(idx)
+        else:
+            self.combo_box_7.SetSelection(0)
 
         #self.text_ctrl_15.SetValue("")
         #self.text_ctrl_15.write(train_spec['checkpoint_name'])
