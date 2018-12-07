@@ -275,7 +275,7 @@ class TrainSpecPage(wx.Panel):
         #grid_sizer_3.Add(self.text_ctrl_14, (2, 1), (1, 18), wx.EXPAND, 0)
         grid_sizer_3.Add(self.text_ctrl_19, (2, 21), (1, 18), wx.EXPAND | wx.RIGHT, 30)
 
-        label_15 = wx.StaticText(self, wx.ID_ANY, _("Checkpoint name (Keep training or New one)"))
+        label_15 = wx.StaticText(self, wx.ID_ANY, _("Checkpoint name (Select trained or Write new name)"))
         label_15.SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "Ubuntu"))
         grid_sizer_3.Add(label_15, (4, 1), (1, 10), 0, 0)
 
