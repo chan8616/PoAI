@@ -351,7 +351,7 @@ class TrainSpecPage(wx.Panel):
 
     def OnDatasetSelect(self, event):
         if self.ModelSelected() != wx.NOT_FOUND:
-            self.train_spec['checkpoint_name'] = event.GetString()
+            self.train_spec['checkpoint_name'] = event.GetString() + '_1'
             self.SetCheckpointname()
 
     def SetCheckpoint(self, model_name):
