@@ -5,7 +5,7 @@ import tensorflow as tf
 import time
 
 from utils.util import image_load
-from run import load_model, data_select, select_optimizer, get_data_list
+from gui.run import load_model, data_select, select_optimizer, get_data_list
 
 flags = tf.app.flags
 
@@ -52,21 +52,38 @@ if not FLAGS.dataset in open_data_list:
                 'input_shape':(224, 224, 3),
                 'data_type':'I'} #TODO
 else: # use open data
-    dataspec = {'name' : FLAGS.dataset,
-                'label_names':None,
-                'input_shape':(224, 224, 3),
-                'data_type':'I'} #TODO
+    data_info = get_data_list(FLAGS.dataset)(meta=True)
+    data_spec = {}
+    data_spec['name'] = FLAGS.dataset
+    data_spec['data_path'] = 'Open Data'
+    data_spec['data_type'] = data_info['data_type']
+    data_spec['label_names'] = str(data_info['label_names'])
+    data_spec['data'] = {'train':{'x':np.zeros(data_info['ntrain'])}, 'test':{'x':np.zeros(data_info['ntest'])}}
+    data_spec['output_size'] = str(data_info['classes'])
+    t = data_info['data_type']
+    data_spec['input_types'] = 'Image' if t == 'I' else 'Point' if t == 'P' else 'Time-serise' if t == 'T' else 'Unknown'
+    data_spec['input_shapes'] = str(data_info['input_shape'])[1:-1]
+    data_spec['input_shape'] = list(data_info['input_shape'])
 
-data, provider = data_select(dataspec, FLAGS.train)
+#    dataspec = {'path' : 'Open Data',
+#                'name' : FLAGS.dataset,
+#                'label_names':None,
+#                'input_shape':(224, 224, 3),
+#                'output_size':str(10),
+#                'data_type':'I'} #TODO
+
+data, provider = data_select(data_spec, FLAGS.train)
 opt = select_optimizer(FLAGS.optimizer, FLAGS.learning_rate) if FLAGS.train else None
 
 load_model(model_name = FLAGS.model,
            name = FLAGS.name,
-           dataset_name = FLAGS.dataset,
-           data=data,
-           data_provider=provider,
-           optimizer=opt,
+           base_data_spec = data_spec, # base dataset spec
+           curr_data = data_spec,
+           #dataset_name = FLAGS.dataset,
+           #data=data,
+           #data_provider=provider,
+           opt_arg=opt,
            epochs=FLAGS.max_epochs,
            batch_size = FLAGS.max_epochs,
-           train=FLAGS.train,
+           is_train=FLAGS.train,
            step_interval=FLAGS.step_interval)
