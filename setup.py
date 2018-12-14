@@ -10,7 +10,6 @@ setup(name='TensorflowGUI',
     packages=['model', 'icons', 'utils', 'gui'],
     scripts=['bin/TensorflowGUI'],
     install_requires=[
-        'tensorflow==1.8',
         'h5py',
         'Pillow',
         'matplotlib',
