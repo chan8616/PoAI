@@ -84,7 +84,7 @@ def report_plot(data, i, model_name, log='./log'):
     d.append(data)
     t.append(i)
     pickle_save([d,t], os.path.join(log,model_name))
-    plt.plot(t,d)
+#    plt.plot(t,d)
     plt.pause(0.0001)
 
 def gpu_inspection():
