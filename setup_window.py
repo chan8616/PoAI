@@ -11,4 +11,4 @@ setup(name='TensorflowGUI',
         'Pillow',
         'matplotlib',
         'sklearn'],
-    python_requires='==3.6')
+    python_requires='>=3.6')
