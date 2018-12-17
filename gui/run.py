@@ -290,7 +290,8 @@ def load_model(
                                   checkpoint_dir=checkpoint_dir, #
                                   freeze_pretrained = pre_trained['freeze'],
                                   input_shape=base_data_spec['input_shape'],
-                                  name = name)
+                                  name = name,
+                                  label_names = curr_data['label_names'])
 
     # 3. arrange dataset
     data, data_provider = data_select(curr_data, model.image_shape, is_train)
@@ -324,10 +325,12 @@ def load_model(
             model.test(x = data['test_x'],
                        y = data['test_y'],
                        # label_name = data['label_names'],
+                       label_name = model.model_conf['label_names'],
                        visualize=visualize)
         else:
             g, steps = data_provider('test', batch_size)
             model.test_with_generator(generator = g,
                                      steps = steps,
                                      # label_name = data['label_names'],
+                                     label_name = model.model_conf['label_names'],
                                      visualize  = visualize)

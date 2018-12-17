@@ -243,7 +243,6 @@ class MyFrame(wx.Frame):
 
             elif phase == 'Test':
                 dataset_spec = self.getTestDataSpec(spec['upload_list'])
-                print(dataset_spec)
                 modelID = self.getModelsDict()[1][spec['model_name']][spec['dataset_name']][spec['trained_model_name']]
                 model_spec = self.getModelSpec(modelID)
                 args.update({'gpu':"cpu"})
@@ -454,7 +453,7 @@ class MyFrame(wx.Frame):
             # Open data setting
             data_spec['path'] = 'Open Data'
             data_spec['data_type'] = data_info['data_type']
-            data_spec['label_names'] = str(data_info['label_names'])
+            data_spec['label_names'] = data_info['label_names']
             data_spec['data'] = {'train':{'x':np.zeros(data_info['ntrain'])}, 'test':{'x':np.zeros(data_info['ntest'])}}
             data_spec['output_size'] = str(data_info['classes'])
             t = data_info['data_type']

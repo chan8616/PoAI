@@ -51,7 +51,8 @@ class NET(object):
                  name = None,
                  input_shape = None,
                  checkpoint_name = 'model',
-                 model_ckpt = None
+                 model_ckpt = None,
+                 label_names = None
                  ):
 
 
@@ -97,7 +98,8 @@ class NET(object):
                                'optimizer':optimizer['name'],
                                'learning_rate':optimizer['lr'],
                                'optimizer_arg':optimizer['arg'],
-                               'num_classes':num_classes}
+                               'num_classes':num_classes,
+                               'label_names':label_names}
             self.epochs = 0
             # 5. Set configurations for building model and callbacks
             self.build_model(self.model_conf)
@@ -163,7 +165,7 @@ class NET(object):
             if x.shape[0] == 1: # A image
                 print("The result is [{}]".format(np.argmax(y_pred)))
                 fig = plt.figure()
-                plt.title(y_pred if label_name is None else label_name[y_pred])
+                plt.title(np.argmax(y_pred) if label_name is None else label_name[np.argmax(y_pred)])
                 plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0]) 
                 plt.show()
             else:
@@ -214,7 +216,7 @@ class NET(object):
             if x.shape[0] == 1: # A image
                 print("The result is [{}]".format(np.argmax(y_pred)))
                 fig = plt.figure()
-                plt.title(y_pred if label_name is None else label_name[y_pred])
+                plt.title(np.argmax(y_pred) if label_name is None else label_name[np.argmax(y_pred)])
                 plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0]) 
                 plt.show()
             else:
