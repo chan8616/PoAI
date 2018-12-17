@@ -301,6 +301,7 @@ def load_model(
         if data_provider is None:
             model.train(x=data['train_x'],
                         y=data['train_y'],
+                        batch_size=batch_size,
                         epochs=epochs,
                         period=epoch_interval,
                         step_interval=step_interval,

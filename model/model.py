@@ -312,6 +312,7 @@ class NET(object):
     def train(self,
               x,
               y,
+              batch_size,
               epochs,
               period,
               step_interval,
@@ -330,6 +331,7 @@ class NET(object):
             return
         self.model.fit(x=x,
                        y=one_hot(y, classes=self.num_classes),
+                       batch_size=batch_size,
                        epochs=epochs,
                        validation_split=0.01,
                        initial_epoch=self.epochs,
