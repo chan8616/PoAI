@@ -162,6 +162,10 @@ class NET(object):
         else:
             if x.shape[0] == 1: # A image
                 print("The result is [{}]".format(np.argmax(y_pred)))
+                fig = plt.figure()
+                plt.title(y_pred if label_name is None else label_name[y_pred])
+                plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0]) 
+                plt.show()
             else:
                 if not path.exists(model_result):
                     makedirs(model_result)
@@ -209,6 +213,10 @@ class NET(object):
         else:
             if x.shape[0] == 1: # A image
                 print("The result is [{}]".format(np.argmax(y_pred)))
+                fig = plt.figure()
+                plt.title(y_pred if label_name is None else label_name[y_pred])
+                plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0]) 
+                plt.show()
             else:
                 if not path.exists(model_result):
                     makedirs(model_result)

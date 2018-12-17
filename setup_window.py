@@ -10,5 +10,6 @@ setup(name='TensorflowGUI',
         'wxpython', 
         'Pillow',
         'matplotlib',
-        'sklearn'],
+        'sklearn',
+        'keras'],
     python_requires='>=3.6')

@@ -125,9 +125,16 @@ def data_select(dataset, input_size, train=True):
         dataset['name']
     except:
         test_images = dataset['data']['test']['x']
-        data = {'test_x':np.array([image_load(img) for img in test_images]).astype(np.float32),
+        test_x = np.array([image_load(img, input_size[0]) for img in test_images]).astype(np.float32)
+#        if input_size != test_images.shape:
+#            if (input_size[-1] == 3 and test_images.shape[-1] == 1):
+#                
+#                data = {'test_x':test_x
+
+        data = {'test_x':test_x,
                 'test_y':None}
         return data, None
+
     if dataset['name'] in OPEN_DATA.keys(): # data is provided
         return OPEN_DATA[dataset['name']](), None
     else:    # own dataset
