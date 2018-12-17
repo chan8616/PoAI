@@ -243,6 +243,7 @@ class MyFrame(wx.Frame):
 
             elif phase == 'Test':
                 dataset_spec = self.getTestDataSpec(spec['upload_list'])
+                print(dataset_spec)
                 modelID = self.getModelsDict()[1][spec['model_name']][spec['dataset_name']][spec['trained_model_name']]
                 model_spec = self.getModelSpec(modelID)
                 args.update({'gpu':"cpu"})

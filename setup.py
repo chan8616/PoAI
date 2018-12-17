@@ -14,5 +14,6 @@ setup(name='TensorflowGUI',
         'h5py',
         'Pillow',
         'matplotlib',
-        'sklearn'],
+        'sklearn',
+        'keras'],
     python_requires='>=3.6')

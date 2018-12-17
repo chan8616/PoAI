@@ -38,7 +38,7 @@ class LOGISTIC(NET):
 
         input_ = Input(shape=(conf['input_shape']), name='data')
         x = Flatten()(input_)
-        x = Dense(512, activation='relu', name='lin')(x)
+#        x = Dense(512, activation='relu', name='lin')(x)
         y_pred = Dense(self.num_classes, activation='softmax', name='prediction')(x)
 
         self.model = Model(inputs=input_, outputs=y_pred)

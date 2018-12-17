@@ -67,6 +67,10 @@ def image_load(file_path, resize=0):            # load image as float numpy arra
     img = Image.open(file_path)
     if resize > 0:
         img = img.resize((resize, resize))
+    img = np.array(img)
+    if len(img.shape) == 2:
+        shape = img.shape
+        img = img.reshape(*shape, 1)
     return np.array(img).astype(float)/255.
 
 def aassert(statement, message=''): #TODO
@@ -84,7 +88,7 @@ def report_plot(data, i, model_name, log='./log'):
     d.append(data)
     t.append(i)
     pickle_save([d,t], os.path.join(log,model_name))
-#    plt.plot(t,d)
+    plt.plot(t,d)
     plt.pause(0.0001)
 
 def gpu_inspection():
