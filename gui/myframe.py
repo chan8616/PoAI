@@ -388,6 +388,7 @@ class MyFrame(wx.Frame):
 
     def getTestDataSpec(self, paths):
         data_spec = dict()
+
         #data_spec['path'] = paths
         ######################################################
         # Fix it if we can deal with various data in general.
@@ -424,6 +425,7 @@ class MyFrame(wx.Frame):
             else:
                 print("We don't support type %s in %s"%(ext, x))
                 data_spec['data']['test']['x'].remove(x)
+                types.remove(ext)
 
         data_spec['input_types'] = types
         data_spec['input_shapes'] = input_shapes
