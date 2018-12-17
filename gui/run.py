@@ -294,7 +294,13 @@ def load_model(
                                   label_names = curr_data['label_names'])
 
     # 3. arrange dataset
-    data, data_provider = data_select(curr_data, model.image_shape, is_train)
+    try:
+        data, data_provider = data_select(curr_data, model.image_shape, is_train)
+    except:
+        if curr_data['name'] in OPEN_DATA.keys(): # data is provided
+            return OPEN_DATA[curr_data['name']](), None
+        else:
+            raise "Not Yet Implemented"
 
     # 6.2 train the model.
     if is_train:
