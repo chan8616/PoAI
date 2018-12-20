@@ -50,7 +50,7 @@ class SVM(NET):
         pickle_save(self.model, self.model_ckpt)
 
     def build_model(self, conf):
-        self.model = svm.SVC()
+        self.model = svm.SVC(gamma='scale')
 
     def train(self,
               x,

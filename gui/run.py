@@ -298,7 +298,7 @@ def load_model(
         data, data_provider = data_select(curr_data, model.image_shape, is_train)
     except:
         if curr_data['name'] in OPEN_DATA.keys(): # data is provided
-            return OPEN_DATA[curr_data['name']](), None
+            data, data_provider = OPEN_DATA[curr_data['name']](), None
         else:
             raise "Not Yet Implemented"
 
