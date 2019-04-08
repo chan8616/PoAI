@@ -23,10 +23,32 @@ class DENSENET121(NET):
         y_pred = Dense(self.num_classes, activation='softmax', name='prediction')(x)
         self.model = Model(inputs=base_model.input, outputs=y_pred)
 
-        if conf['freeze'] and conf['init'] is not 'random':
-            for layer in self.model.layers:
-                layer.trainable = False
-        self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+        # if conf['freeze'] and conf['init'] is not 'random':
+        # for layer in self.model.layers:
+        for layer in base_model.layers:
+            layer.trainable = True
+        if conf['optimizer'] == 'adam':
+            # optimizer = keras.optimizers.Adam(lr=conf['learning_rate'])
+            # self.model.compile(optimizer='adam', loss='categorical_crossentropy',
+            self.model.compile(optimizer='adam', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'rmsprop':
+            # optimizer = keras.optimizers.RMSprop(lr=conf['learning_rate'])
+            # self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
+            self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'adagrad':
+            # optimizer = keras.optimizers.Adagrad(lr=conf['learning_rate'])
+            self.model.compile(optimizer='adagrad', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'adadelta':
+            # optimizer = keras.optimizers.Adadelta(lr=conf['learning_rate'])
+            self.model.compile(optimizer='adadelta', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        else:
+            # optimizer = keras.optimizers.SGD(lr=conf['learning_rate'])
+            self.model.compile(optimizer='sgd', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
 
 class DENSENET169(NET):
     def __init__(self, **kargs):
@@ -45,10 +67,33 @@ class DENSENET169(NET):
         x = base_model.output
         y_pred = Dense(self.num_classes, activation='softmax', name='prediction')(x)
         self.model = Model(inputs=base_model.input, outputs=y_pred)
-        if conf['freeze'] and conf['init'] is not 'random':
-            for layer in self.model.layers:
-                layer.trainable = False
-        self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+        # if conf['freeze'] and conf['init'] is not 'random':
+        # for layer in self.model.layers:
+        for layer in base_model.layers:
+            layer.trainable = True
+        if conf['optimizer'] == 'adam':
+            # optimizer = keras.optimizers.Adam(lr=conf['learning_rate'])
+            # self.model.compile(optimizer='adam', loss='categorical_crossentropy',
+            self.model.compile(optimizer='adam', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'rmsprop':
+            # optimizer = keras.optimizers.RMSprop(lr=conf['learning_rate'])
+            # self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
+            self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'adagrad':
+            # optimizer = keras.optimizers.Adagrad(lr=conf['learning_rate'])
+            self.model.compile(optimizer='adagrad', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'adadelta':
+            # optimizer = keras.optimizers.Adadelta(lr=conf['learning_rate'])
+            self.model.compile(optimizer='adadelta', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        else:
+            # optimizer = keras.optimizers.SGD(lr=conf['learning_rate'])
+            self.model.compile(optimizer='sgd', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
 
 class DENSENET201(NET):
     def __init__(self, **kargs):
@@ -67,7 +112,30 @@ class DENSENET201(NET):
         x = base_model.output
         y_pred = Dense(self.num_classes, activation='softmax', name='prediction')(x)
         self.model = Model(inputs=base_model.input, outputs=y_pred)
-        if conf['freeze'] and conf['init'] is not 'random':
-            for layer in self.model.layers:
-                layer.trainable = False
-        self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+        # if conf['freeze'] and conf['init'] is not 'random':
+        # for layer in self.model.layers:
+        for layer in base_model.layers:
+            layer.trainable = True
+        if conf['optimizer'] == 'adam':
+            # optimizer = keras.optimizers.Adam(lr=conf['learning_rate'])
+            # self.model.compile(optimizer='adam', loss='categorical_crossentropy',
+            self.model.compile(optimizer='adam', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'rmsprop':
+            # optimizer = keras.optimizers.RMSprop(lr=conf['learning_rate'])
+            # self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
+            self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'adagrad':
+            # optimizer = keras.optimizers.Adagrad(lr=conf['learning_rate'])
+            self.model.compile(optimizer='adagrad', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        elif conf['optimizer'] == 'adadelta':
+            # optimizer = keras.optimizers.Adadelta(lr=conf['learning_rate'])
+            self.model.compile(optimizer='adadelta', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
+        else:
+            # optimizer = keras.optimizers.SGD(lr=conf['learning_rate'])
+            self.model.compile(optimizer='sgd', loss='categorical_crossentropy',
+                               metrics=['accuracy'])
