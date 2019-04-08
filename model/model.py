@@ -128,7 +128,7 @@ class NET(object):
     def build_model(self):
         raise NotImplementedError('.')
 
-    def test(self, x, y=None, label_name=None, visualize=False):
+    def test(self, x, y=None, label_name=None, image_path=None, ground_truth=None, visualize=False):
         y_pred_score = self.predict(x)
         y_pred = np.argmax(y_pred_score, axis=1)
         from math import log10
@@ -171,14 +171,14 @@ class NET(object):
                 plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0])
                 plt.show()
             else:
-                print(y_pred)
                 if not path.exists(model_result):
                     makedirs(model_result)
                 with open(path.join(model_result, self.model_name+'_predict.txt'), 'w') as f:
-                    f.write('{} | {}\n'.format('order'.rjust(idx), 'pred'.rjust(classes)))
-                    f.write('-' * (max(idx,5) + 3 + max(classes,4))+'\n')
+                    f.write('{} | {} | {} | {}\n'.format('order'.rjust(idx), 'file'.center(12), 'pred'.center(12), 'label'.center(12)))
+                    f.write('-' * (max(idx, 5) + 3*3+7 + max(int(len(os.path.basename(image_path[0]))), 11) + max(classes, 12) + max(classes, 12))+'\n')
                     for i,v in enumerate(y_pred):
-                        f.write('{} | {}\n'.format(str(i).zfill(idx).rjust(5), str(v).zfill(classes).rjust(4)))
+                        name_list = os.path.basename(image_path[i])
+                        f.write('{}  {}  {}  {}\n'.format(str(i).zfill(idx).rjust(5), name_list.ljust(11), str(label_name[int(v)]).ljust(12), str(label_name[int(ground_truth[i])]).ljust(12)))
                     f.write('The number of samples : [{}]'.format(y_pred.shape[0]))
             print('The number of samples : [{}]'.format(y_pred.shape[0]))
 
@@ -220,7 +220,7 @@ class NET(object):
                 print("The result is [{}]".format(np.argmax(y_pred)))
                 fig = plt.figure()
                 plt.title(np.argmax(y_pred) if label_name is None else label_name[np.argmax(y_pred)])
-                plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0]) 
+                plt.imshow(x[0] / 255. if x.shape[-1] != 1 else x[0,:,:,0] / 255.)
                 plt.show()
             else:
                 if not path.exists(model_result):
@@ -254,9 +254,6 @@ class NET(object):
         """
         model = keras.models.load_model(self.model_ckpt)
         conf = pickle_load(self.model_meta)
-##*
-        print("************config************ ")
-        print(conf)
         return model, conf, conf['epochs']
 
     def save(self):
