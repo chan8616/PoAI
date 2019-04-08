@@ -137,7 +137,7 @@ class NET(object):
         model_result = './log'
         if y is not None:
             if x.shape[0] == 1: # A image
-                print("The prediction is [{}], result : [{}]".format(np.argmax(y_pred), np.argmax(y_pred)==y))
+                print("The prediction is [{}], result : [{}]".format(y_pred, y_pred==y))
             else:
                 if not path.exists(model_result):
                     makedirs(model_result)
@@ -163,12 +163,15 @@ class NET(object):
                 conf_mtx(y, y_pred, label_name)
         else:
             if x.shape[0] == 1: # A image
-                print("The result is [{}]".format(np.argmax(y_pred)))
+                result = int(y_pred)
+                print("The result is [{}]".format(result+1))
                 fig = plt.figure()
-                plt.title(np.argmax(y_pred) if label_name is None else label_name[np.argmax(y_pred)])
-                plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0]) 
+                print(type(label_name))
+                plt.title(result + 1 if label_name is None else label_name[result])
+                plt.imshow(x[0] if x.shape[-1] != 1 else x[0,:,:,0])
                 plt.show()
             else:
+                print(y_pred)
                 if not path.exists(model_result):
                     makedirs(model_result)
                 with open(path.join(model_result, self.model_name+'_predict.txt'), 'w') as f:
@@ -251,6 +254,9 @@ class NET(object):
         """
         model = keras.models.load_model(self.model_ckpt)
         conf = pickle_load(self.model_meta)
+##*
+        print("************config************ ")
+        print(conf)
         return model, conf, conf['epochs']
 
     def save(self):
@@ -330,7 +336,7 @@ class NET(object):
             print("[!] Already Done.")
             return
         self.model.fit(x=x,
-                       y=one_hot(y, classes=self.num_classes),
+                       y=y,
                        batch_size=batch_size,
                        epochs=epochs,
                        validation_split=0.01,

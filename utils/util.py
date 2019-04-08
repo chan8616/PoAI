@@ -8,7 +8,7 @@ import numpy as np
 import os
 from PIL import Image
 import matplotlib.pyplot as plt
-
+import cv2
 import wx
 
 from os import makedirs, path, stat
@@ -22,6 +22,7 @@ def path_parent(_path, level=1):
 
 
 def _download(url, directory, file_name=None):
+    print(directory)
     file_path = path.join(directory, file_name)
     if not path.exists(directory):
         makedirs(directory)
@@ -67,11 +68,16 @@ def image_load(file_path, resize=0):            # load image as float numpy arra
     img = Image.open(file_path)
     if resize > 0:
         img = img.resize((resize, resize))
-    img = np.array(img)
-    if len(img.shape) == 2:
-        shape = img.shape
-        img = img.reshape(*shape, 1)
     return np.array(img).astype(float)/255.
+
+def resize_data(data, target_shape):
+    data_upscaled = np.zeros((data.shape[0], target_shape[0], target_shape[1],  target_shape[2]))
+    for i, img in enumerate(data):
+        large_img = cv2.resize(img, dsize=(target_shape[0], target_shape[1]), interpolation=cv2.INTER_CUBIC)
+        data_upscaled[i] = large_img/255.
+
+    return data_upscaled
+
 
 def aassert(statement, message=''): #TODO
     if not statement:
@@ -126,3 +132,4 @@ class LossHistory(tf.keras.callbacks.Callback):
         report_plot(loss, float(self.epoch)+batch/self.step, self.model_name)
         print('[{}] epoch [{}/{}], loss : [{:.4f}], acc : [{}]' \
                     .format(self.epoch, batch*self.batch_size, self.ntrain, loss, acc))
+
