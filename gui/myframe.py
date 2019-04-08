@@ -29,8 +29,7 @@ class MyFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((1194, 922))
 
-        self.cwd = os.path.dirname(os.getcwd())
-        print(self.cwd)
+        self.cwd = os.getcwd()
 
         # Menu Bar
         self.frame_menubar = wx.MenuBar()
@@ -57,11 +56,11 @@ class MyFrame(wx.Frame):
         #self.tool_load = self.tool_bar.AddTool(2, _("Load"), wx.Bitmap("./icons/upload.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Load"), "")
         #self.tool_save = self.tool_bar.AddTool(3, _("Save"), wx.Bitmap("./icons/diskette(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
         #self.tool_bar.AddSeparator()
-        self.tool_train_spec = self.tool_bar.AddTool(4, _("Train Spec"), wx.Bitmap(os.path.join(self.cwd, "icons/3d-modeling.png"), wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
+        self.tool_train_spec = self.tool_bar.AddTool(4, _("Train Spec"), wx.Bitmap("./icons/3d-modeling.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
         self.tool_bar.AddSeparator()
-        self.tool_run = self.tool_bar.AddTool(5, _("Run"), wx.Bitmap(os.path.join(self.cwd, "icons/play(1).png"), wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
+        self.tool_run = self.tool_bar.AddTool(5, _("Run"), wx.Bitmap("./icons/play(1).png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
         self.tool_bar.AddSeparator()
-        self.tool_test = self.tool_bar.AddTool(6, _("Test"), wx.Bitmap(os.path.join(self.cwd,"icons/background.png"), wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
+        self.tool_test = self.tool_bar.AddTool(6, _("Test"), wx.Bitmap("./icons/background.png", wx.BITMAP_TYPE_ANY), wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
 
         self.tool_bar.EnableTool(self.tool_run.GetId(), False)
         # Tool Bar end
