@@ -65,13 +65,13 @@ _CLASSIFICATION_ = ('logistic',
 MODEL = {'logistic':LOGISTIC,
          'vgg16':VGGNET16,
          'vgg19':VGGNET19,
-         #'resnet50':RESNET50,
-         #'resnet101':RESNET101,
-         #'resnet152':RESNET152,
+         'resnet50':RESNET50,
+         'resnet101':RESNET101,
+         'resnet152':RESNET152,
          'densenet121':DENSENET121,
          'densenet169':DENSENET169,
          'densenet201':DENSENET201,
-         #'inception_v3':INCEPTIONV3,
+         'inception_v3':INCEPTIONV3,
          'svm':SVM,
          'randomforest':RF}
          # 'lstm':None, 'gru':None, 'ae_lstm':None}
@@ -126,17 +126,20 @@ def data_select(dataset, input_size, train=True):
     except:
         test_images = dataset['data']['test']['x']
         test_x = np.array([image_load(img, input_size[0]) for img in test_images]).astype(np.float32)
-#        if input_size != test_images.shape:
-#            if (input_size[-1] == 3 and test_images.shape[-1] == 1):
-#                
-#                data = {'test_x':test_x
+        #        if input_size != test_images.shape:
+        #            if (input_size[-1] == 3 and test_images.shape[-1] == 1):
+        #
+        #                data = {'test_x':test_x
 
-        data = {'test_x':test_x,
-                'test_y':None}
+        data = {'test_x': test_x,
+                'test_y': None}
         return data, None
 
     if dataset['name'] in OPEN_DATA.keys(): # data is provided
-        return OPEN_DATA[dataset['name']](), None
+        if dataset['input_types']=='Image':
+            return OPEN_DATA[dataset['name']](input_shape=input_size), None
+        else:
+            return OPEN_DATA[dataset['name']](), None
     else:    # own dataset
         if train:
             DP = lambda : DATA_PROVIDER(train_x=dataset['data']['train']['x'],
@@ -205,6 +208,8 @@ class Run(object):
             else:
                 batch_size=int(kargs['batch_size'])
                 optimizer=kargs['optimizer']
+##*
+                print(model_name, dataset_spec, checkpoint_name, optimizer, learning_rate, max_epochs, batch_size, is_train, interval)
                 load_model(model_name = model_name,
                            base_data_spec = dataset_spec,
                            curr_data = dataset_spec,
@@ -288,10 +293,10 @@ def load_model(
                                   optimizer=optimizer,
                                   batch_size = batch_size,
                                   checkpoint_dir=checkpoint_dir, #
-                                  freeze_pretrained = pre_trained['freeze'],
+                                  freeze_pretrained=pre_trained['freeze'],
                                   input_shape=base_data_spec['input_shape'],
-                                  name = name,
-                                  label_names = curr_data['label_names'])
+                                  name=name,
+                                  label_names=curr_data['label_names'])
 
     # 3. arrange dataset
     try:
@@ -331,7 +336,6 @@ def load_model(
         if data_provider is None:
             model.test(x = data['test_x'],
                        y = data['test_y'],
-                       # label_name = data['label_names'],
                        label_name = model.model_conf['label_names'],
                        visualize=visualize)
         else:
@@ -339,5 +343,4 @@ def load_model(
             model.test_with_generator(generator = g,
                                      steps = steps,
                                      # label_name = data['label_names'],
-                                     label_name = model.model_conf['label_names'],
                                      visualize  = visualize)

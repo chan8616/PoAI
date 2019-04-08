@@ -3,11 +3,13 @@
     Open data
 """
 
-
 from .util import shuffle as _shuffle
 from .util import image_load
+from .util import resize_data
 from tensorflow import keras
 import numpy as np
+import cv2
+
 import sklearn
 
 def one_hot(y, classes=None):
@@ -44,11 +46,13 @@ def call_mnist(meta=False):
                 'input_shape': (28, 28, 1),
                 'data_type':'I'}
 
-def call_cifar10(meta=False):
+def call_cifar10(meta=False, input_shape=None):
     from tensorflow.python.keras.datasets.cifar10 import load_data
+    from tensorflow.python.keras.utils import to_categorical
     (train_data, train_label), (test_data, test_label) = load_data()
-    train_data, train_label = _shuffle(train_data, train_label)
     if meta:
+        print("meta is true")
+        print(meta)
         return {'ntrain':len(train_data),
                 'ntest':len(test_data),
                 'classes':10,
@@ -65,6 +69,13 @@ def call_cifar10(meta=False):
                 'input_shape': (32, 32, 3),
                 'data_type':'I'}
     else:
+        if input_shape:
+            train_data = np.array(train_data).astype(float)
+            test_data = np.array(test_data).astype(float)
+            train_data = resize_data(train_data, input_shape)
+            test_data = resize_data(test_data, input_shape)
+            train_label = to_categorical(train_label, 10)
+            test_label = to_categorical(test_label, 10)
         return {'train_x' : train_data,
                 'train_y' : train_label,
                 'test_x' : test_data,
@@ -80,8 +91,9 @@ def call_cifar10(meta=False):
                                'horse',
                                'ship',
                                'truck'],
-                'input_shape': (32, 32, 3),
+                'input_shape': tuple(input_shape),
                 'data_type':'I'}
+
 
 def call_wine(train_ratio=0.7, meta=False):
     from sklearn.datasets import load_wine
