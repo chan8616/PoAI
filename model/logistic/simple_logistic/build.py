@@ -26,7 +26,7 @@ def build_parser(
     show_and_save_parser = parser.add_argument_group(
         "",
         "Show and Save model options",
-        gooey_options={'show_border': True, 'columns': 4})
+        gooey_options={'show_border': True, 'columns': 2})
     show_and_save_parser.add_argument(
        "--print-model-summary", action='store_true',
     )

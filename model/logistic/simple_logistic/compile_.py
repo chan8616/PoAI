@@ -23,7 +23,7 @@ def compile_parser(
         compile_parser = parser.add_argument_group(
             title=title,
             description=description,
-            gooey_options={'show_border': True, 'columns': 4})
+            gooey_options={'show_border': True, 'columns': 2})
     elif isinstance(parser, _ArgumentGroup):
         compile_parser = parser
     else:

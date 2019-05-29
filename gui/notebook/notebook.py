@@ -35,8 +35,12 @@ class Notebook(AuiNotebook):
 
     def AddTrainPage(self, model_parser, dataset_parser, caption,
                      *args, **kwds):
-        train_page = DoublePage(model_parser, dataset_parser, self,
-                                *args, **kwds)
+        train_page = DoublePage(
+            model_parser, 
+            dataset_parser, 
+            'Selece Model', 
+            'Select Dataset', 
+            self, *args, **kwds)
         self.AddPage(train_page, caption, select=True, *args, **kwds)
         return train_page
 
