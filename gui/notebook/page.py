@@ -13,7 +13,8 @@ from gooey.gui.components.header import FrameHeader
 from gooey.gui.components.footer import Footer
 from gooey.gui.util import wx_util
 from gooey.gui.components.config import ConfigPage, TabbedConfigPage
-from gooey.gui.components.sidebar import Sidebar
+# from gooey.gui.components.sidebar import Sidebar
+from gui.notebook.sidebar import Sidebar
 from gooey.gui.components.tabbar import Tabbar
 from gooey.util.functional import getin, assoc, flatmap, compact
 from gooey.python_bindings import constants
@@ -189,12 +190,11 @@ class Page(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.header, 0, wx.EXPAND)
         sizer.Add(wx_util.horizontal_rule(self), 0, wx.EXPAND)
-
         sizer.Add(self.navbar, 1, wx.EXPAND)
         sizer.Add(self.console, 1, wx.EXPAND)
         sizer.Add(wx_util.horizontal_rule(self), 0, wx.EXPAND)
         sizer.Add(self.footer, 0, wx.EXPAND)
-        self.SetMinSize((400, 300))
+        # self.SetMinSize((400, 300))
         self.SetSize(self.buildSpec['default_size'])
         self.SetSizer(sizer)
         self.header.Hide()
@@ -279,25 +279,33 @@ class Page(wx.Panel):
 
 
 class DoublePage(wx.Panel):
-    def __init__(self, left_parser, right_parser, *args, **kwds):
+    def __init__(self, parser_1, parser_2, title_1, title_2, *args, **kwds):
         super(DoublePage, self).__init__(*args, **kwds)
-        left_spec = build_spec_from_parser(
-            left_parser,
+        self.SetSize(610*2, 530)
+
+        spec_1 = build_spec_from_parser(
+            parser_1,
+            sidebar_title=title_1,
             **kwds)
 
-        right_spec = build_spec_from_parser(
-            right_parser,
+        spec_2 = build_spec_from_parser(
+            parser_2,
+            sidebar_title=title_1,
             **kwds)
 
-        self.panel_left = Page(left_spec, parent=self, id=wx.ID_ANY)
-        self.panel_right = Page(right_spec, parent=self, id=wx.ID_ANY)
+        self.panel_1 = Page(spec_1, parent=self, id=wx.ID_ANY)
+        # self.panel_1 = wx.Button(self, wx.ID_ANY, 'panel1')
+        self.panel_2 = Page(spec_2, parent=self, id=wx.ID_ANY)
+        # self.panel_2 = wx.Button(self, wx.ID_ANY, 'panel2')
 
         self.__do_layout()
 
     def __do_layout(self):
+        # sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.Add(self.panel_left, 1, wx.EXPAND | wx.LEFT, 5)
-        sizer_1.Add(self.panel_right, 1, wx.EXPAND | wx.RIGHT, 5)
+        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 5)
+        sizer_1.Add(self.panel_2, 1, wx.EXPAND, 5)
+        # self.SetSizeHints(self)
         self.SetSizer(sizer_1)
         # self.panel_left.navbar.Hide()
         self.Layout()

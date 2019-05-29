@@ -51,7 +51,8 @@ class Frame(wx.Frame):
         super(Frame, self).__init__(*args, **kwds)
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((1194, 922))
+        # self.SetSize((1194, 922))
+        # self.SetSize((1200, 900))
 
         self.cwd = os.getcwd()
 
@@ -170,9 +171,10 @@ class Frame(wx.Frame):
         sizer_3.Add(self.tree_ctrl_1, 1, wx.EXPAND | wx.BOTTOM, 5)
         sizer_3.Add(self.tree_ctrl_2, 1, wx.EXPAND | wx.TOP, 5)
         sizer_2.Add(sizer_3, 2, wx.EXPAND, 0)
-        sizer_2.Add(self.notebook_1, 10, wx.EXPAND, 0)
-        sizer_1.Add(sizer_2, 4, wx.EXPAND, 0)
-        sizer_1.Add(self.text_ctrl_1, 2, wx.ALL | wx.EXPAND, 0)
+        sizer_2.Add(self.notebook_1, 20, wx.EXPAND, 0)
+        sizer_1.Add(sizer_2, 2, wx.EXPAND, 0)
+        sizer_1.Add(self.text_ctrl_1, 1, wx.ALL | wx.EXPAND, 0)
+        # sizer_1.SetSizeHints(self)
         self.SetSizer(sizer_1)
         self.Layout()
         # end wxGlade

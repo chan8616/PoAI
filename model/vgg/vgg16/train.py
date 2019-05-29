@@ -18,7 +18,7 @@ def callbacks_parser(
     checkpoint_parser = parser.add_argument_group(
         title=title,
         description="checkpoint callback",
-        gooey_options={'columns': 6, 'show_border': True}
+        gooey_options={'columns': 3, 'show_border': True}
     )
     checkpoint_parser.add_argument(
         '--use-checkpoint-callback',
@@ -29,7 +29,7 @@ def callbacks_parser(
     earlystopping_parser = parser.add_argument_group(
         title=None,
         description="earlystopping callback",
-        gooey_options={'columns': 5, 'show_border': True}
+        gooey_options={'columns': 3, 'show_border': True}
     )
     earlystopping_parser.add_argument(
         '--use-earlystopping-callback',
@@ -61,7 +61,7 @@ def checkpoint_callback_parser(
         checkpoint_parser = parser.add_argument_group(
             title=title,
             description=description,
-            gooey_options={'columns': 5})
+            gooey_options={'columns': 3})
     elif isinstance(parser, _ArgumentGroup):
         checkpoint_parser = parser
     else:
@@ -100,7 +100,7 @@ def earlystopping_callback_parser(
         earlystopping_parser = parser.add_argument_group(
             title=title,
             description=description,
-            gooey_options={'columns': 5})
+            gooey_options={'columns': 3})
     elif isinstance(parser, _ArgumentGroup):
         earlystopping_parser = parser
 

@@ -17,7 +17,8 @@ def get_optimizer_parser(
     if isinstance(parser, (ArgumentParser, GooeyParser)):
         optimizer_parser = parser.add_argument_group(
             title=title,
-            description=description
+            description=description,
+            gooey_options={'columns': 3}
         )
     elif isinstance(parser, _ArgumentGroup):
         optimizer_parser = parser
