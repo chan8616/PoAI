@@ -1,75 +1,62 @@
-from sklearn import svm
-from .model import NET
-from os import path, makedirs
-from copy import deepcopy
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--mode", type=int)
 
-import sys
-sys.path.append(path.abspath('..')) # refer to sibling folder
+# Hyper-parameters
+parser.add_argument("--input-dim", type=int, default=4) 
+parser.add_argument("--output-dim", type=int, default=10)
+parser.add_argument("--kernel", type=str, default='rbf')
+parser.add_argument("--degree", type=int, default=3)
+parser.add_argument("--gamma", type=str, default='auto')
 
-from .ops import *
-from utils.util import pickle_save, pickle_load
+# Paths
+parser.add_argument("--save-path", type=str, )
+parser.add_argument("--load-path", type=str, default=None,
+                help='model load location, .npy')
 
-class SVM(NET):
+# Others
+parser.add_argument("--random_state")
 
-    def __init__(self,
-                dataset_name,
-                checkpoint_dir,
-                name,
-                **kargs):
-        model = 'svm'
-        checkpoint_name = 'model'
-        self.model_name = name
-        checkpoint_dir = path.join(checkpoint_dir,model,dataset_name)
-        if not path.exists(checkpoint_dir):
-            makedirs(checkpoint_dir)
-        self.model_dir = path.join(checkpoint_dir, self.model_name)
-        self.model_ckpt = path.join(self.model_dir, checkpoint_name)
-        self.model_meta = path.join(self.model_dir, 'meta')
-        self.model_result = path.join('result', model)
+if __name__ == '__main__':
+    from module import MODULE
+else:
+    from .module import MODULE
 
-        model_check = self.model_check()
+class SVC(MODULE):
+    def __init__(self):
+        super(SVC, self).__init__('svc', None, 'Classification')
+    
+    def build(self, kernel, degree, gamma):
+        from sklearn.svm import SVC
+        self.model = SVC(kernel=kernel, degree=degree, gamma=gamma) 
 
-        if model_check:
-            self.model, self.model_conf = self.restore()
-        else:
-            self.model_conf = {'name':self.model_name,
-                               'model_dir':self.model_dir,
-                               'ckpt_path':self.model_ckpt,
-                               'meta':self.model_meta,
-                               'dataset':dataset_name,
-                               'trained':False}
-            self.build_model(self.model_conf)
-            pickle_save(self.prog_info, self.model_meta)
-
-    def restore(self):
-        model = pickle_load(self.model_ckpt)
-        conf = pickle_load(self.model_meta)
-        return model, conf
-
-    def save(self):
-        pickle_save(self.model, self.model_ckpt)
-
-    def build_model(self, conf):
-        self.model = svm.SVC(gamma='scale')
-
-    def train(self,
-              x,
-              y,
-              save=True, **kargs):
-        print("[@] start training....")
-        self.model.fit(x, y)
-        self.model_conf['trained']= True
-        if save:
-            self.save()
-        print("[@] Training is done...")
-
-    def train_with_provider(self, generator, epochs, save=True):
+    def save(self, path):
+        pass
+    def load(self, path):
         pass
 
-    @property
-    def prog_info(self):
-        return deepcopy(self.model_conf)
+    def fit(self, X, y):
+        self.model.fit(X, y)
 
-    @property
-    def trained(self):
-        return self.model_conf['trained']
+def main(parse):
+    args, unknowns = parser.parse_known_args()
+    print(args)
+
+    model = SVC()
+    if args.load_path is not None:
+        model.load(args.load_path)
+    else:
+        model.build(args.kernel, args.degree, args.gamma)
+    if args.mode == 'train':
+        #        model.fit()
+        if args.Xy is not None: 
+            model.fit(*Xy)
+
+    elif args.mode == 'test':
+
+        model.eval()
+        model.pred()
+
+
+if __name__ == '__main__':
+    main(parser)

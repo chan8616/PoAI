@@ -47,14 +47,6 @@ class Redirection(object):
     def flush(self):
         pass
 
-def shuffle(x, y):
-    from random import shuffle as sf
-    d = list(zip(x,y))
-    sf(d)
-    x_, y_ = zip(*d)
-    return np.array(x_).astype(x.dtype), np.array(y_).astype(y.dtype)
-
-
 def pickle_save(d, file_name):
     #    with open("test.pickle", 'wb') as f:
     with open("{}.pickle".format(file_name), 'wb') as f:
@@ -63,26 +55,6 @@ def pickle_save(d, file_name):
 def pickle_load(file_name):
     with open("{}.pickle".format(file_name), 'rb') as f:
         return pickle.load(f, encoding='bytes')
-
-def image_load(file_path, resize=0):            # load image as float numpy array
-    img = Image.open(file_path)
-    if resize > 0:
-        img = img.resize((resize, resize))
-    return np.array(img).astype(float)/255.
-
-def resize_data(data, target_shape):
-    data_upscaled = np.zeros((data.shape[0], target_shape[0], target_shape[1],  target_shape[2]))
-    for i, img in enumerate(data):
-        large_img = cv2.resize(img, dsize=(target_shape[0], target_shape[1]), interpolation=cv2.INTER_CUBIC)
-        data_upscaled[i] = large_img/255.
-
-    return data_upscaled
-
-
-def aassert(statement, message=''): #TODO
-    if not statement:
-        print(message)
-        assert False, message
 
 def report_plot(data, i, model_name, log='./log'):
     if not os.path.exists(log):
