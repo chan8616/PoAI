@@ -31,6 +31,7 @@ class MyApp(wx.App):
                            None, wx.ID_ANY, "")
         self.SetTopWindow(self.frame)
         self.frame.Show()
+        self.frame.Maximize(True)
         return True
 
 

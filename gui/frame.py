@@ -52,7 +52,7 @@ class Frame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         # self.SetSize((1194, 922))
-        # self.SetSize((1200, 900))
+        # self.SetSize((1980, 450))
 
         self.cwd = os.getcwd()
 
