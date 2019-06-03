@@ -3,7 +3,7 @@ from pathlib import Path
 from treelib import Tree
 import sys
 sys.path.insert(
-    0, '/home/mlg/yys/project/TensorflowGUI/dataset/image_classification')
+    0, '/home/mlg/yys/project/TensorflowGUI/generator/image_classification')
 
 from flow_from_directory import flow_from_directory_parser
 from image_preprocess import image_preprocess_parser
