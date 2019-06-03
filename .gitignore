@@ -20,15 +20,15 @@ log/
 
 
 ### dataset ###
-Dataset/
-Dataset_/
+dataset/*/
+
+### vim ###
 *.backup
 *.swp
 
 ### not yet ###
 requirements.txt
 Prerequisites_Linux.sh
-test.py
 dist
 *egg-info
 Untitled.ipynb
