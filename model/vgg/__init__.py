@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from treelib import Tree
 import sys
-sys.path.insert(0, '/home/mlg/yys/project/TensorflowGUI/model/vgg')
+sys.path.insert(0, os.path.join(os.getcwd(), 'model/vgg'))
 
 from vgg.build import build_parser
 
