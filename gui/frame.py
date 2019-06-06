@@ -355,6 +355,30 @@ class Frame(wx.Frame):
         #      parser = ItemData.trainSettingParser(GooeyParser())
 
     def OnTestPage(self, event):
+        model_node = self.model_tree.GetItemData(
+            self.model_tree.GetRootItem())
+        dataset_node = self.dataset_tree.GetItemData(
+            self.dataset_tree.GetRootItem())
+
+        print(model_node.tag, model_node.data)
+        test_setting_parser = \
+            model_node.data.test_setting_parser(GooeyParser())
+        dataset_generator_parser = \
+            dataset_node.data.image_generator_parser(GooeyParser())
+        print(test_setting_parser, dataset_generator_parser)
+
+        # model_parser.parse_args(['--help'])
+        # dataset_parser.parse_args(['--help'])
+
+        page = self.notebook.AddTestPage(
+            test_setting_parser, dataset_generator_parser, "Test Page")
+        page.test_setting_parser = test_setting_parser
+        page.dataset_generator_parser = dataset_generator_parser
+        page.test = model_node.data.test
+        # page.model_parser = model_node.data.trainParser
+        # page.dataset_parser = dataset_node.data.Parser
+        self.tool_bar.EnableTool(self.tool_run.GetId(), True)
+
         # page
         pass
 
