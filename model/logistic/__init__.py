@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from treelib import Tree
 import sys
-sys.path.insert(0, '/home/mlg/yys/project/TensorflowGUI/model/logistic')
+sys.path.insert(0, os.path.join(os.getcwd(), 'model/logistic'))
 
 from logistic.build import build_parser
 from logistic import simple_logistic

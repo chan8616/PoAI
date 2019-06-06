@@ -1,9 +1,9 @@
-# import os
+import os
 from pathlib import Path
 from treelib import Tree
 import sys
 sys.path.insert(
-    0, '/home/mlg/yys/project/TensorflowGUI/generator')
+    0, os.path.join(os.getcwd(), 'generator'))
 
 import image_classification
 IMAGE_CLASSIFICATION_TREE = Tree()
