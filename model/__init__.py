@@ -4,14 +4,16 @@ from treelib import Tree
 import sys
 sys.path.insert(0, os.path.join(os.getcwd(), 'model'))
 
+from model import build, train
+
 import logistic
 from logistic import SIMPLE_LOGISTIC_TREE
 from logistic import MULTILAYER_LOGISTIC_TREE
 
 import vgg
-from vgg import VGG16_TREE
-from vgg import VGG19_TREE
+from vgg import VGG16_TREE, VGG19_TREE
 
+import Xception
 
 LOGISTIC_TREE = Tree()
 LOGISTIC_TREE.create_node(
@@ -28,3 +30,9 @@ VGG_TREE.create_node(
     data=vgg)
 VGG_TREE.paste(VGG_TREE.root, VGG16_TREE)
 VGG_TREE.paste(VGG_TREE.root, VGG19_TREE)
+
+Xception_TREE = Tree()
+Xception_TREE.create_node(
+    'Xception',
+    Path(Xception.__path__[0]).relative_to(os.getcwd()),
+    data=Xception)

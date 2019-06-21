@@ -3,9 +3,8 @@ from treelib import Tree
 import gettext
 
 # from model import MODELDICT
-from model import VGG_TREE
-from model import LOGISTIC_TREE
-from model import train, build
+import model
+from model import VGG_TREE, LOGISTIC_TREE, Xception_TREE
 # from checkpoint import CHECKPOINTDICT
 # from generator import DATASETDICT
 from generator import IMAGE_CLASSIFICATION_TREE
@@ -15,9 +14,11 @@ from gui.frame import Frame
 
 MODEL_TREE = Tree()
 # MODEL_TREE.create_node('model', data=build)
-MODEL_TREE.create_node('model', data=train)
+# MODEL_TREE.create_node('model', data=train)
+MODEL_TREE.create_node('model', data=model)
 MODEL_TREE.paste(MODEL_TREE.root, VGG_TREE)
 MODEL_TREE.paste(MODEL_TREE.root, LOGISTIC_TREE)
+MODEL_TREE.paste(MODEL_TREE.root, Xception_TREE)
 
 
 DATASET_TREE = Tree()

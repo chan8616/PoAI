@@ -105,9 +105,9 @@ class Page(wx.Panel):
         optional = ' '.join(optional).replace("'", '').split(' ')
 
         cmd = [] if group['command'] == '::gooey/default' \
-                else [group['command']]
+            else [group['command']]
         cmds = cmd + positional + optional
-        return cmds
+        return cmd, cmds
 
     def buildCliString(self):
         """

@@ -6,10 +6,11 @@ sys.path.insert(0, '/home/mlg/yys/project/TensorflowGUI/model')
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
 
-from logistic.simple_logistic.train import train_setting_parser as simple_
-from logistic.multilayer_logistic.train import train_setting_parser as multi_
-from vgg.vgg16.train import train_setting_parser as vgg16_
-from vgg.vgg19.train import train_setting_parser as vgg19_
+from logistic.simple_logistic import train as simple_
+from logistic.multilayer_logistic import train as multi_
+from vgg.vgg16 import train as vgg16_
+from vgg.vgg19 import train as vgg19_
+from Xception import train as Xception_
 # from dataset.parser import generator
 
 
@@ -20,22 +21,29 @@ def train_setting_parser(
     subs = parser.add_subparsers()
 
     simple_parser = subs.add_parser('simple_logistic')
-    train_setting = simple_(simple_parser)
-    parser.set_defaults(simple_logistic=train_setting)
+    simple_.train_setting_parser(simple_parser)
 
     multi_parser = subs.add_parser('multilayer_logistic')
-    train_setting = multi_(multi_parser)
-    parser.set_defaults(multilayer_logistic=train_setting)
+    multi_.train_setting_parser(multi_parser)
 
     vgg16_parser = subs.add_parser('vgg16')
-    train_setting = vgg16_(vgg16_parser)
-    parser.set_defaults(vgg16=train_setting)
+    vgg16_.train_setting_parser(vgg16_parser)
 
     vgg19_parser = subs.add_parser('vgg19')
-    train_setting = vgg19_(vgg19_parser)
-    parser.set_defaults(vgg19=train_setting)
+    vgg19_.train_setting_parser(vgg19_parser)
 
-    return parser
+    Xception_parser = subs.add_parser('Xception')
+    Xception_train_setting = Xception_.train_setting_parser(Xception_parser)
+
+    def train_setting(cmd, args):
+        if 'simple_logistic' == cmd:
+            pass
+        elif 'Xception' == cmd:
+            return Xception_train_setting(args)
+
+    return parser, train_setting
+    # return train_setting
+    # return parser
 
 
 if __name__ == "__main__":
@@ -47,23 +55,37 @@ if __name__ == "__main__":
     print(args)
 
 
+def train_setting(model_cmd, args):
+    if 'simple_logistic' == model_cmd:
+        train_setting = simple_logistic_.defaults['train_setting'](args)
+    elif 'multilayer_logistic' == model_cmd:
+        train_setting = simple_logistic_.defaults['train_setting'](args)
+    elif 'vgg16' == model_cmd:
+        train_setting = simple_logistic_.defaults['train_setting'](args)
+    elif 'vgg19' == model_cmd:
+        train_setting = simple_logistic_.defaults['train_setting'](args)
+    elif 'Xception' == model_cmd:
+        train_setting = Xception_.train_setting_parser.defaults['train_setting'](args)
+    else:
+        raise NotImplementedError('wrong model_cmd:', model_cmd)
 
-def train(args1, args2):
-    print("in train")
-    print(args1, args2)
-    model, epochs, callbacks, shuffle = args1
-    train_generator, validation_generator = args2
+    return train_setting(args)
 
-    model.fit_generator(train_generator,
-                        epochs,
-                        callbacks=callbacks,
-                        # validation_split=validation_split,
-                        validation_data=validation_generator,
-                        shuffle=shuffle,
-                        # initial_epoch=initial_epoch,
-                        # steps_per_epoch=steps_per_epoch,
-                        # validation_steps=validation_steps,
-                        )
+
+def train(model_cmd, args1, args2):
+    if 'simple_logistic' == model_cmd:
+        simple_logistic_.train(args1, args2)
+    elif 'multilayer_logistic' == model_cmd:
+        multilayer_logistic_.train(args1, args2)
+    elif 'vgg16' == model_cmd:
+        vgg16_.train(args1, args2)
+    elif 'vgg19' == model_cmd:
+        vgg19_.train(args1, args2)
+    elif 'Xception' == model_cmd:
+        Xception_.train(args1, args2)
+    else:
+        raise NotImplementedError('wrong model_cmd:', model_cmd)
+
 
 
 def train_parser(
