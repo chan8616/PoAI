@@ -41,6 +41,7 @@ class Notebook(AuiNotebook):
             'Selece Model',
             'Select Dataset',
             self, *args, **kwds)
+        train_page.phase = "train"
         self.AddPage(train_page, caption, select=True, *args, **kwds)
         return train_page
 
@@ -52,16 +53,17 @@ class Notebook(AuiNotebook):
             'Selece Model',
             'Select Dataset',
             self, *args, **kwds)
+        test_page.phase = "test"
         self.AddPage(test_page, caption, select=True, *args, **kwds)
         return test_page
 
     def isOnTrainPage(self):
         page = self.GetPage(self.GetSelection())
-        return isinstance(page, DoublePage)
+        return True if self.isOnDoublePage and page.phase == 'train' else False
 
     def isOnTestPage(self):
         page = self.GetPage(self.GetSelection())
-        return isinstance(page, DoublePage)
+        return True if self.isOnDoublePage and page.phase == 'test' else False
 
     def isOnDoublePage(self):
         page = self.GetPage(self.GetSelection())

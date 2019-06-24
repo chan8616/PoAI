@@ -1,8 +1,12 @@
 from typing import Union, Callable
-from argparse import ArgumentParser
+from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
 
 from keras.models import load_model
+
+# from image_classification import flow_from_dirctory_parser
+# from image_classification import image_preprocess
+# from image_classification.image_generator import image_generator_parser
 
 
 def test_setting_parser(
@@ -19,27 +23,29 @@ def test_setting_parser(
         widget='FileChooser'
     )
 
-    return parser
+    def test_setting(args):
+        model = load_model(args.load_file)
+        return model
 
+    parser.set_defaults(test_setting=test_setting)
 
-def test_setting(args):
-    model = load_model(args.load_file)
-    return model
+#    compile_parser = parser.add_argument_group(
+#        "Compile Parser")
+#    compile_parser = compileParser(compile_parser)
+#    parser = saveParser(parser)
+
+    return test_setting
 
 
 def test(args1, args2):
     model = args1
-    test_generator, _ = args2
+    test_generator = args2
     model.evaluate_generator(test_generator,
-                             steps=1,
-                             # steps=len(test_generator),
                              # callbacks=callbacks,
                              )
 
 
 if __name__ == "__main__":
-    from generator.image_classification.image_generator \
-        import image_generator_parser
     # parser = Gooey(callbacks_parser)()
     model_parser = Gooey(test_setting_parser)()
     model_args = model_parser.parse_args()

@@ -22,7 +22,7 @@ def build_parser(
         gooey_options={'show_border': True, 'columns': 4})
     feature_layer_parser.add_argument(
         "--input_shape", type=int, nargs=3,
-        help="Default: %s".format(DEFAULT_INPUT_SHAPE)
+        help="Default: {}".format(DEFAULT_INPUT_SHAPE)
     )
     feature_layer_parser.add_argument(
         "--weights", choices=['imagenet'], default=None,

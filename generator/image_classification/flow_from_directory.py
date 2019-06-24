@@ -1,31 +1,35 @@
 from typing import Callable, Union
-from argparse import _SubParsersAction, ArgumentParser
+from argparse import _SubParsersAction, ArgumentParser, _ArgumentGroup
 from gooey import GooeyParser
 
 from image_preprocess import image_preprocess_parser
 
 
 def flow_parser(parser=GooeyParser()):
+
     pass
 
 
 def flow_from_directory_parser(
         parser: Union[ArgumentParser, GooeyParser]) -> Callable:
+
     assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
 
     dir_parser = parser.add_argument_group(
         description='Data folder',
         gooey_options={'columns': 2, 'show_border': True})
-    dir_parser.add_argument('train_directory', type=str,
+    dir_parser.add_argument('directory', type=str,
                             # default="data/cifar10/train",
-                            metavar='Train Directory',
-                            help="data for train",
+                            metavar='Train/Test Directory',
+                            help="data for train/test",
                             widget='DirChooser')
     dir_parser.add_argument('--validation-directory', type=str,
                             # default="data/cifar10/test",
                             metavar='Validation Directory',
-                            help="data for validation, optional",
+                            help="data for validation with train "
+                                 "(optional).",
                             widget='DirChooser')
+
     image_preprocess_parser(parser)
     # dir_parser.add_argument(
     #     'directory',
@@ -70,7 +74,7 @@ def flow_from_directory_parser(
     def image_generator(args):
         generator = [dir_parser._defaults[
             'preprocess_image'](args).flow_from_directory(
-                args.train_directory,
+                args.directory,
                 target_size=args.target_size,
                 color_mode=args.color_mode,
                 class_mode=args.class_mode,

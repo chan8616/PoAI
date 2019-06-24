@@ -33,20 +33,19 @@ def get_optimizer_parser(
         "--learning_rate", type=float, default=.001,
     )
 
-    def get_optimizer(args):
-        if args.optimizer == 'sgd':
-            return sgd(args.learning_rate)
-        if args.optimizer == 'SGD':
-            return SGD(args.learning_rate)
-        if args.optimizer == 'adam':
-            return adam(args.learning_rate)
-        if args.optimizer == 'Adam':
-            return Adam(args.learning_rate)
-        raise NotImplementedError
-
-    parser.set_defaults(get_optimizer=get_optimizer)
-
     return parser
+
+
+def get_optimizer(args):
+    if args.optimizer == 'sgd':
+        return sgd(args.learning_rate)
+    if args.optimizer == 'SGD':
+        return SGD(args.learning_rate)
+    if args.optimizer == 'adam':
+        return adam(args.learning_rate)
+    if args.optimizer == 'Adam':
+        return Adam(args.learning_rate)
+    raise NotImplementedError
 
 
 if __name__ == "__main__":

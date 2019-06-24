@@ -1,128 +1,10 @@
 from typing import Union, Callable
-from argparse import ArgumentParser, _ArgumentGroup
+from argparse import ArgumentParser
 from gooey import Gooey, GooeyParser
 
-from Xception.compile_ import compile_parser
+from model.Xception import compile_
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-
-# from image_classification import flow_from_dirctory_parser
-# from image_classification import image_preprocess
-# from image_classification.image_generator import image_generator_parser
-
-
-def callbacks_parser(
-        parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
-        title="Callbacks Setting",):
-
-    checkpoint_parser = parser.add_argument_group(
-        title=title,
-        description="checkpoint callback",
-        gooey_options={'columns': 3, 'show_border': True}
-    )
-    checkpoint_parser.add_argument(
-        '--use-checkpoint-callback',
-        action='store_true',
-    )
-    checkpoint_callback_parser(checkpoint_parser)
-
-    earlystopping_parser = parser.add_argument_group(
-        title=None,
-        description="earlystopping callback",
-        gooey_options={'columns': 3, 'show_border': True}
-    )
-    earlystopping_parser.add_argument(
-        '--use-earlystopping-callback',
-        action='store_true',
-    )
-    earlystopping_callback_parser(earlystopping_parser)
-
-    def get_callbacks(args):
-        callbacks = []
-        if args.use_checkpoint_callback:
-            callbacks.append([
-                parser._defaults['get_checkpoint_callback'](args)])
-
-        if args.use_earlystopping_callback:
-            callbacks.append([
-                parser._defaults['get_earlystopping_callback'](args)])
-        return callbacks
-
-    parser.set_defaults(get_callbacks=get_callbacks)
-    return parser
-
-
-def checkpoint_callback_parser(
-        parser: Union[ArgumentParser, GooeyParser,
-                      _ArgumentGroup] = GooeyParser(),
-        title="Checkpoint Options",
-        description=""):
-    if isinstance(parser, (ArgumentParser, GooeyParser)):
-        checkpoint_parser = parser.add_argument_group(
-            title=title,
-            description=description,
-            gooey_options={'columns': 3})
-    elif isinstance(parser, _ArgumentGroup):
-        checkpoint_parser = parser
-    else:
-        raise ValueError
-
-    checkpoint_parser.add_argument('--ckpt-file-path')
-    checkpoint_parser.add_argument(
-        '--monitor',
-        choices=['acc', 'loss', 'val_loss', 'val_acc'],
-        default='loss')
-    checkpoint_parser.add_argument('--save-best-only', action='store_true')
-    checkpoint_parser.add_argument('--save-weights-only', action='store_true')
-    checkpoint_parser.add_argument('--period', type=int)
-
-    def get_checkpoint_callback(args):
-        callbacks_ = ModelCheckpoint(
-            args.ckpt_file_path,
-            monitor=args.monitor,
-            save_best_only=args.save_best_only,
-            save_weights_only=args.save_weights_only,
-            period=args.period
-            )
-        return callbacks_
-
-    parser.set_defaults(get_checkpoint_callback=get_checkpoint_callback)
-
-    return parser
-
-
-def earlystopping_callback_parser(
-        parser: Union[ArgumentParser, GooeyParser,
-                      _ArgumentGroup] = GooeyParser(),
-        title="EalyStopping Options",
-        description=""):
-    if isinstance(parser, (ArgumentParser, GooeyParser)):
-        earlystopping_parser = parser.add_argument_group(
-            title=title,
-            description=description,
-            gooey_options={'columns': 3})
-    elif isinstance(parser, _ArgumentGroup):
-        earlystopping_parser = parser
-
-    earlystopping_parser.add_argument('--min_delta')
-    earlystopping_parser.add_argument('--patience')
-    earlystopping_parser.add_argument('--baseline')
-    earlystopping_parser.add_argument('--restore_best_weights')
-
-    def get_earlystopping_callback(args):
-        callbacks_ = EarlyStopping(
-            monitor=args.monitor,
-            min_delta=args.min_delta,
-            patience=args.patience,
-            baseline=args.baseline,
-            restore_best_weights=args.restore_best_weights
-            )
-
-        return callbacks_
-
-    parser.set_defaults(get_earlystopping_callback=get_earlystopping_callback)
-
-    return parser
+from model.utils.callbacks import get_callbacks_parser, get_callbacks
 
 
 def train_setting_parser(
@@ -130,7 +12,7 @@ def train_setting_parser(
         title="Train Setting",
         description="") -> Callable:
 
-    compile_parser(parser)
+    compile_.compile_parser(parser)
     # compile_parser = parser.add_argument_group(
     #     "Compile Parser")
     # compile_parser = compileParser(compile_parser)
@@ -149,21 +31,37 @@ def train_setting_parser(
         default=True
     )
 
-    callbacks_parser(parser)
+    get_callbacks_parser(parser)
 
-    def train_setting(args):
-        model = parser._defaults['compile_'](args)
-        return (model, args.epochs,
-                parser._defaults['get_callbacks'](args), args.shuffle)
-
-    parser.set_defaults(train_setting=train_setting)
-
+    return parser
 #    compile_parser = parser.add_argument_group(
 #        "Compile Parser")
 #    compile_parser = compileParser(compile_parser)
 #    parser = saveParser(parser)
 
-    return train_setting
+    # return train_setting
+
+
+def train_setting(args):
+    model = compile_.compile_(args)
+    return (model, args.epochs,
+            get_callbacks(args), args.shuffle)
+
+
+def train(args1, args2):
+    model, epochs, callbacks, shuffle = args1
+    train_generator, validation_generator = args2
+    model.fit_generator(train_generator,
+                        epochs,
+                        callbacks=callbacks,
+                        # validation_split=validation_split,
+                        validation_data=validation_generator,
+                        shuffle=shuffle,
+                        # initial_epoch=initial_epoch,
+                        # steps_per_epoch=steps_per_epoch,
+                        # validation_steps=validation_steps,
+                        )
+
 
 """
 def train_parser(
@@ -210,28 +108,17 @@ def train_parser(
     return parser
 """
 
-
-def train(args1, args2):
-    model, epochs, callbacks, shuffle = args1
-    train_generator, validation_generator = args2
-    model.fit_generator(train_generator,
-                        epochs,
-                        callbacks=callbacks,
-                        # validation_split=validation_split,
-                        validation_data=validation_generator,
-                        shuffle=shuffle,
-                        # initial_epoch=initial_epoch,
-                        # steps_per_epoch=steps_per_epoch,
-                        # validation_steps=validation_steps,
-                        )
-
-
 if __name__ == "__main__":
+    # from image_classification import flow_from_dirctory_parser
+    # from image_classification import image_preprocess
+    from generator.image_classification.image_generator \
+        import image_generator_parser
+
     # parser = Gooey(callbacks_parser)()
     model_parser = Gooey(train_setting_parser)()
     model_args = model_parser.parse_args()
-    # data_parser = Gooey(image_generator_parser)()
-    # data_args = data_parser.parse_args()
+    data_parser = Gooey(image_generator_parser)()
+    data_args = data_parser.parse_args()
     print(model_args)
     # print(data_ags)
 

@@ -6,83 +6,83 @@ sys.path.insert(0, '/home/mlg/yys/project/TensorflowGUI/model')
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
 
-from logistic.simple_logistic import train as simple_
-from logistic.multilayer_logistic import train as multi_
-from vgg.vgg16 import train as vgg16_
-from vgg.vgg19 import train as vgg19_
-from Xception import train as Xception_
+from logistic.simple_logistic import test as simple_
+from logistic.multilayer_logistic import test as multi_
+from vgg.vgg16 import test as vgg16_
+from vgg.vgg19 import test as vgg19_
+from Xception import test as Xception_
 # from dataset.parser import generator
 
 
-def train_setting_parser(
+def test_setting_parser(
         parser: Union[ArgumentParser, GooeyParser] = GooeyParser()
         ) -> Union[ArgumentParser, GooeyParser]:
     assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
     subs = parser.add_subparsers()
 
     simple_parser = subs.add_parser('simple_logistic')
-    simple_.train_setting_parser(simple_parser)
+    simple_.test_setting_parser(simple_parser)
 
     multi_parser = subs.add_parser('multilayer_logistic')
-    multi_.train_setting_parser(multi_parser)
+    multi_.test_setting_parser(multi_parser)
 
     vgg16_parser = subs.add_parser('vgg16')
-    vgg16_.train_setting_parser(vgg16_parser)
+    vgg16_.test_setting_parser(vgg16_parser)
 
     vgg19_parser = subs.add_parser('vgg19')
-    vgg19_.train_setting_parser(vgg19_parser)
+    vgg19_.test_setting_parser(vgg19_parser)
 
     Xception_parser = subs.add_parser('Xception')
-    Xception_.train_setting_parser(Xception_parser)
+    Xception_.test_setting_parser(Xception_parser)
 
     return parser
-    # return train_setting
+    # return test_setting
     # return parser
 
 
 if __name__ == "__main__":
     # parser = Gooey(callbacks_parser)()
-    parser = Gooey(train_setting_parser)()
+    parser = Gooey(test_setting_parser)()
     print(parser._defaults)
-    # parser = Gooey(train_parser)()
+    # parser = Gooey(test_parser)()
     args = parser.parse_args()
     print(args)
 
 
-def train_setting(model_cmd, args):
+def test_setting(model_cmd, args):
     if 'simple_logistic' == model_cmd:
-        return simple_.train_setting(args)
+        return simple_.test_setting(args)
     elif 'multilayer_logistic' == model_cmd:
-        return multi_.train_setting(args)
+        return multi_.test_setting(args)
     elif 'vgg16' == model_cmd:
-        return vgg16_.train_setting(args)
+        return vgg16_.test_setting(args)
     elif 'vgg19' == model_cmd:
-        return vgg19_.train_setting(args)
+        return vgg19_.test_setting(args)
     elif 'Xception' == model_cmd:
-        return Xception_.train_setting(args)
+        return Xception_.test_setting(args)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
 
-def train(model_cmd, args1, args2):
+def test(model_cmd, args1, args2):
     if 'simple_logistic' == model_cmd:
-        simple_.train(args1, args2)
+        simple_.test(args1, args2)
     elif 'multilayer_logistic' == model_cmd:
-        multi_.train(args1, args2)
+        multi_.test(args1, args2)
     elif 'vgg16' == model_cmd:
-        vgg16_.train(args1, args2)
+        vgg16_.test(args1, args2)
     elif 'vgg19' == model_cmd:
-        vgg19_.train(args1, args2)
+        vgg19_.test(args1, args2)
     elif 'Xception' == model_cmd:
-        Xception_.train(args1, args2)
+        Xception_.test(args1, args2)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
 
 """
-def train_parser(
-        train_setting_parser: Union[ArgumentParser, GooeyParser,
-                                    _ArgumentGroup] = GooeyParser(),
+def test_parser(
+        test_setting_parser: Union[ArgumentParser, GooeyParser,
+                                   _ArgumentGroup] = GooeyParser(),
         data_generator_parser: Union[ArgumentParser, GooeyParser,
                                      _ArgumentGroup] = GooeyParser(),
         title="Train Model",
@@ -90,21 +90,21 @@ def train_parser(
 
     # modelLoadParser(parser, )
     # compile_parser(parser)
-    train_setting_parser(parser)
+    test_setting_parser(parser)
     data_generator_parser(parser)
-    # parser.set_defaults(train=train)
+    # parser.set_defaults(test=test)
 
-    def train(model, callbacks,  # train setting output
-              epochs, initial_epoch,
-              steps_per_epoch, validation_steps,
-              train_data, val_data,      # data generator output
-              validation_split,
-              shuffle,
-              ):
-        train_data = args.train_data
+    def test(model, callbacks,  # test setting output
+             epochs, initial_epoch,
+             steps_per_epoch, validation_steps,
+             test_data, val_data,      # data generator output
+             validation_split,
+             shuffle,
+             ):
+        test_data = args.test_data
         val_data = args.val_data
 
-        model.fit_generator(*train_data,
+        model.fit_generator(*test_data,
                             epochs,
                             callbacks=callbacks,
                             validation_split=validation_split,

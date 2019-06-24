@@ -7,7 +7,7 @@ from gooey import Gooey, GooeyParser
 from keras.applications import Xception as baseModel
 from keras.models import load_model
 
-from Xception.optimizer import get_optimizer_parser
+from model.utils.optimizer import get_optimizer_parser, get_optimizer
 
 
 def compile_parser(
@@ -34,7 +34,9 @@ def compile_parser(
         widget='FileChooser'
     )
 
-    MAX_FREEZE_LAYER = len([layer for layer in baseModel().layers if layer.trainable])
+    MAX_FREEZE_LAYER = len([layer for layer in baseModel().layers
+                            if layer.trainable])
+
     def max_freeze_layer(value):
         ivalue = ast.literal_eval(value)
         assert isinstance(ivalue, int), ivalue
@@ -44,10 +46,11 @@ def compile_parser(
 
     compile_parser.add_argument(
         "--freeze-layer", type=max_freeze_layer, default=0,
-        help="freeze layer from bottom (input) / %d".format(MAX_FREEZE_LAYER),
+        help="freeze layer from bottom (input) / {}".format(MAX_FREEZE_LAYER),
         gooey_options={
             'validation': {
-                'test': 'int(user_input) >= %d or int(user_input) < 0'.format(MAX_FREEZE_LAYER),
+                'test': 'int(user_input) >= {} or int(user_input) < 0'
+                        ''.format(MAX_FREEZE_LAYER),
                 'message': 'invalid freeze layer number'
             }
         }
@@ -84,34 +87,33 @@ def compile_parser(
 
     get_optimizer_parser(compile_parser, None, None)
 
-    def compile_(args):
-        model = load_model(args.load_file)
-
-        freeze = args.freeze_layer
-        for layer in model.layers:
-            if freeze == 0:
-                break
-            if layer.trainable:
-                layer.trainable = False
-                freeze -= 1
-
-        model.compile(optimizer=args.get_optimizer(args),
-                      loss=args.loss, metrics=args.metrics)
-
-        if args.print_compile_result:
-            print('_________________________________'
-                  '________________________________')
-            print('compiled:', model._is_compiled)
-            print('optimizer:', model.optimizer)
-            print('loss:', model.loss)
-            print('metrics:', model.metrics)
-            print('_________________________________'
-                  '________________________________')
-        return model
-
-    parser.set_defaults(compile_=compile_)
-
     return parser
+
+
+def compile_(args):
+    model = load_model(args.load_file)
+
+    freeze = args.freeze_layer
+    for layer in model.layers:
+        if freeze == 0:
+            break
+        if layer.trainable:
+            layer.trainable = False
+            freeze -= 1
+
+    model.compile(optimizer=get_optimizer(args),
+                  loss=args.loss, metrics=args.metrics)
+
+    if args.print_compile_result:
+        print('_________________________________'
+              '________________________________')
+        print('compiled:', model._is_compiled)
+        print('optimizer:', model.optimizer)
+        print('loss:', model.loss)
+        print('metrics:', model.metrics)
+        print('_________________________________'
+              '________________________________')
+    return model
 
 
 if __name__ == "__main__":

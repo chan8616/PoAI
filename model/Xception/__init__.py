@@ -1,4 +1,4 @@
-from Xception import build, train
+from Xception import build, train, test
 # from treelib import Tree
 # from pathlib import Path
 # import os

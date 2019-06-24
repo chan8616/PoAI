@@ -31,8 +31,6 @@ def test(args1, args2):
     model = args1
     test_generator, _ = args2
     model.evaluate_generator(test_generator,
-                             steps=1,
-                             # steps=len(test_generator),
                              # callbacks=callbacks,
                              )
 

@@ -4,7 +4,7 @@ from treelib import Tree
 import sys
 sys.path.insert(0, os.path.join(os.getcwd(), 'model'))
 
-from model import build, train
+from model import build, train, test
 
 import logistic
 from logistic import SIMPLE_LOGISTIC_TREE

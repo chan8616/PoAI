@@ -5,7 +5,7 @@ from gooey import GooeyParser
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 
 
-def callbacks_parser(
+def get_callbacks_parser(
         parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
         title: str = "Callbacks Setting",
         ) -> Callable:
@@ -19,7 +19,7 @@ def callbacks_parser(
         '--use-checkpoint-callback',
         action='store_true',
     )
-    get_checkpoint_callback = checkpoint_callback_parser(checkpoint_parser)
+    checkpoint_callback_parser(checkpoint_parser)
 
     earlystopping_parser = parser.add_argument_group(
         title=None,
@@ -30,21 +30,21 @@ def callbacks_parser(
         '--use-earlystopping-callback',
         action='store_true',
     )
-    get_earlystopping_callback = \
-        earlystopping_callback_parser(earlystopping_parser)
+    earlystopping_callback_parser(earlystopping_parser)
 
-    def get_callbacks(args):
-        callbacks = []
-        if args.use_checkpoint_callback:
-            callbacks.append([
-                get_checkpoint_callback(args)])
+    return parser
 
-        if args.use_earlystopping_callback:
-            callbacks.append([
-                get_earlystopping_callback(args)])
-        return callbacks
 
-    return get_callbacks
+def get_callbacks(args):
+    callbacks = []
+    if args.use_checkpoint_callback:
+        callbacks.append(
+            get_checkpoint_callback(args))
+
+    if args.use_earlystopping_callback:
+        callbacks.append(
+            get_earlystopping_callback(args))
+    return callbacks
 
 
 def checkpoint_callback_parser(
@@ -71,19 +71,19 @@ def checkpoint_callback_parser(
         default='loss')
     checkpoint_parser.add_argument('--save-best-only', action='store_true')
     checkpoint_parser.add_argument('--save-weights-only', action='store_true')
-    checkpoint_parser.add_argument('--period', type=int)
+    checkpoint_parser.add_argument('--period', type=int, default=1)
 
-    def get_checkpoint_callback(args):
-        callbacks_ = ModelCheckpoint(
-            args.ckpt_file_path,
-            monitor=args.monitor,
-            save_best_only=args.save_best_only,
-            save_weights_only=args.save_weights_only,
-            period=args.period
-            )
-        return callbacks_
+    return parser
 
-    return get_checkpoint_callback
+
+def get_checkpoint_callback(args):
+    return ModelCheckpoint(
+        args.ckpt_file_path,
+        monitor=args.monitor,
+        save_best_only=args.save_best_only,
+        save_weights_only=args.save_weights_only,
+        period=args.period
+        )
 
 
 def earlystopping_callback_parser(
@@ -106,15 +106,14 @@ def earlystopping_callback_parser(
     earlystopping_parser.add_argument('--baseline')
     earlystopping_parser.add_argument('--restore_best_weights')
 
-    def get_earlystopping_callback(args):
-        callbacks_ = EarlyStopping(
-            monitor=args.monitor,
-            min_delta=args.min_delta,
-            patience=args.patience,
-            baseline=args.baseline,
-            restore_best_weights=args.restore_best_weights
-            )
+    return parser
 
-        return callbacks_
 
-    return get_earlystopping_callback
+def get_earlystopping_callback(args):
+    return EarlyStopping(
+        monitor=args.monitor,
+        min_delta=args.min_delta,
+        patience=args.patience,
+        baseline=args.baseline,
+        restore_best_weights=args.restore_best_weights
+        )

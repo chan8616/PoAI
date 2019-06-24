@@ -330,8 +330,9 @@ class Frame(wx.Frame):
             self.dataset_tree.GetRootItem())
 
         print(model_node.tag, model_node.data)
-        train_setting_parser, train_setting = \
+        train_setting_parser = \
             model_node.data.train.train_setting_parser(GooeyParser())
+        train_setting = model_node.data.train.train_setting
         dataset_generator_parser = \
             dataset_node.data.image_generator_parser(GooeyParser())
         # dataset_generator = dataset_node.data.image_generator
@@ -346,7 +347,7 @@ class Frame(wx.Frame):
         page.train_setting = train_setting
         page.dataset_generator_parser = dataset_generator_parser
         # page.dataset_generator = dataset_generator
-        page.train = model_node.data.train.train
+        page.run = model_node.data.train.train
         # page.test = model_node.data.test
         # page.model_parser = model_node.data.trainParser
         # page.dataset_parser = dataset_node.data.Parser
@@ -368,7 +369,8 @@ class Frame(wx.Frame):
 
         print(model_node.tag, model_node.data)
         test_setting_parser = \
-            model_node.data.test_setting_parser(GooeyParser())
+            model_node.data.test.test_setting_parser(GooeyParser())
+        test_setting = model_node.data.test.test_setting
         dataset_generator_parser = \
             dataset_node.data.image_generator_parser(GooeyParser())
         print(test_setting_parser, dataset_generator_parser)
@@ -379,8 +381,9 @@ class Frame(wx.Frame):
         page = self.notebook.AddTestPage(
             test_setting_parser, dataset_generator_parser, "Test Page")
         page.test_setting_parser = test_setting_parser
+        page.test_setting = test_setting
         page.dataset_generator_parser = dataset_generator_parser
-        page.test = model_node.data.test
+        page.run = model_node.data.test.test
         # page.model_parser = model_node.data.trainParser
         # page.dataset_parser = dataset_node.data.Parser
         self.tool_bar.EnableTool(self.tool_run.GetId(), True)
@@ -400,31 +403,45 @@ class Frame(wx.Frame):
 
             if model_config.isValid() and dataset_config.isValid():
                 cmds = page.panel_1.buildCmd()
-                model_cmd, train_setting_cmds = cmds
+                model_cmd, setting_cmds = cmds
                 cmds = page.panel_2.buildCmd()
                 dataset_cmd, dataset_generator_cmds = cmds
-                print(model_cmd, dataset_cmd)
+                print(model_cmd, setting_cmds)
+                print(dataset_cmd, dataset_generator_cmds)
 
                 # try:
-                print(page.train_setting_parser, page.dataset_generator_parser)
-                train_setting_args = \
-                    page.train_setting_parser.parse_args(
-                        train_setting_cmds)
-                dataset_generator_args = \
-                    page.dataset_generator_parser.parse_args(
-                        dataset_generator_cmds)
+                # print(page.train_setting_parser, page.dataset_generator_parser)
+                if self.notebook.isOnTrainPage():
+                    setting_parser = page.train_setting_parser
+                    get_setting= page.train_setting
+                elif self.notebook.isOnTestPage():
+                    setting_parser = page.test_setting_parser
+                    get_setting= page.test_setting
+                else:
+                    assert False, "page wierd"
 
-                pprint(train_setting_args)
-                pprint(dataset_generator_args)
+                try:
+                    setting_args = \
+                        setting_parser.parse_args(
+                            setting_cmds)
+                    dataset_generator_args = \
+                        page.dataset_generator_parser.parse_args(
+                            dataset_generator_cmds)
 
-                train_setting = page.train_setting(model_cmd[0],
-                                                   train_setting_args)
-                print(train_setting)
-                dataset_generator = page.dataset_generator_parser._defaults[
-                    dataset_cmd[0]](dataset_generator_args)
-                print(dataset_generator)
-                # page.train(train_setting, dataset_generator)
-                page.train(model_cmd[0], train_setting, dataset_generator)
+                    pprint(setting_args)
+                    pprint(dataset_generator_args)
+
+                    setting = get_setting(model_cmd[0],
+                                          setting_args)
+                    print(setting)
+                    dataset_generator = page.dataset_generator_parser._defaults[
+                        dataset_cmd[0]](dataset_generator_args)
+                    print(dataset_generator)
+                    # page.train(train_setting, dataset_generator)
+                    page.run(model_cmd[0], setting, dataset_generator)
+                except:
+                    print("error")
+                
                 # args = page.parser.parse_args()
                 # args.func(args)
                 # except:
