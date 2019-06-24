@@ -10,7 +10,6 @@ __pycache__/
 
 ### checkpoint ###
 checkpoint/
-checkpoint_/
 *.ckpt* # tf weight
 *.h5 # keras model
 *.hdf5 # keras model
@@ -21,7 +20,7 @@ log/
 
 
 ### dataset ###
-dataset/*/
+dataset/
 
 ### vim ###
 *.backup
