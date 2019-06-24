@@ -38,8 +38,8 @@ class Notebook(AuiNotebook):
         train_page = DoublePage(
             model_parser,
             dataset_parser,
-            'Selece Model',
-            'Select Dataset',
+            'Selecet Model',
+            'Select Dataset Format',
             self, *args, **kwds)
         train_page.phase = "train"
         self.AddPage(train_page, caption, select=True, *args, **kwds)
@@ -50,8 +50,8 @@ class Notebook(AuiNotebook):
         test_page = DoublePage(
             model_parser,
             dataset_parser,
-            'Selece Model',
-            'Select Dataset',
+            'Selecet Model',
+            'Select Dataset Format',
             self, *args, **kwds)
         test_page.phase = "test"
         self.AddPage(test_page, caption, select=True, *args, **kwds)

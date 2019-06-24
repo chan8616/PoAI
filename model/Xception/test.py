@@ -1,3 +1,5 @@
+from model.utils.test import test_setting_parser, test_setting, test
+"""
 from typing import Union, Callable
 from argparse import ArgumentParser
 from gooey import Gooey, GooeyParser
@@ -53,3 +55,4 @@ if __name__ == "__main__":
     print(args1)
     print(args2)
     test(args1, args2)
+"""

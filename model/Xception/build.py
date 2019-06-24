@@ -157,7 +157,7 @@ def build(args, baseModel=baseModel):
         fcs = [Dense(nodes) for nodes in args.hidden_layers]
         for fc in fcs:
             x = fc(x)
-        x = Dense(args.classes)(x)
+        x = Dense(args.classes, activation='softmax')(x)
         model = Model(
             inputs=base_model.input,
             outputs=x)

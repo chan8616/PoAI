@@ -291,7 +291,7 @@ class DoublePage(wx.Panel):
 
         spec_2 = build_spec_from_parser(
             parser_2,
-            sidebar_title=title_1,
+            sidebar_title=title_2,
             **kwds)
 
         self.panel_1 = Page(spec_1, parent=self, id=wx.ID_ANY)

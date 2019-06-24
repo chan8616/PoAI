@@ -22,6 +22,9 @@ log/
 ### dataset ###
 dataset/
 
+### test ###
+test/
+
 ### vim ###
 *.backup
 *.swp

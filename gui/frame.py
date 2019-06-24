@@ -416,7 +416,7 @@ class Frame(wx.Frame):
                     get_setting= page.train_setting
                 elif self.notebook.isOnTestPage():
                     setting_parser = page.test_setting_parser
-                    get_setting= page.test_setting
+                    get_setting = page.test_setting
                 else:
                     assert False, "page wierd"
 
@@ -434,13 +434,15 @@ class Frame(wx.Frame):
                     setting = get_setting(model_cmd[0],
                                           setting_args)
                     print(setting)
-                    dataset_generator = page.dataset_generator_parser._defaults[
-                        dataset_cmd[0]](dataset_generator_args)
+                    dataset_generator =\
+                        page.dataset_generator_parser._defaults[
+                            dataset_cmd[0]](dataset_generator_args)
                     print(dataset_generator)
                     # page.train(train_setting, dataset_generator)
                     page.run(model_cmd[0], setting, dataset_generator)
                 except:
-                    print("error")
+                    print("Unexpected error:", sys.exc_info()[0])
+                    raise NotImplementedError
                 
                 # args = page.parser.parse_args()
                 # args.func(args)

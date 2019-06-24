@@ -67,7 +67,7 @@ def flow_from_directory_parser(
     )
     generate_parser.add_argument(
         '--shuffle',
-        action='store_false',
+        action='store_true',
         default=True,
     )
 

@@ -2,7 +2,7 @@ from typing import Union, Callable
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import GooeyParser
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 
 
 def get_callbacks_parser(
@@ -117,3 +117,34 @@ def get_earlystopping_callback(args):
         baseline=args.baseline,
         restore_best_weights=args.restore_best_weights
         )
+
+
+def csvlogger_callback_parser(
+        parser: Union[ArgumentParser, GooeyParser,
+                      _ArgumentGroup] = GooeyParser(),
+        title="CSVLogger Options",
+        description="",
+        ) -> Callable:
+
+    if isinstance(parser, (ArgumentParser, GooeyParser)):
+        csvlogger_parser = parser.add_argument_group(
+            title=title,
+            description=description,
+            gooey_options={'columns': 3})
+    elif isinstance(parser, _ArgumentGroup):
+        csvlogger_parser = parser
+
+    csvlogger_parser.add_argument(
+        '--filename', type=str)
+    # csvlogger_parser.add_argument(
+    #     '--separator', type=str, default=',')
+    # csvlogger_parser.add_argument(
+    #     '--append', action='store_true')
+
+
+def get_csvlogger_callback(args):
+    return CSVLogger(
+        filename=args.filename,
+        # separator=args.separator,
+        # append=args.append
+    )
