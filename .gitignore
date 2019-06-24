@@ -13,6 +13,7 @@ checkpoint/
 checkpoint_/
 *.ckpt* # tf weight
 *.h5 # keras model
+*.hdf5 # keras model
 
 ### result ###
 *.pickle
