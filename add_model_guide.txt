@@ -1,0 +1,76 @@
+[cwd: model/]
+mkdir Xception
+cd Xception
+
+vi __init__.py
+vi build.py
+vi compile_.py
+vi train.py
+vi test.py
+(copy & paste)
+
+__init__.py
+modify: from Xception import build, train, test
+
+build.py
+modify: from keras.applications import Xception as baseModel
+modify: MODEL_DIR = "checkpoint/Xception/"
+modify: DEFAULT_INPUT_SHAPE = (299, 299, 301)
+
+compile_.py
+modify: from keras.applications import Xception as baseModel
+
+train.py
+modify: from Xception import compile_
+
+test.py
+
+cd ..
+[cwd: model/]
+vi build.py
+vi train.py
+vi __init__.py
+
+
+__init__.py
+add: import Xception
+
+add: Xception_TREE = Tree()
+add: Xception_TREE.create_node(
+	'Xception',
+	Path(Xception.__path__[0]).relative_to(os.getcwd()),
+	data=Xception)
+
+build.py
+add: from Xception import build as Xception_
+
+add: Xception_parser = subs.add_parser('Xception')
+add: Xception_.build_parser(Xception_parser)
+
+add: elif 'Xception' == cmd:
+	Xception_.build(args)
+
+train.py
+add: Xception import train as Xception_
+
+add: Xception_parser = subs.add_parser('Xception')
+add: Xception_.train_setting_parser(Xception_parser)
+
+add: elif: 'Xception' == model_cmd:
+	Xception_.train_setting(args)
+
+add: elif: 'Xception' == model_cmd:
+	Xception_.train(args1, args2)
+
+test.py
+add: Xception import test as Xception_
+
+add: Xception_parser = subs.add_parser('Xception')
+add: Xception_.test_setting_parser(Xception_parser)
+
+add: elif: 'Xception' == model_cmd:
+	Xception_.test_setting(args)
+
+add: elif: 'Xception' == model_cmd:
+	Xception_.test(args1, args2)
+
