@@ -1,12 +1,8 @@
 from typing import Union, Callable
-from argparse import ArgumentParser, _ArgumentGroup
+from argparse import ArgumentParser
 from gooey import Gooey, GooeyParser
 
 from keras.models import load_model
-
-# from image_classification import flow_from_dirctory_parser
-# from image_classification import image_preprocess
-# from image_classification.image_generator import image_generator_parser
 
 
 def test_setting_parser(
@@ -46,6 +42,11 @@ def test(args1, args2):
 
 
 if __name__ == "__main__":
+    # from image_classification import flow_from_dirctory_parser
+    # from image_classification import image_preprocess
+    from generator.image_classification.image_generator \
+        import image_generator_parser
+
     # parser = Gooey(callbacks_parser)()
     model_parser = Gooey(test_setting_parser)()
     model_args = model_parser.parse_args()
