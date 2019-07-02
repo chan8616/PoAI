@@ -129,6 +129,11 @@ class Frame(wx.Frame):
         self.page_to_item = dict()
         # TreeCtrl end
 
+        # Folders
+        self.datset_folder = Path("dataset/").mkdir(exist_ok=True)
+        self.checkpoint_folder = Path("checkpoint").mkdir(exist_ok=True)
+        # Folders end
+
         # AuiNotebook
         self.notebook = self.notebook_1 = \
             Notebook(self, wx.ID_ANY)
@@ -147,8 +152,6 @@ class Frame(wx.Frame):
         self.redir = Redirection(self.text_log)
         sys.stdout = self.redir
         sys.stderr = self.redir
-        """
-        """
         # log window end
 
         self.__set_properties()
@@ -410,10 +413,11 @@ class Frame(wx.Frame):
                 print(dataset_cmd, dataset_generator_cmds)
 
                 # try:
-                # print(page.train_setting_parser, page.dataset_generator_parser)
+                # print(page.train_setting_parser,
+                #       page.dataset_generator_parser)
                 if self.notebook.isOnTrainPage():
                     setting_parser = page.train_setting_parser
-                    get_setting= page.train_setting
+                    get_setting = page.train_setting
                 elif self.notebook.isOnTestPage():
                     setting_parser = page.test_setting_parser
                     get_setting = page.test_setting
