@@ -98,12 +98,12 @@ class Page(wx.Panel):
         positional = config.getPositionalArgs()
         positional = list(filter(None, positional))
         if positional:
-            positional = ' '.join(positional).replace("'", '').split(' ')
+            positional = ' '.join(positional).replace("'", '').replace('"', '').split(' ')
 
         optional = config.getOptionalArgs()
         optional = list(filter(None, optional))
         if optional:
-            optional = ' '.join(optional).replace("'", '').split(' ')
+            optional = ' '.join(optional).replace("'", '').replace('"', '').split(' ')
 
         cmd = [] if group['command'] == '::gooey/default' \
             else [group['command']]
