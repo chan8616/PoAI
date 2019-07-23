@@ -2,7 +2,8 @@ from typing import Union, Callable
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import GooeyParser
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
+from keras.callbacks import ModelCheckpoint, EarlyStopping
+from model.utils.callbacks_ import MyCSVLogger
 
 
 def get_callbacks_parser(
@@ -143,7 +144,7 @@ def csvlogger_callback_parser(
 
 
 def get_csvlogger_callback(args):
-    return CSVLogger(
+    return MyCSVLogger(
         filename=args.filename,
         # separator=args.separator,
         # append=args.append

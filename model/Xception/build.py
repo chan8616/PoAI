@@ -62,7 +62,8 @@ def build_parser(
     Path(MODEL_DIR).mkdir(exist_ok=True)
     show_and_save_parser.add_argument(
         "--save-path", type=str,
-        metavar="File path (checkpoint/__/file_name.h5)",
+        metavar="File path",
+        default="{}model.h5)".format(MODEL_DIR),
         help="model name to save model",
         gooey_options={
             'validator': {

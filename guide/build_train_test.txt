@@ -21,6 +21,7 @@ train
 2. specify model setting
     2.1) select model (Ex. Xception)
     2.2) load_file: checkpoint/Xceptoin/model.h5
+    (if you want save model)
     2.3) use_checkpoint_callback: True
         2.3.1) ckpt_file_path: checkpoint/Xception/trained_model.h5
         2.3.2) monitor: loss

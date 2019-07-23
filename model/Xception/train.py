@@ -19,11 +19,16 @@ def train_setting_parser(
 
     train_setting_parser = parser.add_argument_group(
         title=title,
-        description=description)
+        description=description,
+        gooey_options={'columns': 3})
 
     train_setting_parser.add_argument(
         "epochs", type=int, default=10,
         help="number of training per entire dataset"
+    )
+    train_setting_parser.add_argument(
+        "--validation_steps", type=int, default=None,
+        help="number of steps (batches of samples) to validate before stopping"
     )
     train_setting_parser.add_argument(
         "--shuffle",
@@ -45,21 +50,22 @@ def train_setting_parser(
 def train_setting(args):
     model = compile_.compile_(args)
     return (model, args.epochs,
+            args.epochs if args.validation_steps is None else args.validation_steps,
             get_callbacks(args), args.shuffle)
 
 
 def train(args1, args2):
-    model, epochs, callbacks, shuffle = args1
+    model, epochs, validation_steps, callbacks, shuffle = args1
     train_generator, validation_generator = args2
     model.fit_generator(train_generator,
                         epochs,
                         callbacks=callbacks,
                         # validation_split=validation_split,
                         validation_data=validation_generator,
+                        validation_steps=validation_steps,
                         shuffle=shuffle,
                         # initial_epoch=initial_epoch,
                         # steps_per_epoch=steps_per_epoch,
-                        # validation_steps=validation_steps,
                         )
 
 
