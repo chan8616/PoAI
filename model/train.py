@@ -11,6 +11,7 @@ from logistic.multilayer_logistic import train as multi_
 from vgg.vgg16 import train as vgg16_
 from vgg.vgg19 import train as vgg19_
 from Xception import train as Xception_
+from MobileNet import train as MobileNet_
 # from dataset.parser import generator
 
 
@@ -34,6 +35,9 @@ def train_setting_parser(
 
     Xception_parser = subs.add_parser('Xception')
     Xception_.train_setting_parser(Xception_parser)
+
+    MobileNet_parser = subs.add_parser('MobileNet')
+    MobileNet_.train_setting_parser(MobileNet_parser)
 
     return parser
     # return train_setting
@@ -60,6 +64,8 @@ def train_setting(model_cmd, args):
         return vgg19_.train_setting(args)
     elif 'Xception' == model_cmd:
         return Xception_.train_setting(args)
+    elif 'MobileNet' == model_cmd:
+        return MobileNet_.train_setting(args)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
@@ -75,6 +81,8 @@ def train(model_cmd, args1, args2):
         vgg19_.train(args1, args2)
     elif 'Xception' == model_cmd:
         Xception_.train(args1, args2)
+    elif 'MobileNet' == model_cmd:
+        MobileNet_.train(args1, args2)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 

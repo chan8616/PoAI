@@ -9,7 +9,7 @@ from vgg.vgg16 import build as vgg16_
 from vgg.vgg19 import build as vgg19_
 
 from Xception import build as Xception_
-
+from MobileNet import build as MobileNet_
 
 def build_parser(
         parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
@@ -38,6 +38,9 @@ def build_parser(
     Xception_parser = subs.add_parser('Xception')
     Xception_.build_parser(Xception_parser)
 
+    MobileNet_parser = subs.add_parser('MobileNet')
+    MobileNet_.build_parser(MobileNet_parser)
+
     return parser
 
 
@@ -52,6 +55,8 @@ def build(cmd, args):
         vgg19_.build(args)
     elif 'Xception' == cmd:
         Xception_.build(args)
+    elif 'MobileNet' == cmd:
+        MobileNet_.build(args)
     else:
         raise NotImplementedError('wrong cmd:', cmd)
 
