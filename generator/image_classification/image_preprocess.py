@@ -58,7 +58,7 @@ def image_preprocess_parser(
         default=False,
         help="Divide inputs by std of the dataset, sample-wize")
     scale_parser.add_argument(
-        '--rescale', type=float, default=0.0,
+        '--rescale', type=lambda x: eval(x), default=0.0,
         help="rescaling factor, apply after all other transformatoins")
 
     zca_parser = parser.add_argument_group(

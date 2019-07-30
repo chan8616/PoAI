@@ -1,39 +1,61 @@
-# from pathlib import Path
+from pathlib import Path
 from typing import Union
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
 
-from keras.layers import Dense
+from keras.layers import Dense, Reshape
 from keras.models import Sequential, load_model
+
+DEFAULT_INPUT_SHAPE = (32, 32, 3)
+MODEL_DIR = "checkpoint/logistic/simple_logistic/"
 
 
 def build_parser(
-        parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
-        title="Build Model",
-        description="Dimension Setting",
-        save_path=""):
+    parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
+    title="Build Model",
+    description="Dimension Setting",
+):
+    """"""
     build_parser = parser.add_argument_group(
         title,
         description,
         gooey_options={'columns': 3, 'show_border': True}
     )
 
-    build_parser.add_argument("--input-dim", type=int, default=4)
+    build_parser.add_argument(
+        "--input-dim", type=lambda x: eval(x), default=4,
+        gooey_options={
+            'validator': {
+                'test': "isinstance(eval(user_input), int)",
+                'message': 'unvalid input number'
+            }
+        }
+    )
     build_parser.add_argument("--output-dim", type=int, default=3)
+    # build_parser.add_argument("--activation", type=str, default="None",
+    #                           choices=["None", "sigmoid", "tanh", "relu"])
     build_parser.add_argument(
         "--initializer", type=str, default='glorot_uniform')
 
     show_and_save_parser = parser.add_argument_group(
         "",
         "Show and Save model options",
-        gooey_options={'show_border': True, 'columns': 2})
+        gooey_options={'show_border': True, 'columns': 3})
     show_and_save_parser.add_argument(
        "--print-model-summary", action='store_true',
     )
+    Path(MODEL_DIR).mkdir(exist_ok=True, parents=True)
     show_and_save_parser.add_argument(
         "--save-path", type=str,
-        metavar="File path (checkpoint/__/file_name.h5)",
+        metavar="File path",
+        default="{}model.h5".format(MODEL_DIR),
         help="model name to save model",
+        gooey_options={
+            'validator': {
+                'test': "user_input[:len('"+MODEL_DIR+"')]=='"+MODEL_DIR+"'",
+                'message': 'unvalid save path'
+            }
+        }
     )
     show_and_save_parser.add_argument(
         "--save-file", type=str,
@@ -56,25 +78,44 @@ def build_parser(
 
     # parser = save_model_parser(parser)
 
-    def build(args):
-        model = Sequential()
-        model.add(Dense(args.output_dim, input_dim=args.input_dim,
-                        activation='softmax',
-                        kernel_initializer=args.initializer,
-                        ))
+    # def build(args):
+    #     model = Sequential()
+    #     model.add(Dense(args.output_dim, input_dim=args.input_dim,
+    #                     activation='softmax',
+    #                     kernel_initializer=args.initializer,
+    #                     ))
 
-        if args.print_model_summary:
-            print(model.summary())
-        if args.save_path:
-            model.save(args.save_path)
-        if args.save_file:
-            model.save(args.save_file)
+    #     if args.print_model_summary:
+    #         print(model.summary())
+    #     if args.save_path:
+    #         model.save(args.save_path)
+    #     if args.save_file:
+    #         model.save(args.save_file)
 
-        return model
+    #     return model
 
-    parser.set_defaults(build=build)
+    # parser.set_defaults(build=build)
 
-    return build
+    return parser
+
+
+def build(args):
+    model = Sequential()
+    model.add(Reshape([args.input_dim], input_shape=DEFAULT_INPUT_SHAPE))
+    # fcs = [Dense(nodes, activation=args.activation) for nodes
+    #        in args.hidden_layers]
+    # for fc in fcs:
+    #     model.add(fc)
+    model.add(Dense(args.output_dim, activation="softmax"))
+
+    if args.print_model_summary:
+        print(model.summary())
+    if args.save_path:
+        model.save(args.save_path)
+    if args.save_file:
+        model.save(args.save_file)
+
+    return model
 
 
 if __name__ == "__main__":

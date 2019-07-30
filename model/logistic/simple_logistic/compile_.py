@@ -62,42 +62,33 @@ def compile_parser(
 
     get_optimizer_parser(compile_parser, None, None)
 
-    def compile_(args):
-        # if args.model_path:
-        #     model = args.model_load(args)
-        # elif args.base_model:
-        #     base_model = args.base_model
-        #     model = build(args, base_model)
-        # else:
-        #     assert False
-        # model = VGG16()
-        model = load_model(args.load_file)
-
-        freeze = args.freeze_layer
-        for layer in model.layers:
-            if freeze == 0:
-                break
-            if layer.trainable:
-                layer.trainable = False
-                freeze -= 1
-
-        model.compile(optimizer=args.get_optimizer(args),
-                      loss=args.loss, metrics=args.metrics)
-
-        if args.print_compile_result:
-            print('_________________________________'
-                  '________________________________')
-            print('compiled:', model._is_compiled)
-            print('optimizer:', model.optimizer)
-            print('loss:', model.loss)
-            print('metrics:', model.metrics)
-            print('_________________________________'
-                  '________________________________')
-        return model
-
-    parser.set_defaults(compile_=compile_)
-
     return parser
+
+
+def compile_(args):
+    model = load_model(args.load_file)
+
+    # freeze = args.freeze_layer
+    # for layer in model.layers:
+    #     if freeze == 0:
+    #         break
+    #     if layer.trainable:
+    #         layer.trainable = False
+    #         freeze -= 1
+
+    model.compile(optimizer=args.get_optimizer(args),
+                  loss=args.loss, metrics=args.metrics)
+
+    if args.print_compile_result:
+        print('_________________________________'
+              '________________________________')
+        print('compiled:', model._is_compiled)
+        print('optimizer:', model.optimizer)
+        print('loss:', model.loss)
+        print('metrics:', model.metrics)
+        print('_________________________________'
+              '________________________________')
+    return model
 
 
 if __name__ == "__main__":

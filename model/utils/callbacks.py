@@ -7,10 +7,13 @@ from model.utils.callbacks_ import MyCSVLogger
 
 
 def get_callbacks_parser(
-        parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
-        title: str = "Callbacks Setting",
-        ) -> Callable:
-
+    parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
+    title: str = "Callbacks Setting",
+    # paths: {'ckpt_file_path': "checkpoint/model.h5"}
+    # ckpt_file_path: str = "checkpoint/model.h5",
+    model_dir: str = "checkpoint/"
+) -> Callable:
+    """"""
     checkpoint_parser = parser.add_argument_group(
         title=title,
         description="checkpoint callback",
@@ -18,9 +21,10 @@ def get_callbacks_parser(
     )
     checkpoint_parser.add_argument(
         '--use-checkpoint-callback',
-        action='store_true',
+        action='store_true', default=False,
     )
-    checkpoint_callback_parser(checkpoint_parser)
+    checkpoint_callback_parser(checkpoint_parser,
+                               model_dir=model_dir)
 
     earlystopping_parser = parser.add_argument_group(
         title=None,
@@ -29,7 +33,7 @@ def get_callbacks_parser(
     )
     earlystopping_parser.add_argument(
         '--use-earlystopping-callback',
-        action='store_true',
+        action='store_true', default=False,
     )
     earlystopping_callback_parser(earlystopping_parser)
 
@@ -53,6 +57,7 @@ def checkpoint_callback_parser(
                       _ArgumentGroup] = GooeyParser(),
         title: str = "Checkpoint Options",
         description: str = "",
+        model_dir: str = "checkpoint/"
         ) -> Callable:
 
     if isinstance(parser, (ArgumentParser, GooeyParser)):
@@ -65,7 +70,15 @@ def checkpoint_callback_parser(
     else:
         raise ValueError
 
-    checkpoint_parser.add_argument('--ckpt-file-path')
+    checkpoint_parser.add_argument(
+        '--ckpt-file-path',
+        default=model_dir+"trained_model.hd5",
+        gooey_options={
+            'validator': {
+                'test': "user_input[:len('"+model_dir+"')]=='"+model_dir+"'",
+                'message': 'unvalid save path'
+            }
+        })
     checkpoint_parser.add_argument(
         '--monitor',
         choices=['acc', 'loss', 'val_loss', 'val_acc'],
