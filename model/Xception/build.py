@@ -63,7 +63,7 @@ def build_parser(
     show_and_save_parser.add_argument(
         "--save-path", type=str,
         metavar="File path",
-        default="{}model.h5)".format(MODEL_DIR),
+        default="{}model.h5".format(MODEL_DIR),
         help="model name to save model",
         gooey_options={
             'validator': {
