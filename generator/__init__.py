@@ -9,6 +9,11 @@ import image_classification
 IMAGE_CLASSIFICATION_TREE = Tree()
 IMAGE_CLASSIFICATION_TREE.create_node('image classification',
                                       data=image_classification)
+import iris
+IRIS_TREE = Tree()
+IRIS_TREE.create_node('iris dataset',
+                       data=iris)
+
 """
 class DATASET():
     def __init__(self, name, path):

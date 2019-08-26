@@ -11,7 +11,7 @@ DEFAULT_PARAMS = {'C': 1.0,
                   'kernel': 'rbf',
                   'degree': 3,
                   'gamma': 'auto',
-                  'coef0': 0.0}
+                  'coef0': '0.0'}
 MODEL_DIR = "checkpoint/svm/"
 
 

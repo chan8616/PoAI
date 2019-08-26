@@ -51,7 +51,7 @@ def image_generator_parser(
     # )
 
     name_parser = subs.add_parser('opendata')
-    name_parser.add_argument('--name', type=str, choices=[],)
+    name_parser.add_argument('--name', type=str, choices=['iris'])
 
     file_parser = subs.add_parser('dataframe')
     files_parser = file_parser.add_argument_group()

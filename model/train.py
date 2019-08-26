@@ -6,6 +6,7 @@ sys.path.insert(0, '/home/mlg/yys/project/TensorflowGUI/model')
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
 
+from svm import train as svm_
 from logistic.simple_logistic import train as simple_
 from logistic.multilayer_logistic import train as multi_
 from vgg.vgg16 import train as vgg16_
@@ -20,6 +21,9 @@ def train_setting_parser(
         ) -> Union[ArgumentParser, GooeyParser]:
     assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
     subs = parser.add_subparsers()
+
+    svm_parser = subs.add_parser('svm')
+    svm_.train_setting_parser(svm_parser)
 
     simple_parser = subs.add_parser('simple_logistic')
     simple_.train_setting_parser(simple_parser)
@@ -54,7 +58,9 @@ if __name__ == "__main__":
 
 
 def train_setting(model_cmd, args):
-    if 'simple_logistic' == model_cmd:
+    if 'svm' == model_cmd:
+        return svm_.train_setting(args)
+    elif 'simple_logistic' == model_cmd:
         return simple_.train_setting(args)
     elif 'multilayer_logistic' == model_cmd:
         return multi_.train_setting(args)
@@ -71,7 +77,9 @@ def train_setting(model_cmd, args):
 
 
 def train(model_cmd, args1, args2):
-    if 'simple_logistic' == model_cmd:
+    if 'svm' == model_cmd:
+        svm_.train(args1, args2)
+    elif 'simple_logistic' == model_cmd:
         simple_.train(args1, args2)
     elif 'multilayer_logistic' == model_cmd:
         multi_.train(args1, args2)

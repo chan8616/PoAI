@@ -2,84 +2,60 @@ from typing import Union, Callable
 from argparse import ArgumentParser
 from gooey import Gooey, GooeyParser
 
-from model.Xception import compile_
+from model.svm import build
 
-from model.utils.callbacks import get_callbacks_parser, get_callbacks
-
+DEFAULT_PARAMS={'tol': 1e-3,
+                'max_iter': -1,
+                'dicision_function_shape': 'ovr'}
 
 def train_setting_parser(
         parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
         title="Train Setting",
         description="") -> Callable:
 
+    parser.add_argument(
+        'load_build_params',
+        widget='FileChooser'
+    )
+
     parameter_parser = parser.add_argument_group(
         title,
         "Parameters",
         gooey_options={'show_border': True, 'columns': 4})
     parameter_parser.add_argument(
-        "--C", type=float,
-        default=DEFAULT_PARAMS['C'],
-        metavar="C",
-        help="Penalty Parameter C of the error term"
+        "--tol", type=lambda x: eval(x),
+        default=DEFAULT_PARAMS['tol'],
+        metavar="tolerance",
+        help="Tolerance for stopping criterion.",
     )
     parameter_parser.add_argument(
-        "--kernel", choices=['linear', 'poly', 'rbf', 'sigmoid'],
-        default=DEFAULT_PARAMS['kernel'],
-        metavar="kernel type",
-        help="Specifies the kernel type to be used in the algorithm. "
-             "It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’."
+        "--class_weight", choices=['balanced'],
+        metavar="class weight",
+        help="Set the parameter C of class i to class_weight[i]*C for SVC. "
+             "If not given, all classes are supposed to have weight one. "
+             "The “balanced” mode uses the values of y to automatically adjust weights "
+             "inversely proportional to class frequencies in the input data as n_samples / (n_classes * np.bincount(y))",
     )
     parameter_parser.add_argument(
-        "--degree", type=int,
-        default=DEFAULT_PARAMS['degree'],
-        metavar='ploynomial kernel degree',
-        help="Degree of the polynomial kernel function (‘poly’)."
-             "Ignored by all other kernels."
+        "--max_iter", type=lambda x: eval(x),
+        default=DEFAULT_PARAMS['max_iter'],
+        metavar='max iteration',
+        help="Hard limit on iterations within solver, or -1 for no limit.",
     )
     parameter_parser.add_argument(
-        "--gamma", type=float,
-        default=DEFAULT_PARAMS['gamma'],
-        metavar="gamma",
-        help="Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’.",
+        "--decision_function_shape", choices=['ovo', 'ovr'],
+        default=DEFAULT_PARAMS['dicision_function_shape'],
+        metavar="dicision_function_shape",
+        help="Whether to return a one-vs-rest (‘ovr’) decision function of shape (n_samples, n_classes) as all other classifiers, "
+             "or the original one-vs-one (‘ovo’) decision function of libsvm which has shape (n_samples, n_classes * (n_classes - 1) / 2). "
+             "However, one-vs-one (‘ovo’) is always used as multi-class strategy.",
     )
-
-    compile_.compile_parser(parser)
-    # compile_parser = parser.add_argument_group(
-    #     "Compile Parser")
-    # compile_parser = compileParser(compile_parser)
-
-    train_setting_parser = parser.add_argument_group(
-        title=title,
-        description=description,
-        gooey_options={'columns': 3})
-
-    train_setting_parser.add_argument(
-        "epochs", type=int, default=10,
-        help="number of training per entire dataset"
-    )
-    train_setting_parser.add_argument(
-        "--validation_steps", type=int, default=None,
-        help="number of steps (batches of samples) to validate before stopping"
-    )
-    train_setting_parser.add_argument(
-        "--shuffle",
-        action='store_true',
-        default=True
-    )
-
-    get_callbacks_parser(parser)
 
     return parser
-#    compile_parser = parser.add_argument_group(
-#        "Compile Parser")
-#    compile_parser = compileParser(compile_parser)
-#    parser = saveParser(parser)
-
-    # return train_setting
 
 
 def train_setting(args):
-    model = compile_.compile_(args)
+    print(args)
     return (model, args.epochs,
             args.epochs if args.validation_steps is None else args.validation_steps,
             get_callbacks(args), args.shuffle)
