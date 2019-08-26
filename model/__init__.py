@@ -15,6 +15,7 @@ from vgg import VGG16_TREE, VGG19_TREE
 
 import Xception
 import MobileNet
+import InceptionV3
 
 LOGISTIC_TREE = Tree()
 LOGISTIC_TREE.create_node(
@@ -43,3 +44,9 @@ MobileNet_TREE.create_node(
     'MobileNet',
     Path(MobileNet.__path__[0]).relative_to(os.getcwd()),
     data=MobileNet)
+
+InceptionV3_TREE = Tree()
+InceptionV3_TREE.create_node(
+    'InceptionV3',
+    Path(InceptionV3.__path__[0]).relative_to(os.getcwd()),
+    data=InceptionV3)

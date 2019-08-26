@@ -12,6 +12,7 @@ from vgg.vgg16 import test as vgg16_
 from vgg.vgg19 import test as vgg19_
 from Xception import test as Xception_
 from MobileNet import test as MobileNet_
+from InceptionV3 import build as InceptionV3_
 # from dataset.parser import generator
 
 
@@ -38,6 +39,9 @@ def test_setting_parser(
 
     MobileNet_parser = subs.add_parser('MobileNet')
     MobileNet_.test_setting_parser(MobileNet_parser)
+
+    InceptionV3_parser = subs.add_parser('InceptionV3')
+    InceptionV3_.test_setting_parser(InceptionV3_parser)
 
     return parser
     # return test_setting
@@ -66,6 +70,8 @@ def test_setting(model_cmd, args):
         return Xception_.test_setting(args)
     elif 'MobileNet' == model_cmd:
         return MobileNet_.test_setting(args)
+    elif 'InceptionV3' == model_cmd:
+        return InceptionV3_.test_setting(args)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
@@ -83,6 +89,8 @@ def test(model_cmd, args1, args2):
         Xception_.test(args1, args2)
     elif 'MobileNet' == model_cmd:
         MobileNet_.test(args1, args2)
+    elif 'InceptionV3' == model_cmd:
+        InceptionV3_.test(args1, args2)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 

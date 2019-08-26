@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union, Callable
 import sys
-sys.path.insert(0, '/home/mlg/yys/project/TensorflowGUI/model')
+#sys.path.insert(0, 'C:\Users\chanyang\Desktop\gui\TensorflowGUI\TensorflowGUI\model')
 
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
@@ -12,6 +12,8 @@ from vgg.vgg16 import train as vgg16_
 from vgg.vgg19 import train as vgg19_
 from Xception import train as Xception_
 from MobileNet import train as MobileNet_
+from InceptionV3 import train as InceptionV3_
+
 # from dataset.parser import generator
 
 
@@ -38,6 +40,9 @@ def train_setting_parser(
 
     MobileNet_parser = subs.add_parser('MobileNet')
     MobileNet_.train_setting_parser(MobileNet_parser)
+
+    InceptionV3_parser = subs.add_parser('InceptionV3')
+    InceptionV3_.train_setting_parser(InceptionV3_parser)
 
     return parser
     # return train_setting
@@ -66,6 +71,8 @@ def train_setting(model_cmd, args):
         return Xception_.train_setting(args)
     elif 'MobileNet' == model_cmd:
         return MobileNet_.train_setting(args)
+    elif 'InceptionV3' == model_cmd:
+        return InceptionV3_.train_setting(args)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
@@ -83,6 +90,8 @@ def train(model_cmd, args1, args2):
         Xception_.train(args1, args2)
     elif 'MobileNet' == model_cmd:
         MobileNet_.train(args1, args2)
+    elif 'InceptionV3' == model_cmd:
+        InceptionV3_.train(args1, args2)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
