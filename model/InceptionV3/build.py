@@ -3,12 +3,12 @@ from typing import Union
 from argparse import ArgumentParser, _ArgumentGroup
 from gooey import Gooey, GooeyParser
 
-from keras.applications.mobilenet import MobileNet as baseModel
+from keras.applications.inception_v3 import InceptionV3 as baseModel
 from keras.layers import Dense, Flatten
 from keras.models import Model, load_model
 
-DEFAULT_INPUT_SHAPE = (224, 224, 3)
-MODEL_DIR = "checkpoint/MobileNet/"
+DEFAULT_INPUT_SHAPE = (299, 299, 3)
+MODEL_DIR = "checkpoint/InceptionV3/"
 
 
 def build_parser(
@@ -187,7 +187,7 @@ def save_model_parser(
                       _ArgumentGroup] = GooeyParser(),
         title="Save Model",
         description="",
-        save_path="checkpoint/MobileNet/",
+        save_path="checkpoint/InceptionV3/",
         save_name="model.h5"):
     if isinstance(parser, (ArgumentParser, GooeyParser)):
         save_parser = parser.add_argument_group(
@@ -226,7 +226,7 @@ def save_load_parser(
                       _ArgumentGroup] = GooeyParser(),
         title="Load Model",
         description="",
-        load_path="checkpoint/MobileNet/",
+        load_path="checkpoint/InceptionV3/",
         load_name="model.h5"):
     if isinstance(parser, (ArgumentParser, GooeyParser)):
         load_parser = parser.add_argument_group(

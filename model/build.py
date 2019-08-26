@@ -13,6 +13,7 @@ from vgg.vgg19 import build as vgg19_
 
 from Xception import build as Xception_
 from MobileNet import build as MobileNet_
+from InceptionV3 import build as InceptionV3_
 
 
 def build_parser(
@@ -48,6 +49,9 @@ def build_parser(
     MobileNet_parser = subs.add_parser('MobileNet')
     MobileNet_.build_parser(MobileNet_parser)
 
+    InceptionV3_parser = subs.add_parser('InceptionV3')
+    InceptionV3_.build_parser(InceptionV3_parser)
+
     return parser
 
 
@@ -64,6 +68,8 @@ def build(cmd, args):
         Xception_.build(args)
     elif 'MobileNet' == cmd:
         MobileNet_.build(args)
+    elif 'InceptionV3' == cmd:
+        InceptionV3_.build(args)
     else:
         raise NotImplementedError('wrong cmd:', cmd)
 
