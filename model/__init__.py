@@ -6,6 +6,8 @@ sys.path.insert(0, os.path.join(os.getcwd(), 'model'))
 
 from model import build, train, test
 
+import svm
+
 import logistic
 from logistic import SIMPLE_LOGISTIC_TREE
 from logistic import MULTILAYER_LOGISTIC_TREE
@@ -15,6 +17,12 @@ from vgg import VGG16_TREE, VGG19_TREE
 
 import Xception
 import MobileNet
+
+SVM_TREE = Tree()
+SVM_TREE.create_node(
+    'svm',
+    Path(svm.__path__[0]).relative_to(os.getcwd()),
+    data=svm)
 
 LOGISTIC_TREE = Tree()
 LOGISTIC_TREE.create_node(

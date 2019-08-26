@@ -1,6 +1,9 @@
+# type: ignore
 from typing import Union
 from argparse import ArgumentParser
 from gooey import Gooey, GooeyParser
+
+from svm import build as svm_
 
 from logistic.simple_logistic import build as simple_logistic_
 from logistic.multilayer_logistic import build as multilayer_logistic_
@@ -11,6 +14,7 @@ from vgg.vgg19 import build as vgg19_
 from Xception import build as Xception_
 from MobileNet import build as MobileNet_
 
+
 def build_parser(
         parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
         title="Build Model",
@@ -18,6 +22,9 @@ def build_parser(
     assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
 
     subs = parser.add_subparsers()
+
+    svm_parser = subs.add_parser('svm')
+    svm_.build_parser(svm_parser)
 
     simple_logistic_parser = subs.add_parser('simple_logistic')
     simple_logistic_.build_parser(simple_logistic_parser)
