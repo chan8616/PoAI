@@ -5,6 +5,7 @@ from pathlib import Path
 from gettext import gettext as _
 from argparse import ArgumentParser
 from pprint import pprint
+import threading
 
 import wx
 from gooey import GooeyParser
@@ -26,6 +27,7 @@ from gui.tree_tree import TreeTree
 from gui.notebook.notebook import Notebook
 # from gui.notebook.pages import Page
 from gui.utils import Redirection
+from gui.progbar import TrainWindow, BuildWindow, TestWindow
 
 # if __name__ == '__main__':
 #    from trees.datasettree import DatasetTree
@@ -350,7 +352,8 @@ class Frame(wx.Frame):
         page.train_setting = train_setting
         page.dataset_generator_parser = dataset_generator_parser
         # page.dataset_generator = dataset_generator
-        page.run = model_node.data.train.train
+        # page.run = model_node.data.train.train
+        page.run = TrainWindow(self, 'Train').train
         # page.test = model_node.data.test
         # page.model_parser = model_node.data.trainParser
         # page.dataset_parser = dataset_node.data.Parser
@@ -443,7 +446,9 @@ class Frame(wx.Frame):
                             dataset_cmd[0]](dataset_generator_args)
                     print(dataset_generator)
                     # page.train(train_setting, dataset_generator)
-                    page.run(model_cmd[0], setting, dataset_generator)
+                    # page.run(model_cmd[0], setting, dataset_generator)
+                    t = threading.Thread(target=page.run, args=(model_cmd[0], setting, dataset_generator))
+                    t.start()
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
                     raise NotImplementedError
