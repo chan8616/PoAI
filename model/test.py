@@ -12,7 +12,8 @@ from vgg.vgg16 import test as vgg16_
 from vgg.vgg19 import test as vgg19_
 from Xception import test as Xception_
 from MobileNet import test as MobileNet_
-from InceptionV3 import build as InceptionV3_
+from InceptionV3 import test as InceptionV3_
+from Mask_RCNN import test as Mask_RCNN_
 # from dataset.parser import generator
 
 
@@ -43,6 +44,9 @@ def test_setting_parser(
     InceptionV3_parser = subs.add_parser('InceptionV3')
     InceptionV3_.test_setting_parser(InceptionV3_parser)
 
+    Mask_RCNN_parser = subs.add_parser('Mask_RCNN')
+    Mask_RCNN_.test_setting_parser(Mask_RCNN_parser)
+
     return parser
     # return test_setting
     # return parser
@@ -72,6 +76,8 @@ def test_setting(model_cmd, args):
         return MobileNet_.test_setting(args)
     elif 'InceptionV3' == model_cmd:
         return InceptionV3_.test_setting(args)
+    elif 'Mask_RCNN' == model_cmd:
+        return Mask_RCNN_.test_setting(args)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
@@ -91,6 +97,8 @@ def test(model_cmd, args1, args2):
         MobileNet_.test(args1, args2)
     elif 'InceptionV3' == model_cmd:
         InceptionV3_.test(args1, args2)
+    elif 'Mask_RCNN' == model_cmd:
+        Mask_RCNN_.test(args1, args2)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
