@@ -23,6 +23,9 @@ def test_setting_parser(
     assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
     subs = parser.add_subparsers()
 
+    Mask_RCNN_parser = subs.add_parser('Mask_RCNN')
+    Mask_RCNN_.test_setting_parser(Mask_RCNN_parser)
+
     simple_parser = subs.add_parser('simple_logistic')
     simple_.test_setting_parser(simple_parser)
 
@@ -43,9 +46,6 @@ def test_setting_parser(
 
     InceptionV3_parser = subs.add_parser('InceptionV3')
     InceptionV3_.test_setting_parser(InceptionV3_parser)
-
-    Mask_RCNN_parser = subs.add_parser('Mask_RCNN')
-    Mask_RCNN_.test_setting_parser(Mask_RCNN_parser)
 
     return parser
     # return test_setting

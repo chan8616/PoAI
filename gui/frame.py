@@ -374,9 +374,13 @@ class Frame(wx.Frame):
         test_setting_parser = \
             model_node.data.test.test_setting_parser(GooeyParser())
         test_setting = model_node.data.test.test_setting
+        print(test_setting_parser)
+
         dataset_generator_parser = \
             dataset_node.data.image_generator_parser(GooeyParser())
-        print(test_setting_parser, dataset_generator_parser)
+        dataset_generator = \
+            dataset_node.data.image_generator
+        print(dataset_generator_parser)
 
         # model_parser.parse_args(['--help'])
         # dataset_parser.parse_args(['--help'])
@@ -385,7 +389,10 @@ class Frame(wx.Frame):
             test_setting_parser, dataset_generator_parser, "Test Page")
         page.test_setting_parser = test_setting_parser
         page.test_setting = test_setting
+
         page.dataset_generator_parser = dataset_generator_parser
+        page.dataset_generator = dataset_generator
+
         page.run = model_node.data.test.test
         # page.model_parser = model_node.data.trainParser
         # page.dataset_parser = dataset_node.data.Parser
@@ -437,11 +444,13 @@ class Frame(wx.Frame):
 
                     setting = get_setting(model_cmd[0],
                                           setting_args)
-                    print(setting)
+                    print('setting', setting)
                     dataset_generator =\
-                        page.dataset_generator_parser._defaults[
-                            dataset_cmd[0]](dataset_generator_args)
-                    print(dataset_generator)
+                        page.dataset_generator(
+                            dataset_cmd[0], dataset_generator_args)
+                        #  page.dataset_generator_parser._defaults[
+                        #      dataset_cmd[0]](dataset_generator_args)
+                    print('dataset_generator', dataset_generator)
                     # page.train(train_setting, dataset_generator)
                     page.run(model_cmd[0], setting, dataset_generator)
                 except:
@@ -472,7 +481,7 @@ class Frame(wx.Frame):
                     page.build(args)
                 else:
                     page.build(cmd[0], args)
-                
+
                 self.model_tree.DeleteChildren(self.model_tree.root_id)
                 self.model_tree.ExtendTree(self.model_tree.root_id)
                 self.model_tree.Expand(self.model_tree.root_id)
