@@ -406,6 +406,20 @@ def coco_parser(parser: GooeyParser = GooeyParser()) -> GooeyParser:
     #                      choices=['train', 'evaluate'],
     #                      metavar="<command>",
     #                      help="'train' or 'evaluate' on MS COCO")
+    parser.add_argument(
+            '--mode',
+            choices=['train (Not yet implemented)', 'inference'],
+            default='inference',
+            metavar="Mode",
+            help="Choose model's train/inference mode",
+            )
+    parser.add_argument(
+            '--classes', type=eval,
+            metavar="Classes",
+            help="Number of classes.",
+            default=81,
+            )
+
     parser.add_argument('--dataset', required=True,
                         metavar="/path/to/coco/",
                         default='val2014_/',
@@ -436,10 +450,55 @@ def coco_parser(parser: GooeyParser = GooeyParser()) -> GooeyParser:
 
 
 def coco(args):
-    file_names = next(os.walk(IMAGE_DIR))[2]
-    image = skimage.io.imread(os.path.join(
-        IMAGE_DIR, random.choice(file_names)))
-    return image
+    import skimage.io
+    import random
+    file_names = next(os.walk(args.dataset))[2]
+    images = [skimage.io.imread(
+        os.path.join(args.dataset, file_name))
+        for file_name in file_names]
+
+    class_names = [
+            'BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
+            'bus', 'train', 'truck', 'boat', 'traffic light',
+            'fire hydrant', 'stop sign', 'parking meter', 'bench',
+            'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant',
+            'bear', 'zebra', 'giraffe', 'backpack', 'umbrella',
+            'handbag', 'tie', 'suitcase', 'frisbee', 'skis',
+            'snowboard', 'sports ball', 'kite', 'baseball bat',
+            'baseball glove', 'skateboard', 'surfboard',
+            'tennis racket', 'bottle', 'wine glass', 'cup', 'fork',
+            'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich',
+            'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+            'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
+            'dining table', 'toilet', 'tv', 'laptop', 'mouse',
+            'remote', 'keyboard', 'cell phone', 'microwave', 'oven',
+            'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase',
+            'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+
+    def makeConfig(BaseConfig):
+        class CocoConfig(BaseConfig):
+            NAME = "coco"
+            #  IMAGES_PER_GPU = 2
+            NUM_CLASSES = 1 + 80
+
+            CLASS_NAMES = class_names
+        return CocoConfig
+
+    if args.mode == 'inference':
+        def makeConfig(BaseConfig):
+            class InferenceConfig(BaseConfig):
+                NAME = "coco"
+                #  IMAGES_PER_GPU = 2
+                NUM_CLASSES = 1 + 80
+
+                CLASS_NAMES = class_names
+
+                #  GPU_COUNT = 1
+                IMAGES_PER_GPU = 1
+                DETECTION_MIN_CONFIDENCE = 0
+            return InferenceConfig
+
+    return (iter(file_names), iter(images)), makeConfig
 
 ############################################################
 #  Training
