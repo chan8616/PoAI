@@ -76,6 +76,10 @@ def test(test_setting, dataset_setting):
             mode=mode,
             model_dir=MODEL_DIR,
             config=config)
+    # Load weights
+    print("Loading weights ", model_path)
+    model.load_weights(args.save_path, by_name=True)
+
     file_names, images = dataset
     file_names, images = (list(file_names), list(images))
     dataset = (file_names, images)
