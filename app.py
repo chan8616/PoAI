@@ -7,9 +7,13 @@ import model
 from model import SVM_TREE, VGG_TREE, LOGISTIC_TREE, Xception_TREE
 # from checkpoint import CHECKPOINTDICT
 # from generator import DATASETDICT
-from generator import IMAGE_CLASSIFICATION_TREE, IRIS_TREE
+import generator
+from generator import (IMAGE_CLASSIFICATION_TREE,
+                       IMAGE_ANNOTATION_TREE,
+                       #  IRIS_TREE
+                       )
 # from generator.image_classification import data_generator
-from generator.image_classification import image_generator
+#  from generator.image_classification import image_generator
 from gui.frame import Frame
 
 MODEL_TREE = Tree()
@@ -23,9 +27,10 @@ MODEL_TREE.paste(MODEL_TREE.root, Xception_TREE)
 
 
 DATASET_TREE = Tree()
-DATASET_TREE.create_node('generator', data=image_generator)
+DATASET_TREE.create_node('generator', data=generator)
 DATASET_TREE.paste(DATASET_TREE.root, IMAGE_CLASSIFICATION_TREE)
-DATASET_TREE.paste(DATASET_TREE.root, IRIS_TREE)
+DATASET_TREE.paste(DATASET_TREE.root, IMAGE_ANNOTATION_TREE)
+#  DATASET_TREE.paste(DATASET_TREE.root, IRIS_TREE)
 
 
 class MyApp(wx.App):

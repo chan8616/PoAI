@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from treelib import Tree
 import sys
+from .image_generator import image_generator_parser, image_generator
 sys.path.insert(
     0, os.path.join(os.getcwd(), 'generator'))
 
@@ -9,10 +10,17 @@ import image_classification
 IMAGE_CLASSIFICATION_TREE = Tree()
 IMAGE_CLASSIFICATION_TREE.create_node('image classification',
                                       data=image_classification)
-import iris
-IRIS_TREE = Tree()
-IRIS_TREE.create_node('iris dataset',
-                       data=iris)
+
+import image_annotation
+IMAGE_ANNOTATION_TREE = Tree()
+IMAGE_ANNOTATION_TREE.create_node('image annotation',
+                                  data=image_annotation)
+
+#  import iris
+#  import iris
+#  IRIS_TREE = Tree()
+#  IRIS_TREE.create_node('iris dataset',
+#                         data=iris)
 
 """
 class DATASET():
