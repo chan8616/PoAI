@@ -8,3 +8,7 @@ pip install tensorflow  # tensorboard, setuptools version error
 # pycocotools
 pip install Cython
 pip install pycocotools
+
+# image
+pip install pandas
+pip install xlsxwriter
