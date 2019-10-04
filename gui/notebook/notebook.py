@@ -1,4 +1,5 @@
 import wx
+from gooey import GooeyParser
 from gettext import gettext as _
 
 from wx.lib.agw.aui.auibook import AuiNotebook
@@ -32,6 +33,20 @@ class Notebook(AuiNotebook):
         page = Page(build_spec, self)
         self.AddPage(page, caption, select=True, *args, **kwds)
         return page
+
+    def AddDoublePage(self,
+                      build_parser: GooeyParser,
+                      dataset_parser: GooeyParser,
+                      caption: str,
+                      *args, **kwds):
+        double_page = DoublePage(
+            build_parser,
+            dataset_parser,
+            'Selecet Build Mode',
+            'Select Dataset Format',
+            self, *args, **kwds)
+        self.AddPage(double_page, caption, select=True, *args, **kwds)
+        return double_page
 
     def AddTrainPage(self, model_parser, dataset_parser, caption,
                      *args, **kwds):
