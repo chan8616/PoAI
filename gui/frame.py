@@ -22,7 +22,8 @@ from gooey.gui.containers.application import GooeyApplication as Page
 # from gui.trees.dicttree import DictTree
 # from gui.trees.modeltree import ModelTree
 # from gui.trees.datasettree import DatasetTree
-from gui.tree_tree import TreeTree
+#  from gui.tree_tree import TreeTree
+from gui.module_tree import ModuleTree
 from gui.notebook.notebook import Notebook
 # from gui.notebook.pages import Page
 from gui.utils import Redirection
@@ -46,7 +47,8 @@ os.environ["UBUNTU_MENUPROXY"] = "0"
 class Frame(wx.Frame):
     # begin wxGlade: MyFrame.__init__
     # def __init__(self, DATASETDICT, MODELDICT,
-    def __init__(self, DATASET_TREE, MODEL_TREE,
+    #  def __init__(self, DATASET_TREE, MODEL_TREE,
+    def __init__(self, dataset_module, model_module,
                  *args, **kwds):
         super(Frame, self).__init__(*args, **kwds)
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
@@ -93,12 +95,14 @@ class Frame(wx.Frame):
         #         "./icons/diskette(1).png", wx.BITMAP_TYPE_ANY),
         #     wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
         # self.tool_bar.AddSeparator()
+        """
         self.tool_train_page = self.tool_bar.AddTool(
             4, _("Train Page"), wx.Bitmap(
                 "gui/icons/3d-modeling.png", wx.BITMAP_TYPE_ANY),
             wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
 
         self.tool_bar.AddSeparator()
+        """
 
         self.tool_run = self.tool_bar.AddTool(
             5, _("Run"), wx.Bitmap(
@@ -106,25 +110,29 @@ class Frame(wx.Frame):
             wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
         self.tool_bar.EnableTool(self.tool_run.GetId(), False)
 
+        """
         self.tool_bar.AddSeparator()
 
         self.tool_test_page = self.tool_bar.AddTool(
             6, _("Test Page"), wx.Bitmap(
                 "gui/icons/background.png", wx.BITMAP_TYPE_ANY),
             wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
+        """
         # Tool Bar end
 
         # TreeCtrl
         self.dataset_tree = self.tree_ctrl_1 = \
-            TreeTree(tree=DATASET_TREE, parent=self, id=wx.ID_ANY)
-#            DatasetTree(DATASETDICT=DATASETDICT, parent=self, id=wx.ID_ANY)
-#            DictTree(trees, self, wx.ID_ANY)
-#            wx.TreeCtrl(self, wx.ID_ANY)
+            ModuleTree(root_module=dataset_module, parent=self, id=wx.ID_ANY)
+        #      TreeTree(tree=DATASET_TREE, parent=self, id=wx.ID_ANY)
+        #      DatasetTree(DATASETDICT=DATASETDICT, parent=self, id=wx.ID_ANY)
+        #      DictTree(trees, self, wx.ID_ANY)
+        #      wx.TreeCtrl(self, wx.ID_ANY)
         self.model_tree = self.tree_ctrl_2 = \
-            TreeTree(tree=MODEL_TREE, parent=self, id=wx.ID_ANY)
-#            ModelTree(MODELDICT=MODELDICT, parent=self, id=wx.ID_ANY)
-#            DictTree(trees, self, wx.ID_ANY)
-#            wx.TreeCtrl(self, wx.ID_ANY)
+            ModuleTree(root_module=model_module, parent=self, id=wx.ID_ANY)
+        #      TreeTree(tree=MODEL_TREE, parent=self, id=wx.ID_ANY)
+        #      ModelTree(MODELDICT=MODELDICT, parent=self, id=wx.ID_ANY)
+        #      DictTree(trees, self, wx.ID_ANY)
+        #      wx.TreeCtrl(self, wx.ID_ANY)
         self.item_to_page = dict()
         self.page_to_item = dict()
         # TreeCtrl end
@@ -192,13 +200,13 @@ class Frame(wx.Frame):
             wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
-        """
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnTrainPage,
             id=self.tool_train_page.GetId())
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnTestPage,
             id=self.tool_test_page.GetId())
+        """
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnRun,
             id=self.tool_run.GetId())
@@ -251,23 +259,29 @@ class Frame(wx.Frame):
                 self.notebook.SetSelection(idx)
                 return
 
-        node = self.model_tree.GetItemData(ItemID)
-        print(node.tag, node.data)
+        model = self.model_tree.GetItemData(ItemID)
 
         build_parser = \
-            node.data.build.build_parser(GooeyParser())
-        print(build_parser)
-        build = node.data.build.build
+            model.build.build_parser(GooeyParser())
+        build = model.build.build
+
+        generator_parser = \
+            model.generator.generator_parser(GooeyParser())
+        generator = model.generator.generator
 
         # model_parser.parse_args(['--help'])
         # dataset_parser.parse_args(['--help'])
 
-        page = self.notebook.AddParserPage(
-            build_parser, "Build Page")
+        page = self.notebook.AddDoublePage(
+            build_parser, generator_parser,
+            self.model_tree.GetItemText(ItemID))
+
+        #  page = self.notebook.AddParserPage(
+        #      build_parser, "Build Page")
         page.build_parser = build_parser
         page.build = build
-        # page.build_parser = build_parser
-        # page.build = build_parser._defaults['build']
+        page.generator_parser = generator_parser
+        page.generator = generator
         self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         return
 
@@ -326,6 +340,7 @@ class Frame(wx.Frame):
         #     self.page_to_item[event.GetSelection()], True)
         pass
 
+    """
     def OnTrainPage(self, event):
         model_node = self.model_tree.GetItemData(
             self.model_tree.GetRootItem())
@@ -338,7 +353,7 @@ class Frame(wx.Frame):
         train_setting = model_node.data.train.train_setting
         dataset_generator_parser = \
             dataset_node.data.image_generator_parser(GooeyParser())
-        # dataset_generator = dataset_node.data.image_generator
+        dataset_generator = dataset_node.data.image_generator
         print(train_setting_parser, dataset_generator_parser)
 
         # model_parser.parse_args(['--help'])
@@ -348,8 +363,10 @@ class Frame(wx.Frame):
             train_setting_parser, dataset_generator_parser, "Train Page")
         page.train_setting_parser = train_setting_parser
         page.train_setting = train_setting
+
         page.dataset_generator_parser = dataset_generator_parser
-        # page.dataset_generator = dataset_generator
+        page.dataset_generator = dataset_generator
+
         page.run = model_node.data.train.train
         # page.test = model_node.data.test
         # page.model_parser = model_node.data.trainParser
@@ -400,6 +417,7 @@ class Frame(wx.Frame):
 
         # page
         pass
+    """
 
     def OnRun(self, event):
         print("OnRun")
