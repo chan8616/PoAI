@@ -408,8 +408,8 @@ def coco_parser(parser: GooeyParser = GooeyParser()) -> GooeyParser:
     #                      help="'train' or 'evaluate' on MS COCO")
     parser.add_argument(
             '--mode',
-            choices=['train (Not yet implemented)', 'inference'],
-            default='inference',
+            choices=['training', 'inference'],
+            default='training',
             metavar="Mode",
             help="Choose model's train/inference mode",
             )
@@ -422,13 +422,15 @@ def coco_parser(parser: GooeyParser = GooeyParser()) -> GooeyParser:
 
     parser.add_argument('--dataset', required=True,
                         metavar="/path/to/coco/",
-                        default='val2014_/',
+                        #  default='val2014_/',
+                        default='/data/COCO/',
                         help='Directory of the MS-COCO dataset')
-    #  parser.add_argument('--year', required=False,
-    #                      default=DEFAULT_DATASET_YEAR,
-    #                      metavar="<year>",
-    #                      help='Year of the MS-COCO dataset (2014 or 2017)'
-    #                      ' (default=2014)')
+    parser.add_argument('--year',
+                        choices=['2014', '2017'],
+                        default='2014',
+                        metavar="<year>",
+                        help='Year of the MS-COCO dataset (2014 or 2017)'
+                        ' (default=2014)')
     #  parser.add_argument('--model', required=True,
     #                      metavar="/path/to/weights.h5",
     #                      help="Path to weights .h5 file or 'coco'")
@@ -450,13 +452,6 @@ def coco_parser(parser: GooeyParser = GooeyParser()) -> GooeyParser:
 
 
 def coco(args):
-    import skimage.io
-    import random
-    file_names = next(os.walk(args.dataset))[2]
-    images = [skimage.io.imread(
-        os.path.join(args.dataset, file_name))
-        for file_name in file_names]
-
     class_names = [
             'BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
             'bus', 'train', 'truck', 'boat', 'traffic light',
@@ -484,7 +479,17 @@ def coco(args):
             CLASS_NAMES = class_names
         return CocoConfig
 
-    if args.mode == 'inference':
+    if args.mode == 'training':
+        return CocoDataset, makeConfig, args
+
+    elif args.mode == 'inference':
+        import skimage.io
+        import random
+        file_names = next(os.walk(args.dataset))[2]
+        images = [skimage.io.imread(
+            os.path.join(args.dataset, file_name))
+            for file_name in file_names]
+
         def makeConfig(BaseConfig):
             class InferenceConfig(BaseConfig):
                 NAME = "coco"
@@ -498,7 +503,7 @@ def coco(args):
                 DETECTION_MIN_CONFIDENCE = 0
             return InferenceConfig
 
-    return (iter(file_names), iter(images)), makeConfig
+        return (iter(file_names), iter(images)), makeConfig
 
 ############################################################
 #  Training

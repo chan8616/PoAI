@@ -12,8 +12,8 @@ import logistic
 from logistic import SIMPLE_LOGISTIC_TREE
 from logistic import MULTILAYER_LOGISTIC_TREE
 
-import vgg
-from vgg import VGG16_TREE, VGG19_TREE
+#  import vgg
+#  from vgg import VGG16_TREE, VGG19_TREE
 
 import Xception
 import MobileNet
@@ -32,14 +32,14 @@ LOGISTIC_TREE.create_node(
 LOGISTIC_TREE.paste(LOGISTIC_TREE.root, SIMPLE_LOGISTIC_TREE)
 LOGISTIC_TREE.paste(LOGISTIC_TREE.root, MULTILAYER_LOGISTIC_TREE)
 
-VGG_TREE = Tree()
-VGG_TREE.create_node(
-    'vgg',
-    # 'model/vgg/',
-    Path(vgg.__path__[0]).relative_to(os.getcwd()),
-    data=vgg)
-VGG_TREE.paste(VGG_TREE.root, VGG16_TREE)
-VGG_TREE.paste(VGG_TREE.root, VGG19_TREE)
+#  VGG_TREE = Tree()
+#  VGG_TREE.create_node(
+    #  'vgg',
+    #  # 'model/vgg/',
+    #  Path(vgg.__path__[0]).relative_to(os.getcwd()),
+    #  data=vgg)
+#  VGG_TREE.paste(VGG_TREE.root, VGG16_TREE)
+#  VGG_TREE.paste(VGG_TREE.root, VGG19_TREE)
 
 Xception_TREE = Tree()
 Xception_TREE.create_node(
