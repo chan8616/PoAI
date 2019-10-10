@@ -46,7 +46,8 @@ def train_parser(
 
 
 def train(model,
-          train_args, dataset_train,
+          train_args,
+          dataset_train,
           dataset_val):
     """Train the model."""
     # Training dataset.

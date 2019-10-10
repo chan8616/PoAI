@@ -23,6 +23,7 @@ def run_parser(
     return parser
 
 
+# Should be fixed. It is directly used in gui/frame.py
 def run(build_cmds, build_args,
         run_cmds, run_args,
         generator_cmds, generator_args):
