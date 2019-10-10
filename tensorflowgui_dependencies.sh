@@ -1,6 +1,7 @@
 # pip
 pip install wxpython  # ref dependencies
 pip install treelib
+pip install pathlib2
 pip install gooey==1.0.1
 pip install keras==2.1.6
 pip install numpy==1.16.4
