@@ -5,7 +5,7 @@ from gettext import gettext as _
 from wx.lib.agw.aui.auibook import AuiNotebook
 
 from gui.notebook.build_spec_from_parser import build_spec_from_parser
-from gui.notebook.page import Page, DoublePage
+from gui.notebook.page import Page, DoublePage, TriplePage
 
 
 class Notebook(AuiNotebook):
@@ -48,6 +48,23 @@ class Notebook(AuiNotebook):
         self.AddPage(double_page, caption, select=True, *args, **kwds)
         return double_page
 
+    def AddTriplePage(self,
+                      build_parser: GooeyParser,
+                      run_parser: GooeyParser,
+                      dataset_parser: GooeyParser,
+                      caption: str,
+                      *args, **kwds):
+        triple_page = TriplePage(
+            build_parser,
+            run_parser,
+            dataset_parser,
+            'Selecet Build Mode',
+            'Selecet Run Mode',
+            'Select Dataset Format',
+            self, *args, **kwds)
+        self.AddPage(triple_page, caption, select=True, *args, **kwds)
+        return triple_page
+
     def AddTrainPage(self, model_parser, dataset_parser, caption,
                      *args, **kwds):
         train_page = DoublePage(
@@ -83,6 +100,10 @@ class Notebook(AuiNotebook):
     def isOnDoublePage(self):
         page = self.GetPage(self.GetSelection())
         return isinstance(page, DoublePage)
+
+    def isOnTriplePage(self):
+        page = self.GetPage(self.GetSelection())
+        return isinstance(page, TriplePage)
 
 
 if __name__ == '__main__':

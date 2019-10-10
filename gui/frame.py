@@ -158,8 +158,8 @@ class Frame(wx.Frame):
                         style=wx.HSCROLL | wx.TE_LEFT |
                         wx.TE_MULTILINE | wx.TE_READONLY)
         self.redir = Redirection(self.text_log)
-        sys.stdout = self.redir
-        sys.stderr = self.redir
+        #  sys.stdout = self.redir
+        #  sys.stderr = self.redir
         # log window end
 
         self.__set_properties()
@@ -219,7 +219,7 @@ class Frame(wx.Frame):
             wx.EVT_TREE_ITEM_ACTIVATED,
             self.modelTreeOnActivated)
         """
-        self.dataset_tree.Bind(
+        strainelf.dataset_tree.Bind(
             wx.EVT_TREE_ITEM_ACTIVATED, self.OnClosed)
         self.dataset_tree.Bind(
             wx.EVT_TREE_ITEM_EXPANDING, self.dataTreeOnExpand)
@@ -265,6 +265,10 @@ class Frame(wx.Frame):
             model.build.build_parser(GooeyParser())
         build = model.build.build
 
+        run_parser = \
+            model.run.run_parser(GooeyParser())
+        run = model.run.run
+
         generator_parser = \
             model.generator.generator_parser(GooeyParser())
         generator = model.generator.generator
@@ -272,14 +276,17 @@ class Frame(wx.Frame):
         # model_parser.parse_args(['--help'])
         # dataset_parser.parse_args(['--help'])
 
-        page = self.notebook.AddDoublePage(
-            build_parser, generator_parser,
+        #  page = self.notebook.AddDoublePage(
+        page = self.notebook.AddTriplePage(
+            build_parser, run_parser, generator_parser,
             self.model_tree.GetItemText(ItemID))
 
         #  page = self.notebook.AddParserPage(
         #      build_parser, "Build Page")
         page.build_parser = build_parser
         page.build = build
+        page.run_parser = run_parser
+        page.run = run
         page.generator_parser = generator_parser
         page.generator = generator
         self.tool_bar.EnableTool(self.tool_run.GetId(), True)
@@ -423,7 +430,45 @@ class Frame(wx.Frame):
         print("OnRun")
         page = self.notebook.GetPage(self.notebook.GetSelection())
 
-        if self.notebook.isOnDoublePage():
+        if self.notebook.isOnTriplePage():
+            model_config = page.panel_1.navbar.getActiveConfig()
+            model_config.resetErrors()
+            run_config = page.panel_1.navbar.getActiveConfig()
+            run_config.resetErrors()
+            dataset_config = page.panel_2.navbar.getActiveConfig()
+            dataset_config.resetErrors()
+
+            if (model_config.isValid()
+                    and run_config.isValid()
+                    and dataset_config.isValid()):
+                #  build_cmds = page.panel_1.buildCmd()
+                #  build_cmds = page.panel_1.buildCliString()
+                build_cmds = page.panel_1.buildString()
+                #  run_cmds = page.panel_2.buildCmd()
+                #  run_cmds = page.panel_2.buildCliString()
+                run_cmds = page.panel_2.buildString()
+                #  generator_cmds = page.panel_3.buildCmd()
+                #  generator_cmds = page.panel_3.buildCliString()
+                generator_cmds = page.panel_3.buildString()
+
+                build_args = page.build_parser.parse_args(build_cmds)
+                #  run_args = page.run_parser.parse_args(['train', '-h'])
+                #  print(run_args)
+                run_args = page.run_parser.parse_args(run_cmds)
+                generator_args = page.generator_parser.parse_args(
+                            generator_cmds)
+                try:
+                    #  generator_args = page.generator_parser.parse_args(
+                    #          ['-h'])
+                    #  generator_args = page.generator_parser.parse_args(
+                    #          ['generator_balloon', '-h'])
+                    page.run(build_cmds, build_args,
+                             run_cmds, run_args,
+                             generator_cmds, generator_args)
+                except Exception as e:
+                    print(e)
+
+        elif self.notebook.isOnDoublePage():
             model_config = page.panel_1.navbar.getActiveConfig()
             model_config.resetErrors()
             dataset_config = page.panel_2.navbar.getActiveConfig()

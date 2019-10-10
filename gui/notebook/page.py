@@ -4,6 +4,7 @@ Primary orchestration and control point for Gooey.
 
 import sys
 from itertools import chain
+from copy import deepcopy
 
 import wx
 from gui.notebook.build_spec_from_parser import build_spec_from_parser
@@ -26,6 +27,11 @@ from gooey.gui.processor import ProcessController
 from gooey.gui.util.wx_util import transactUI
 from gooey.gui.components import modals
 from gooey.gui import seeder
+
+
+
+def buildString(target, cmd, positional, optional):
+    return u'{} --ignore-gooey {}'.format(target, cmd_string)
 
 
 class Page(wx.Panel):
@@ -90,25 +96,31 @@ class Page(wx.Panel):
                 self.fetchExternalUpdates()
             self.showSettings()
 
-    def buildCmd(self):
+    def buildString(self):
         config = self.navbar.getActiveConfig()
-
         group = self.buildSpec['widgets'][self.navbar.getSelectedGroup()]
-
         positional = config.getPositionalArgs()
-        positional = list(filter(None, positional))
-        if positional:
-            positional = ' '.join(positional).replace("'", '').replace('"', '').split(' ')
-
         optional = config.getOptionalArgs()
-        optional = list(filter(None, optional))
-        if optional:
-            optional = ' '.join(optional).replace("'", '').replace('"', '').split(' ')
 
-        cmd = [] if group['command'] == '::gooey/default' \
-            else [group['command']]
-        cmds = cmd + positional + optional
-        return cmd, cmds
+        positionals = deepcopy(positional)
+        if positionals:
+            positionals.insert(0, "--")
+
+        cmd_string = compact(chain(optional, positionals))
+        print(cmd_string)  # [" ''", ' ', " ''"]
+        cmd_string = ["{} ''".format(cmd) if cmd.find("'") == -1 else cmd
+                      for cmd in cmd_string]
+        print(cmd_string)  # [" ''", " ", " ''"]
+        cmd_string = ' '.join(cmd_string)  # " '' ''"
+        print(cmd_string)
+        cmd_string = cmd_string.split("'")  # [' ', ' ', '']
+        print(cmd_string)
+        cmd_string = [cmd.strip() for cmd in cmd_string
+                      if cmd.strip() != '']  # [' ', ' ']
+        print(cmd_string)
+        cmd_string = [group['command']] + cmd_string
+        print(cmd_string)
+        return cmd_string
 
     def buildCliString(self):
         """
@@ -312,4 +324,46 @@ class DoublePage(wx.Panel):
         self.Layout()
 
 
+class TriplePage(wx.Panel):
+    def __init__(self, parser_1, parser_2, parser_3,
+                 title_1, title_2, title_3, *args, **kwds):
+        super(TriplePage, self).__init__(*args, **kwds)
+        self.SetSize(610*2, 530)
 
+        print(parser_1)
+        print(parser_2)
+        print(parser_3)
+
+        spec_1 = build_spec_from_parser(
+            parser_1,
+            sidebar_title=title_1,
+            **kwds)
+
+        spec_2 = build_spec_from_parser(
+            parser_2,
+            sidebar_title=title_2,
+            **kwds)
+
+        spec_3 = build_spec_from_parser(
+            parser_3,
+            sidebar_title=title_3,
+            **kwds)
+
+        self.panel_1 = Page(spec_1, parent=self, id=wx.ID_ANY)
+        # self.panel_1 = wx.Button(self, wx.ID_ANY, 'panel1')
+        self.panel_2 = Page(spec_2, parent=self, id=wx.ID_ANY)
+        # self.panel_2 = wx.Button(self, wx.ID_ANY, 'panel2')
+        self.panel_3 = Page(spec_3, parent=self, id=wx.ID_ANY)
+
+        self.__do_layout()
+
+    def __do_layout(self):
+        # sizer_1 = wx.BoxSizer(wx.VERTICAL)
+        sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_1.Add(self.panel_1, 1, wx.EXPAND, 5)
+        sizer_1.Add(self.panel_2, 1, wx.EXPAND, 5)
+        sizer_1.Add(self.panel_3, 1, wx.EXPAND, 5)
+        # self.SetSizeHints(self)
+        self.SetSizer(sizer_1)
+        # self.panel_left.navbar.Hide()
+        self.Layout()
