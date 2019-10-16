@@ -1,5 +1,7 @@
 import json
+import datetime
 import numpy as np
+from pathlib import Path
 
 #  from typing import Union, Callable
 from argparse import Namespace
@@ -58,10 +60,13 @@ def test(model,
 
     results = []
 
-    if test_args.save_image_result:
-        from pathlib import Path
-        Path(test_args.save_image_result).mkdir(parents=True,
-                                                exist_ok=True)
+    #  now = datetime.datetime.now()
+    #  result_dir = Path("{}{:%Y%m%dT%H%M}".format(
+    #          str(Path(test_args.result_path).parent), now))
+    #  if not result_dir.exists():
+    #      result_dir.mkdir(parents=True)
+    result_path = Path(model.result_dir).joinpath(
+            Path(test_args.result_path).name)
 
     #  image_results = []
     for i, image_id in enumerate(image_ids):
@@ -74,19 +79,21 @@ def test(model,
         r = model.detect([image], verbose=0)[0]
 
         if test_args.show_image_result or test_args.save_image_result:
+            image_name = dataset_test.image_info[image_id]['id']
             fig, ax = plt.subplots()
             display_instances(image, r['rois'],
                               r['masks'], r['class_ids'],
                               dataset_test.class_names,
                               r['scores'],
-                              image_id,
+                              image_name,
                               ax=ax)
             if test_args.show_image_result:
                 plt.show(block=False)
-                plt.pause(0.01)
+                plt.pause(1)
             if test_args.save_image_result:
-                plt.savefig(test_args.save_image_result +
-                            str(image_id) + '.jpg')
+                image_save_path = model.result_dir.joinpath(image_name)
+                print('saving image to {}...'.format(image_save_path))
+                plt.savefig(str(image_save_path))
             plt.close()
 
         results += [{k: v.tolist() for k, v in r.items()}]
@@ -97,9 +104,9 @@ def test(model,
         #                                     r["scores"],
         #                                     r["masks"].astype(np.uint8))
         #  image_results.extend(image_results)
-    print('saving results to {}...'.format(test_args.log_file_path))
-    with open(test_args.log_file_path, 'w') as f:
-        json.dump(results[:1], f, cls=NumpyEncoder)
+    print('saving results to {}...'.format(result_path))
+    with open(str(result_path), 'w') as f:
+        json.dump(results, f, cls=NumpyEncoder)
     print('test complete')
 
     return results

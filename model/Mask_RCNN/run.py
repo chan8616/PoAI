@@ -1,3 +1,5 @@
+import datetime
+from pathlib import Path
 from gooey import Gooey, GooeyParser
 
 from . import (build, build_config,
@@ -16,12 +18,12 @@ def run_parser(
 
     subs = parser.add_subparsers()
 
+    test_parser = subs.add_parser('test')
+    test_config.test_config_parser(test_parser)
+
     balloon_train_parser = subs.add_parser('train_balloon')
     train_config.train_config_parser(balloon_train_parser,
                                      BalloonConfig(),)
-
-    test_parser = subs.add_parser('test')
-    test_config.test_config_parser(test_parser)
 
     train_parser = subs.add_parser('train')
     train_config.train_config_parser(train_parser)
@@ -75,11 +77,13 @@ def run(build_cmds, build_args,
 
     if 'coco' not in run_cmd and \
             run_args.load_pretrained_weights == "coco":
+        print('load coco in balloon model')
         model.load_weights(weights_path, by_name=True, exclude=[
             "mrcnn_class_logits", "mrcnn_bbox_fc",
             "mrcnn_bbox", "mrcnn_mask"])
     else:
-        model.load_weights(weights_path)
+        print('load balloon model')
+        model.load_weights(weights_path, by_name=True)
     print('load complete')
 
     #  config = model_config(build_config, train_config),
@@ -91,6 +95,12 @@ def run(build_cmds, build_args,
         print('before train')
         return train.train(model, train_args, dataset, dataset_val)
     elif 'test' == run_cmd:
+        now = datetime.datetime.now()
+        result_dir = Path("{}{:%Y%m%dT%H%M}".format(
+                str(Path(test_args.result_path).parent), now))
+        if not result_dir.exists():
+            result_dir.mkdir(parents=True)
+        model.result_dir = result_dir
         print('before test')
         return test.test(model, test_args, dataset)
     #      setting = train.test_setting(model, run_args)

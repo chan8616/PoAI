@@ -1,5 +1,6 @@
 from argparse import Namespace
 from gooey import GooeyParser
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
@@ -9,6 +10,8 @@ from tensorflow.python.client import device_lib
 from .mrcnn.config import Config
 from .fix_validator import fix_validator
 from .get_available_gpus import get_available_gpus
+
+RESULT_DIR = Path("results/Mask_RCNN/")
 
 
 def test_config_parser(
@@ -22,7 +25,7 @@ def test_config_parser(
     load_parser.add_argument(
         '--load_pretrained_weights',
         choices=['coco', 'imagenet', 'last'],
-        default='coco',
+        default='last',
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',
@@ -36,26 +39,30 @@ def test_config_parser(
     log_parser = parser.add_argument_group(
         'Log',
         "Save result options",
-        gooey_options={'show_border': True, 'columns': 4}
-        )
-    log_parser.add_argument(
-        "--log-file-path", type=str,
-        metavar="Log File Path",
-        default='predict_result.json',
-        help='Log file path',
+        gooey_options={'show_border': True, 'columns': 2}
         )
     log_parser.add_argument(
         "--show-image-result",
         metavar="Show Image Results",
         action='store_true',
         default=False,
-        help='Show image result',
         )
     log_parser.add_argument(
         "--save-image-result",
         metavar="Save Image Results",
-        default='results/MaskRCNN/',
-        help='Directory path to save image result',
+        action='store_true',
+        default=False,
+        )
+    log_parser.add_argument(
+        "--result-path", type=str,
+        metavar='Result File Path.',
+        default=(RESULT_DIR.joinpath('untitled/result.json')
+                 if config.NAME is None
+                 else RESULT_DIR.joinpath(
+                     str(config.NAME)).joinpath('result.json')),
+        help='{}{}TIME{}/result.json'.format(
+            RESULT_DIR.joinpath('RESULT_NAME'),
+            '{', '}')
         )
 
     return parser
