@@ -2,7 +2,7 @@ from typing import Callable, Union
 from argparse import _SubParsersAction, ArgumentParser, _ArgumentGroup
 from gooey import GooeyParser
 
-from .. import image_preprocess
+from ..image_preprocess import image_preprocess_keras
 
 
 def flow_parser(parser=GooeyParser()):
@@ -29,7 +29,7 @@ def directory_generator_parser(
                                  "(optional).",
                             widget='DirChooser')
 
-    image_preprocess.image_preprocess_parser(parser)
+    image_preprocess_keras.image_preprocess_parser(parser)
     # dir_parser.add_argument(
     #     'directory',
     #     metavar="Path to target directory",
@@ -74,7 +74,7 @@ def directory_generator_parser(
 
 
 def directory_generator(args):
-    generator = [image_preprocess.image_preprocess(
+    generator = [image_preprocess_keras.image_preprocess(
         args).flow_from_directory(
             args.directory,
             target_size=args.target_size,
@@ -83,7 +83,7 @@ def directory_generator(args):
             batch_size=args.batch_size,
             shuffle=args.shuffle)]
     if args.validation_directory:
-        generator += [image_preprocess.image_preprocess(
+        generator += [image_preprocess_keras.image_preprocess(
             args).flow_from_directory(args).flow_from_directory(
                 args.validation_directory,
                 target_size=args.target_size,

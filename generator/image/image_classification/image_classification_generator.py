@@ -4,8 +4,8 @@ from gooey import Gooey, GooeyParser
 from . import cifar10
 from . import directory
 
-CONFIG: dict = {'cifar10': {},
-                'directory': {}}
+CONFIG = {'cifar10': {},
+          'directory': {}}
 
 
 def image_classification_generator_parser(
