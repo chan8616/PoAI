@@ -25,17 +25,17 @@ def train_parser(
     #  train_config_parser(balloon_train_parser,
     #                      BalloonConfig(),)
 
-    coco_train_parser = subs.add_parser('train_coco')
-    train_config_parser(coco_train_parser,
-                        CocoConfig(),)
+    #  coco_train_parser = subs.add_parser('train_coco')
+    #  train_config_parser(coco_train_parser,
+    #                      CocoConfig(),)
 
-    nucleus_train_parser = subs.add_parser('train_nucleus')
-    train_config_parser(nucleus_train_parser,
-                        NucleusConfig(),)
+    #  nucleus_train_parser = subs.add_parser('train_nucleus')
+    #  train_config_parser(nucleus_train_parser,
+    #                      NucleusConfig(),)
 
-    shapes_train_parser = subs.add_parser('train_shapes')
-    train_config_parser(shapes_train_parser,
-                        ShapesConfig(),)
+    #  shapes_train_parser = subs.add_parser('train_shapes')
+    #  train_config_parser(shapes_train_parser,
+    #                      ShapesConfig(),)
 
     return parser
     #  model = compile_.compile_(args)

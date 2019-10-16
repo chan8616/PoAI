@@ -76,10 +76,14 @@ def build(mode,
         IMAGE_MIN_SCALE = generator_config.IMAGE_MIN_SCALE
         MEAN_PIXEL = generator_config.MEAN_PIXEL
 
+    log_dir = Path(build_args.log_dir).parent
+    if not log_dir.exists():
+        log_dir.mkdir()
+
     config = ModelConfig()
     model = modellib.MaskRCNN(mode=mode,
                               config=config,
-                              model_dir=build_args.log_dir)
+                              model_dir=str(log_dir))
 
     if build_args.print_model_summary:
         config.display()

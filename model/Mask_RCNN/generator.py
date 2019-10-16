@@ -6,6 +6,7 @@ from .generator_config import generator_config_parser
 from .config_samples import (BalloonConfig, CocoConfig,
                              NucleusConfig, ShapesConfig)
 from .dataset_samples import (BalloonDataset, )
+from .utils import Dataset
 
 
 def generator_parser(
@@ -59,6 +60,8 @@ def generator(generator_cmd,
         dataset_val.load_balloon(generator_args.dataset, "val",
                                  auto_download=generator_args.download)
 
+        dataset_train.prepare()
+        dataset_val.prepare()
     elif 'coco' in generator_cmd:
         # Training dataset.
         dataset_train = CocoDataset()
@@ -72,7 +75,9 @@ def generator(generator_cmd,
         dataset_val.load_coco(args.dataset, val_type,
                               year=generator_args.year,
                               auto_download=generator_args.download)
+        dataset_train.prepare()
+        dataset_val.prepare()
+    else:
+        raise NotImplementedError()
 
-    dataset_train.prepare()
-    dataset_val.prepare()
     return dataset_train, dataset_val

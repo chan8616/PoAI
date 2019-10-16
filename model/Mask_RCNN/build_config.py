@@ -65,9 +65,12 @@ def build_config_parser(
     log_parser.add_argument(
         "--log-dir", type=str,
         metavar="Log Directory Path",
-        default=MODEL_DIR.joinpath(
-            'name' if config.NAME is None else config.NAME),
-        help='Logs and checkpoints directory',
+        default=(MODEL_DIR.joinpath('untitled')
+                 if config.NAME is None
+                 else MODEL_DIR.joinpath(str(config.NAME))),
+        help='{}{}TIME{}/'.format(
+            MODEL_DIR.joinpath('LOG_NAME'),
+            '{', '}')
         )
     #  show_and_save_parser.add_argument(
     #      "--save-path", type=str,

@@ -2,7 +2,11 @@ from gooey import Gooey, GooeyParser
 
 from . import (build, build_config,
                train, train_config,
+               test, test_config,
                generator, generator_config)
+
+from .config_samples import (BalloonConfig, CocoConfig,
+                             NucleusConfig, ShapesConfig)
 
 
 def run_parser(
@@ -10,15 +14,17 @@ def run_parser(
         title="Train Setting",
         description="") -> GooeyParser:
 
-    train.train_parser(parser)
+    subs = parser.add_subparsers()
 
-    #  subs = parser.add_subparsers()
+    balloon_train_parser = subs.add_parser('train_balloon')
+    train_config.train_config_parser(balloon_train_parser,
+                                     BalloonConfig(),)
 
-    #  train_config_parser = subs.add_parser('train')
-    #  train.train_config_parser(train_config_parser)
+    test_parser = subs.add_parser('test')
+    test_config.test_config_parser(test_parser)
 
-    #  test_setting_parser = subs.add_parser('test')
-    #  test.test_setting_parser(test_setting_parser)
+    train_parser = subs.add_parser('train')
+    train_config.train_config_parser(train_parser)
 
     return parser
 
@@ -33,7 +39,7 @@ def run(build_cmds, build_args,
 
     #  build_config = build_config.build_config(build_args)
     #  generator_config = generator_config.generator_config(generator_args)
-    dataset_train, dataset_val = generator.generator(
+    dataset, dataset_val = generator.generator(
             generator_cmd, generator_args)
 
     if 'train' in run_cmd:
@@ -46,28 +52,47 @@ def run(build_cmds, build_args,
                             train_config.train_config(run_args),
                             generator_config.generator_config(generator_args),
                             )
+    elif 'test' == run_cmd:
+        test_args = run_args
+        model = build.build('inference',
+                            build_args,
+                            build_config.build_config(build_args),
+                            run_args,
+                            test_config.test_config(run_args),
+                            generator_config.generator_config(generator_args),
+                            )
+    print('before load')
+    if run_args.load_pretrained_weights == "coco":
+        weights_path = model.get_coco_weights()
+    elif run_args.load_pretrained_weights == "last":
+        # Find last trained weights
+        weights_path = model.find_last()
+    elif run_args.load_pretrained_weights == "imagenet":
+        # Start from ImageNet trained weights
+        weights_path = model.get_imagenet_weights()
+    else:
+        weights_path = run_args.load_pretrained_weights
 
-        print('before load')
-        if train_args.load_pretrained_weights == "coco":
-            weights_path = model.get_coco_weights()
-        elif train_args.load_pretrained_weights == "last":
-            # Find last trained weights
-            weights_path = model.find_last()
-        elif train_args.load_pretrained_weights == "imagenet":
-            # Start from ImageNet trained weights
-            weights_path = model.get_imagenet_weights()
-        else:
-            weights_path = train_args.load_pretrained_weights
+    if 'coco' not in run_cmd and \
+            run_args.load_pretrained_weights == "coco":
+        model.load_weights(weights_path, by_name=True, exclude=[
+            "mrcnn_class_logits", "mrcnn_bbox_fc",
+            "mrcnn_bbox", "mrcnn_mask"])
+    else:
         model.load_weights(weights_path)
+    print('load complete')
 
-        #  config = model_config(build_config, train_config),
-        #  model = modellib.MaskRCNN(model=run_cmd,
-        #                            config=config,
-        #                            model_dir=MODEL_DIR.joinpath(args.save_dir))
-        #  setting = train.train_setting(model, run_args)
+    #  config = model_config(build_config, train_config),
+    #  model = modellib.MaskRCNN(model=run_cmd,
+    #                            config=config,
+    #                            model_dir=MODEL_DIR.joinpath(args.save_dir))
+    #  setting = train.train_setting(model, run_args)
+    if 'train' in run_cmd:
         print('before train')
-        return train.train(model, train_args, dataset_train, dataset_val)
-    #  elif 'test' == build_cmd:
+        return train.train(model, train_args, dataset, dataset_val)
+    elif 'test' == run_cmd:
+        print('before test')
+        return test.test(model, test_args, dataset)
     #      setting = train.test_setting(model, run_args)
     #      dataset = generator(generator_args)
     #      return test.test(setting, dataset)

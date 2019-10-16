@@ -8,12 +8,7 @@ from tensorflow.python.client import device_lib
 
 from .mrcnn.config import Config
 from .fix_validator import fix_validator
-
-
-def get_available_gpus():
-    local_device_protos = device_lib.list_local_devices()
-    return [x.name for x in local_device_protos
-            if x.device_type == 'GPU']
+from .get_available_gpus import get_available_gpus
 
 
 def train_config_parser(
@@ -44,7 +39,7 @@ def train_config_parser(
         gooey_options={'columns': 3})
 
     steps_parser.add_argument(
-        "epochs", type=int, default=10,
+        "epochs", type=int, default=30,
         help="number of training per entire dataset"
     )
 
