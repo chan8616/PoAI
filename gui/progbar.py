@@ -53,3 +53,50 @@ class TrainThread(Thread):
 
     def run(self):
         self.train_function(self.config)
+
+import io
+import wx
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+class MainPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent=parent)
+        self.SetSize((512, 384))
+        self.SetBackgroundColour('white')
+
+        #Generate Sample Graph
+        t = np.arange(0.0, 2.0, 0.01)
+        s = 10 * np.power(np.e, -t + np.random.randn())
+        fig, ax = plt.subplots()
+        ax.plot(t, s)
+
+        ax.set(xlabel='epoch', ylabel='loss',
+               title='Loss Graph')
+        ax.grid()
+
+        #Save into Buffer
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+
+        self.Image = wx.Image(buf, wx.BITMAP_TYPE_ANY)
+        self.Image = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(self.Image))
+        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer.Add(self.Image, 1, wx.ALIGN_CENTRE)
+        self.SetSizer(self.sizer)
+
+
+class MyForm(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, None, wx.ID_ANY,
+            "Graph to Image Test", size=(1024, 768))
+        self.panel = MainPanel(self)
+
+
+if __name__ == "__main__":
+    app = wx.App(False)
+    frame = MyForm()
+    frame.Show()
+    app.MainLoop()
