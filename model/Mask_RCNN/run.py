@@ -35,17 +35,16 @@ def run_parser(
 
 
 # Should be fixed. It is directly used in gui/frame.py
-def run(build_cmds, build_args,
-        run_cmds, run_args,
-        generator_cmds, generator_args):
+def run(config):
+    print(config)
+    build_cmds, build_args, run_cmds, run_args, generator_cmds, generator_args, stream = config
     build_cmd = build_cmds[0]
     run_cmd = run_cmds[0]
     generator_cmd = generator_cmds[0]
 
     #  build_config = build_config.build_config(build_args)
     #  generator_config = generator_config.generator_config(generator_args)
-    dataset, dataset_val = generator.generator(
-            generator_cmd, generator_args)
+    dataset, dataset_val = generator.generator(generator_cmd, generator_args)
 
     if 'train' in run_cmd:
         train_args = run_args
@@ -66,6 +65,9 @@ def run(build_cmds, build_args,
                             test_config.test_config(run_args),
                             generator_config.generator_config(generator_args),
                             )
+    else:
+        raise AttributeError("run_cmd must be train or test!")
+
     print('before load')
     if run_args.load_pretrained_weights == "coco":
         weights_path = model.get_coco_weights()
@@ -96,7 +98,7 @@ def run(build_cmds, build_args,
     #  setting = train.train_setting(model, run_args)
     if 'train' in run_cmd:
         print('before train')
-        return train.train(model, train_args, dataset, dataset_val)
+        return train.train((model, train_args, dataset, dataset_val, stream))
     elif 'test' == run_cmd:
         now = datetime.datetime.now()
         result_dir = Path("{}{:%Y%m%dT%H%M}".format(

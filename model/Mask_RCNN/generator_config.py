@@ -1,3 +1,4 @@
+import os
 from typing import List
 from argparse import Namespace
 from gooey import GooeyParser
@@ -27,7 +28,7 @@ def generator_config_parser(
         dataset_parser.add_argument(
                 '--dataset',
                 metavar='Dataset Folder',
-                default="dataset/{}".format(config.NAME),
+                default=os.path.join("dataset", config.NAME),
                 help='Directory of the dataset',
                 )
         if download:

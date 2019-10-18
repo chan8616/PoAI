@@ -46,7 +46,7 @@ def train_parser(
     #          get_callbacks(args), args.shuffle)
 
 
-def train(config):
+def train(t_config):
     """Train the model."""
     # Training dataset.
     #  dataset_train = BalloonDataset()
@@ -57,7 +57,7 @@ def train(config):
     #  dataset_val = BalloonDataset()
     #  dataset_val.load_balloon(args.dataset, "val")
     #  dataset_val.prepare()
-    model, train_args, dataset_train, dataset_val, stream = config
+    model, train_args, dataset_train, dataset_val, stream = t_config
     # *** This training schedule is an example. Update to your needs ***
     # Since we're using a very small dataset, and starting from
     # COCO trained weights, we don't need to train too long. Also,
