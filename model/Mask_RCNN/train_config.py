@@ -98,7 +98,6 @@ def train_config(args: Namespace) -> Config:
     class TrainConfig(Config):
         STEPS_PER_EPOCH = args.steps_per_epoch
         VALIDATION_STEPS = args.validation_steps
-
-        GPU_COUNT = 0 if args.gpu_list is None else len(args.gpu_list)
+        GPU_COUNT = 1 if not args.gpu_list else len(args.gpu_list)
         IMAGES_PER_GPU = args.images_per_gpu
     return TrainConfig()
