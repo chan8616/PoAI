@@ -5,6 +5,7 @@ from gooey import Gooey, GooeyParser
 from .train_config import train_config_parser, train_config
 from .config_samples import (BalloonConfig, CocoConfig,
                              NucleusConfig, ShapesConfig)
+from ..utils.stream_callbacks import KerasQueueLogger
 
 
 def train_parser(
@@ -45,10 +46,7 @@ def train_parser(
     #          get_callbacks(args), args.shuffle)
 
 
-def train(model,
-          train_args,
-          dataset_train,
-          dataset_val):
+def train(config):
     """Train the model."""
     # Training dataset.
     #  dataset_train = BalloonDataset()
@@ -59,13 +57,15 @@ def train(model,
     #  dataset_val = BalloonDataset()
     #  dataset_val.load_balloon(args.dataset, "val")
     #  dataset_val.prepare()
-
+    model, train_args, dataset_train, dataset_val, stream = config
     # *** This training schedule is an example. Update to your needs ***
     # Since we're using a very small dataset, and starting from
     # COCO trained weights, we don't need to train too long. Also,
     # no need to train all layers, just the heads should do it.
+    callback = KerasQueueLogger(stream)
     print("Training network heads")
     model.train(dataset_train, dataset_val,
                 learning_rate=train_args.learning_rate,
                 epochs=train_args.epochs,
-                layers='heads')
+                layers='heads',
+                custom_callbacks=[callback])
