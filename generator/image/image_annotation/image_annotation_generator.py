@@ -1,33 +1,51 @@
-from typing import Union
-from argparse import ArgumentParser, Namespace
+#  from typing import Union
+from argparse import Namespace
 from gooey import Gooey, GooeyParser
 
-from . import coco
-
-CONFIG = {'coco': {}}
+from ..image_preprocess import image_preprocess_mask_rcnn
 
 
 def image_annotation_generator_parser(
-        parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
-        config: dict = CONFIG,
-        ) -> Union[ArgumentParser, GooeyParser]:
-    assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
+        parser: GooeyParser = GooeyParser(),
+        ) -> GooeyParser:
 
-    subs = parser.add_subparsers()
+    dataset_parser = parser.add_argument_group(
+        description='Image annotation dataset',
+        gooey_options={'columns': 2, 'show_border': True})
+    dataset_parser.add_argument(
+            'image-directory', type=str,
+            # default="data/cifar10/train",
+            metavar='Train/Test Image Directory',
+            help="Image directory for train/test",
+            widget='DirChooser')
+    dataset_parser.add_argument(
+            'annotation-file',
+            metavar='Train/Test Annotation File',
+            help="Image Annotation file for train/test\n"
+                 "If blank, just generate images",
+            widget='FileChooser')
+    dataset_parser.add_argument(
+            '--validation-directory', type=str,
+            # default="data/cifar10/test",
+            metavar='Validation Directory',
+            help="data for validation with train "
+                 "(optional).",
+            widget='DirChooser')
+    dataset_parser.add_argument(
+            '--validation-annotation-file',
+            metavar='Validation Annotation File',
+            help="Image Annotation file for validation "
+                 "with train (optional).",
+            widget='FileChooser')
 
-    coco_parser = subs.add_parser('coco')
-    coco.coco_parser(coco_parser, CONFIG['coco'])
+    image_preprocess_mask_rcnn.image_preprocess_parser(parser)
 
     return parser
 
 
 def image_annotation_generator(
-        cmd: str,
         args: Namespace):
-    if 'coco' == cmd:
-        return coco.coco(args)
-    else:
-        raise NotImplementedError('wrong dataset_cmd:', cmd)
+    return image_preprocess_mask_rcnn.image_preprocess(args)
 
 
 if __name__ == '__main__':
