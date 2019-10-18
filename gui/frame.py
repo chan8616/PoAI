@@ -5,6 +5,9 @@ from pathlib import Path
 from gettext import gettext as _
 from argparse import ArgumentParser
 from pprint import pprint
+from queue import Queue
+from threading import Thread
+# from multiprocessing import Process
 
 import wx
 from gooey import GooeyParser
@@ -27,6 +30,7 @@ from gui.module_tree import ModuleTree
 from gui.notebook.notebook import Notebook
 # from gui.notebook.pages import Page
 from gui.utils import Redirection
+from gui.progbar import TrainWindow, TrainThread
 
 # if __name__ == '__main__':
 #    from trees.datasettree import DatasetTree
@@ -462,9 +466,11 @@ class Frame(wx.Frame):
                     #          ['-h'])
                     #  generator_args = page.generator_parser.parse_args(
                     #          ['generator_balloon', '-h'])
-                    page.run(build_cmds, build_args,
-                             run_cmds, run_args,
-                             generator_cmds, generator_args)
+
+                    self.train_with_progbar(page.run,
+                                            (build_cmds, build_args,
+                                             run_cmds, run_args,
+                                             generator_cmds, generator_args))
                 except Exception as e:
                     print(e)
 
@@ -554,6 +560,18 @@ class Frame(wx.Frame):
 
         # page
         pass
+
+    def train_with_progbar(self, train_function, config):
+        stream = Queue()
+        window = TrainWindow(self, title='Train Progress', stream=stream)
+        train_thread = TrainThread(train_function, config, stream)
+        progbar_thread = Thread(target=window.main_loop)
+
+        train_thread.start()
+        progbar_thread.start()
+
+
+
 
 
 if __name__ == '__main__':
