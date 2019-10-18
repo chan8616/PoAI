@@ -437,9 +437,9 @@ class Frame(wx.Frame):
         if self.notebook.isOnTriplePage():
             model_config = page.panel_1.navbar.getActiveConfig()
             model_config.resetErrors()
-            run_config = page.panel_1.navbar.getActiveConfig()
+            run_config = page.panel_2.navbar.getActiveConfig()
             run_config.resetErrors()
-            dataset_config = page.panel_2.navbar.getActiveConfig()
+            dataset_config = page.panel_3.navbar.getActiveConfig()
             dataset_config.resetErrors()
 
             if (model_config.isValid()
