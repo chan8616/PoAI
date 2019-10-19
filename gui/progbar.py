@@ -1,46 +1,121 @@
 import wx
 from queue import Queue
 from threading import Thread
+import io
+import matplotlib.pyplot as plt
 
 
 class TrainWindow(wx.Frame):
-    def __init__(self, parent, title, stream: Queue):
-        super(TrainWindow, self).__init__(parent, wx.ID_ANY, title=title, size=(300, 200))
-        self.stream = stream
+    def __init__(self, parent, title):
+        super(TrainWindow, self).__init__(parent, wx.ID_ANY, title=title, size=(520, 480))
         self.progbar_range = 1000
+        self.image_width = 480
+        self.image_height = 270
         self.InitUI()
 
     def InitUI(self):
         pnl = wx.Panel(self)
         vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox_progbar = wx.BoxSizer(wx.VERTICAL)
+        hbox_graph = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.progbar = wx.Gauge(pnl, range=self.progbar_range, size=(250, 25), style=wx.GA_HORIZONTAL)
+        self.progbar = wx.Gauge(pnl, range=self.progbar_range, size=(self.image_width, 25), style=wx.GA_HORIZONTAL)
+        self.msg = wx.StaticText(pnl, label="Test Message")
+        self.loss_graph = wx.StaticBitmap(pnl, bitmap=wx.Bitmap(self.image_width, self.image_height),
+                                          size=(self.image_width, self.image_height), style=wx.GA_HORIZONTAL)
 
-        hbox1.Add(self.progbar, proportion=1, flag=wx.ALIGN_CENTRE)
+        hbox_progbar.Add(self.msg, proportion=1, flag=wx.ALIGN_RIGHT)
+        hbox_progbar.Add(self.progbar, proportion=1, flag=wx.ALIGN_CENTRE)
+        hbox_graph.Add(self.loss_graph, proportion=1, flag=wx.ALIGN_CENTRE)
 
         vbox.Add((0, 30))
-        vbox.Add(hbox1, flag=wx.ALIGN_CENTRE)
+        vbox.Add(hbox_progbar, flag=wx.ALIGN_CENTRE)
+        vbox.Add((0, 20))
+        vbox.Add(hbox_graph, flag=wx.ALIGN_CENTRE)
         vbox.Add((0, 30))
         pnl.SetSizer(vbox)
 
-        self.SetSize((300, 200))
+        self.SetSize((520, 480))
         self.Centre()
         self.ToggleWindowStyle(wx.FRAME_FLOAT_ON_PARENT)
 
+    def update_msg(self, msg):
+        self.msg.SetLabelText(msg)
+
+    def update_gauge(self, ratio):
+        self.progbar.SetValue(int(ratio * self.progbar_range))
+
+    def update_loss_graph(self, img_buf):
+        image = wx.Image(img_buf, wx.BITMAP_TYPE_ANY)
+        image = image.Scale(self.image_width, self.image_height, wx.IMAGE_QUALITY_HIGH)
+        self.loss_graph.SetBitmap(wx.Bitmap(image))
+
+
+class TrainWindowManager(object):
+    def __init__(self, parent, stream: Queue):
+        self.train_window = TrainWindow(parent, title="Train Window")
+        self.stream = stream
+
+        self.batch_losses = []
+        self.batch_acces = []
+        self.epoch_losses = []
+        self.epoch_acces = []
+        self.epoch_val_losses = []
+        self.epoch_val_acces = []
+
+        self.loss_graph_buf = None
+        self.acc_graph_buf = None
+
+        self.epoch_text = "Epoch 0"
+        self.msg_text = ""
+
     def main_loop(self):
-        self.Show()
+        self.train_window.Show()
+        self.train_window.update_msg("Starting...")
         while True:
             data = self.stream.get(block=True)
             if data == 'end':
                 break
-            else:
-                current, total, msg = data
-                percentage = current / total
-                self.update_gauge(percentage)
 
-    def update_gauge(self, percentage):
-        self.progbar.SetValue(int(percentage * self.progbar_range))
+            data_head, data_body, data_msg = data
+            if data_head == 'batch':
+                current_batch_num, total_batch_num, batch_loss, batch_acc = data_body
+                batch_progress_ratio = current_batch_num / total_batch_num
+                self.batch_losses.append(batch_loss)
+                self.train_window.update_gauge(batch_progress_ratio)
+            elif data_head == 'epoch':
+                current_epoch_num, epoch_loss, epoch_acc, epoch_val_loss, epoch_val_acc = data_body
+                current_batch = len(self.batch_losses)
+                self.epoch_text = f"Epoch {current_epoch_num}"
+                self.epoch_losses.append((current_batch, epoch_loss))
+                self.epoch_acces.append((current_batch, epoch_acc))
+                self.epoch_val_losses.append((current_batch, epoch_val_loss))
+                self.epoch_val_acces.append((current_batch, epoch_val_acc))
+            else:
+                raise Exception(f"Head must be 'batch' or 'epoch', but it is '{data_head}'.")
+
+            if data_msg is not None:
+                self.msg_text = data_msg
+
+            self.train_window.update_msg(self.msg_text + " " + self.epoch_text)
+            self.train_window.update_loss_graph(self.generate_loss_graph_img())
+
+        self.train_window.Close()
+
+    def generate_loss_graph_img(self):
+        t = range(1, len(self.batch_losses)+1, 1)
+
+        fig = plt.figure(figsize=(8, 4.5))
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_xlim(xmin=0., xmax=None, auto=True)
+        ax.set_ylim(ymin=0., ymax=None, auto=True)
+        ax.set(xlabel='Batch', ylabel='Loss', title='Loss Graph')
+        ax.plot(t, self.batch_losses)
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        return buf
 
 
 class TrainThread(Thread):
@@ -54,49 +129,11 @@ class TrainThread(Thread):
     def run(self):
         self.train_function(self.config)
 
-import io
-import wx
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-class MainPanel(wx.Panel):
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent=parent)
-        self.SetSize((512, 384))
-        self.SetBackgroundColour('white')
-
-        #Generate Sample Graph
-        t = np.arange(0.0, 2.0, 0.01)
-        s = 10 * np.power(np.e, -t + np.random.randn())
-        fig, ax = plt.subplots()
-        ax.plot(t, s)
-
-        ax.set(xlabel='epoch', ylabel='loss',
-               title='Loss Graph')
-        ax.grid()
-
-        #Save into Buffer
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        buf.seek(0)
-
-        self.Image = wx.Image(buf, wx.BITMAP_TYPE_ANY)
-        self.Image = wx.StaticBitmap(self, wx.ID_ANY, wx.Bitmap(self.Image))
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.Image, 1, wx.ALIGN_CENTRE)
-        self.SetSizer(self.sizer)
-
-
-class MyForm(wx.Frame):
-    def __init__(self):
-        wx.Frame.__init__(self, None, wx.ID_ANY,
-            "Graph to Image Test", size=(1024, 768))
-        self.panel = MainPanel(self)
-
 
 if __name__ == "__main__":
     app = wx.App(False)
-    frame = MyForm()
+    frame = TrainWindow(None, 'TrainWindows')
+    frame.update_gauge(0.42)
+    frame.update_msg("Changed!")
     frame.Show()
     app.MainLoop()

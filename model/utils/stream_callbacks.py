@@ -38,6 +38,8 @@ class KerasQueueLogger(Callback):
         # In case of distribution strategy we can potentially run multiple steps
         # at the same time, we should account for that in the `seen` calculation.
         num_steps = logs.get('num_steps', 1)
+        loss = logs.get('loss', None)
+        acc = logs.get('acc', None)
         if self.use_steps:
             self.seen += num_steps
         else:
@@ -45,10 +47,17 @@ class KerasQueueLogger(Callback):
 
         # Skip progbar update for the last batch;
         # will be handled by on_epoch_end.
-        self.stream.put((self.seen, self.target, ""))
+        self.stream.put(('batch', (self.seen, self.target, loss, acc), None))
 
     def on_epoch_end(self, epoch, logs=None):
-        pass
+        logs = logs or {}
+        loss = logs.get('loss', None)
+        acc = logs.get('acc', None)
+        val_loss = logs.get('val_loss', None)
+        val_acc = logs.get('val_acc', None)
+        current_epoch = epoch + 1
+
+        self.stream.put(('epoch', (current_epoch, loss, acc, val_loss, val_acc), None))
 
     def on_train_end(self, logs=None):
         self.stream.put('end')
