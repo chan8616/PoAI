@@ -8,7 +8,7 @@ import numpy as np
 from .mrcnn.config import Config
 from .fix_validator import fix_validator
 
-from generator.image.image_preprocess import image_preprocess_mask_rcnn
+from generator.image_preprocess import image_preprocess_mask_rcnn
 
 
 def generator_config_parser(
