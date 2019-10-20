@@ -5,18 +5,13 @@ from .image_classification_generator_config import (
         ImageClassificationGeneratorConfig,
         image_classification_generator_config,
         )
-from .config_samples import (ICGC_Cifar10,
-                             ICGC_Cifar100,
-                             ICGC_MNIST,
-                             ICGC_FashionMNIST,
-                             )
 from .directory.directory_generator import (
         DirectoryGeneratorConfig,
         directory_generator_config_parser,
         directory_generator_config,
         directory_generator,
-        DGC_Cifar10,
-        DGC_Cifar100,
+        DGC_CIFAR10,
+        DGC_CIFAR100,
         DGC_MNIST,
         DGC_FashionMNIST,
         )
@@ -31,8 +26,8 @@ def image_classification_generator_parser(
         parser: GooeyParser = GooeyParser(),
         directory_generator_config=(
                 DirectoryGeneratorConfig()),
-        cifar10_config=DGC_Cifar10(),
-        cifar100_config=DGC_Cifar100(),
+        cifar10_config=DGC_CIFAR10(),
+        cifar100_config=DGC_CIFAR100(),
         mnist_config=DGC_MNIST(),
         fashion_mnist_config=DGC_FashionMNIST(),
         ) -> GooeyParser:

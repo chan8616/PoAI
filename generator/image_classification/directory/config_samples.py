@@ -3,15 +3,14 @@ import shutil
 
 from keras.preprocessing.image import ImageDataGenerator  # type: ignore
 
-from .directory_generator_config import (
-        DirectoryGeneratorConfig,
-        )
-
-from ..config_samples import (ICGC_Cifar10,
-                              ICGC_Cifar100,
+from ..config_samples import (ICGC_CIFAR10,
+                              ICGC_CIFAR100,
                               ICGC_MNIST,
                               ICGC_FashionMNIST,
                               )
+from .directory_generator_config import (
+        DirectoryGeneratorConfig,
+        )
 
 
 def flow_save_to_dir(x, y, save_to_dir):
@@ -29,14 +28,14 @@ def flow_save_to_dir(x, y, save_to_dir):
             break
 
 
-class DGC_Cifar10(ICGC_Cifar10,
+class DGC_CIFAR10(ICGC_CIFAR10,
                   DirectoryGeneratorConfig):
     NAME = 'CIFAR10'
     LABELS = ('airplane automobile bird cat deer '
               'dog frog horse ship truck ').split()
 
     def __init__(self):
-        super(DGC_Cifar10, self).__init__()
+        super(DGC_CIFAR10, self).__init__()
         self.VAL_DIRECTORY = self.TEST_DIRECTORY
 
     def auto_download(self):
@@ -58,12 +57,12 @@ class DGC_Cifar10(ICGC_Cifar10,
         print('Downloading complete!')
 
 
-class DGC_Cifar100(ICGC_Cifar100,
+class DGC_CIFAR100(ICGC_CIFAR100,
                    DirectoryGeneratorConfig):
     NAME = 'CIFAR100'
 
     def __init__(self):
-        super(DGC_Cifar100, self).__init__()
+        super(DGC_CIFAR100, self).__init__()
 
     def auto_download(self):
         pass

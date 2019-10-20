@@ -7,8 +7,8 @@ from .directory_generator_config import (
         directory_generator_config_parser,
         directory_generator_config,
         )
-from .config_samples import (DGC_Cifar10,
-                             DGC_Cifar100,
+from .config_samples import (DGC_CIFAR10,
+                             DGC_CIFAR100,
                              DGC_MNIST,
                              DGC_FashionMNIST,
                              )
@@ -16,10 +16,9 @@ from .config_samples import (DGC_Cifar10,
 
 def directory_generator_parser(
         parser: GooeyParser = GooeyParser(),
-        directory_generator_config=(
-                DirectoryGeneratorConfig()),
-        cifar10_config=DGC_Cifar10(),
-        cifar100_config=DGC_Cifar100(),
+        directory_generator_config=DirectoryGeneratorConfig(),
+        cifar10_config=DGC_CIFAR10(),
+        cifar100_config=DGC_CIFAR100(),
         mnist_config=DGC_MNIST(),
         fashion_mnist_config=DGC_FashionMNIST(),
         ) -> GooeyParser:

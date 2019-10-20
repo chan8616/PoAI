@@ -4,11 +4,11 @@ from .image_classification_generator_config import (
         )
 
 
-class ICGC_Cifar10(ImageClassificationGeneratorConfig):
+class ICGC_CIFAR10(ImageClassificationGeneratorConfig):
     TARGET_SIZE = (32, 32)
 
 
-class ICGC_Cifar100(ImageClassificationGeneratorConfig):
+class ICGC_CIFAR100(ImageClassificationGeneratorConfig):
     TARGET_SIZE = (32, 32)
 
 
