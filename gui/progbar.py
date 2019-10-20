@@ -103,14 +103,23 @@ class TrainWindowManager(object):
         self.train_window.Close()
 
     def generate_loss_graph_img(self):
-        t = range(1, len(self.batch_losses)+1, 1)
+        batches = range(1, len(self.batch_losses)+1, 1)
+        epoch_losses = self.epoch_losses
+        val_losses = self.epoch_val_losses
 
         fig = plt.figure(figsize=(8, 4.5))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_xlim(xmin=0., xmax=None, auto=True)
         ax.set_ylim(ymin=0., ymax=None, auto=True)
         ax.set(xlabel='Batch', ylabel='Loss', title='Loss Graph')
-        ax.plot(t, self.batch_losses)
+
+        ax.plot(batches, self.batch_losses, 'g--', label='Batch')
+        if epoch_losses:
+            ax.plot(*zip(*epoch_losses), 'c.-', label='Epoch')
+        if val_losses:
+            ax.plot(*zip(*val_losses), 'bo-', label='Validation')
+
+        ax.legend()
 
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
