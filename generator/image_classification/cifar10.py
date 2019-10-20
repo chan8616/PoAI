@@ -30,6 +30,7 @@ def cifar10_generator_parser(
 
 
 def cifar10_generator(args: Namespace):
+    print('in cifar10 generator')
     dataset = cifar10.load_data()
     generator = [
             image_preprocess_keras.image_preprocess(args).flow(

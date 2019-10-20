@@ -1,1 +1,1 @@
-__all__ = ['image']
+__all__ = 'classification image_classification image_annotation'.split()

@@ -2,7 +2,7 @@ from argparse import ArgumentParser, ArgumentTypeError, Namespace
 import ast
 
 from gooey import Gooey, GooeyParser
-from keras.preprocessing.image import ImageDataGenerator
+from keras.preprocessing.image import ImageDataGenerator  # type: ignore
 
 
 def list_or_number(string):
