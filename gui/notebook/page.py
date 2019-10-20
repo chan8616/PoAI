@@ -103,10 +103,11 @@ class Page(wx.Panel):
         optional = config.getOptionalArgs()
 
         positionals = deepcopy(positional)
-        if positionals:
-            positionals.insert(0, "--")
+        #  if positionals:
+        #      positionals.insert(0, "--")
 
-        cmd_string = compact(chain(optional, positionals))
+        #  cmd_string = compact(chain(optional, positionals))
+        cmd_string = compact(chain(positionals, optional))
         cmd_string = [cmd.replace('"', "'") for cmd in cmd_string]
         print(cmd_string)  # [" ''", ' ', " ''"]
         cmd_string = ["{} ''".format(cmd) if cmd.find("'") == -1 else cmd
