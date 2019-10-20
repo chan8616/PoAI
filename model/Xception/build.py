@@ -1,29 +1,34 @@
 from gooey import Gooey, GooeyParser
+from pathlib import Path
 
-from . import train, test, generator
+from . import model as modellib
+from ..keras_applications import build as buildlib
+from ..keras_applications.build import build
+from ..keras_applications.config_samples import (BuildConfig,
+                                                 XceptionImagenetConfig)
+
+from keras.applications import Xception  # type: ignore
 
 
 def build_parser(
         parser: GooeyParser = GooeyParser(),
-        title="Train Setting",
-        description="") -> GooeyParser:
-
-    subs = parser.add_subparsers()
-    train_setting_parser = subs.add_parser('train')
-    train.train_setting_parser(train_setting_parser)
-
-    test_setting_parser = subs.add_parser('test')
-    test.test_setting_parser(test_setting_parser)
-
-    return parser
+        title="Build Setting",
+        ) -> GooeyParser:
+    return buildlib.build_parser(parser,
+                                 build_config=BuildConfig(),
+                                 imagenet_config=XceptionImagenetConfig())
 
 
-def build(build_cmd, build_args, generator_args):
-    if 'train' == build_cmd:
-        setting = train.train_setting(args)
-        dataset = generator(generator_args)
-        return train.train(setting, dataset)
-    elif 'test' == build_cmd:
-        setting = train.test_setting(args)
-        dataset = generator(generator_args)
-        return test.test(setting, dataset)
+#  def build(mode, build_args):
+#      return buildlib.build(model, build_args)
+    #  config = buildlib.build_config(build_args)
+    #  log_dir = Path(build_args.log_dir).parent
+
+    #  model = modellib.XceptionModel(
+    #          config=config,
+    #          model_dir=str(log_dir))
+
+    #  if build_args.print_model_summary:
+    #      model.keras_model.summary()
+
+    #  return model
