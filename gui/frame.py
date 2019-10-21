@@ -264,36 +264,36 @@ class Frame(wx.Frame):
                 return
 
         model = self.model_tree.GetItemData(ItemID)
+        if set(('build', 'run', 'generator')) < set(model.__dict__.keys()):
+            build_parser = \
+                model.build.build_parser(GooeyParser())
+            build = model.build.build
 
-        build_parser = \
-            model.build.build_parser(GooeyParser())
-        build = model.build.build
+            run_parser = \
+                model.run.run_parser(GooeyParser())
+            run = model.run.run
 
-        run_parser = \
-            model.run.run_parser(GooeyParser())
-        run = model.run.run
+            generator_parser = \
+                model.generator.generator_parser(GooeyParser())
+            generator = model.generator.generator
 
-        generator_parser = \
-            model.generator.generator_parser(GooeyParser())
-        generator = model.generator.generator
+            # model_parser.parse_args(['--help'])
+            # dataset_parser.parse_args(['--help'])
 
-        # model_parser.parse_args(['--help'])
-        # dataset_parser.parse_args(['--help'])
+            #  page = self.notebook.AddDoublePage(
+            page = self.notebook.AddTriplePage(
+                build_parser, run_parser, generator_parser,
+                self.model_tree.GetItemText(ItemID))
 
-        #  page = self.notebook.AddDoublePage(
-        page = self.notebook.AddTriplePage(
-            build_parser, run_parser, generator_parser,
-            self.model_tree.GetItemText(ItemID))
-
-        #  page = self.notebook.AddParserPage(
-        #      build_parser, "Build Page")
-        page.build_parser = build_parser
-        page.build = build
-        page.run_parser = run_parser
-        page.run = run
-        page.generator_parser = generator_parser
-        page.generator = generator
-        self.tool_bar.EnableTool(self.tool_run.GetId(), True)
+            #  page = self.notebook.AddParserPage(
+            #      build_parser, "Build Page")
+            page.build_parser = build_parser
+            page.build = build
+            page.run_parser = run_parser
+            page.run = run
+            page.generator_parser = generator_parser
+            page.generator = generator
+            self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         return
 
         node = self.model_tree.GetItemData(ItemID)

@@ -1,3 +1,6 @@
+import os
+from importlib import import_module
+
 from types import ModuleType
 #  from Pathlib import Path
 import wx
@@ -28,29 +31,43 @@ class ModuleTree(wx.TreeCtrl):
 
     def extendTree(self, parent_item_id):
         parent_module = self.GetItemData(parent_item_id)
+        print('parent', parent_module.__name__)
 
-        child_modules = [module for k, module in parent_module.__dict__.items()
-                         if (hasattr(parent_module, '__all__') and
-                             k in parent_module.__all__)]
+        if hasattr(parent_module, '__all__'):
+            #  from parent_module import *
+            #  child_modules = [module
+            #                   for k, module in parent_module.__dict__.items()
+            #                   if k in parent_module.__all__]
+            child_modules = [
+                    import_module('.'.join(
+                        [parent_module.__package__, m]))
+                    for m in parent_module.__all__]
 
-        for child_module in child_modules:
-            child_item_id = self.AppendItem(
-                parent=parent_item_id,
-                text=child_module.__name__.split('.')[-1])
-            self.SetItemData(child_item_id, child_module)
+            for child_module in child_modules:
+                child_item_id = self.AppendItem(
+                    parent=parent_item_id,
+                    text=child_module.__name__.split('.')[-1])
+                self.SetItemData(child_item_id, child_module)
 
-            #  self.ExtendTree(item_id)
+                #  self.ExtendTree(item_id)
 
-            grand_child_modules = [
-                    module for k, module in child_module.__dict__.items()
-                    if (hasattr(child_module, '__all__') and
-                        k in child_module.__all__)]
+                if hasattr(child_module, '__all__'):
+                    #  from child_module import *
+                    #  grand_child_modules = [
+                    #          module
+                    #          for k, module in child_module.__dict__.items()
+                    #          if k in child_module.__all__]
+                    grand_child_modules = [
+                            import_module('.'.join(
+                                [child_module.__package__, m]))
+                            for m in child_module.__all__]
 
-            for grand_child_module in grand_child_modules:
-                item_id = self.AppendItem(
-                    parent=child_item_id,
-                    text=grand_child_module.__name__.split('.')[-1])
-                self.SetItemData(child_item_id, grand_child_module)
+                    for grand_child_module in grand_child_modules:
+                        grand_child_item_id = self.AppendItem(
+                            parent=child_item_id,
+                            text=grand_child_module.__name__.split('.')[-1])
+                        self.SetItemData(
+                                grand_child_item_id, grand_child_module)
 
     def TreeOnActivated(self, event):
         item_id = event.GetItem()
