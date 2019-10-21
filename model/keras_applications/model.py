@@ -31,6 +31,7 @@ class KerasAppBaseModel():
 
         keras_model = self.BaseModel(
                 include_top=False,
+                weights=None,
                 input_shape=build_config.INPUT_SHAPE)
 
         x = keras_model.output

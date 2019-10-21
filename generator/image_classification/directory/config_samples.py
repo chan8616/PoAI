@@ -2,6 +2,10 @@ from pathlib import Path
 import shutil
 
 from keras.preprocessing.image import ImageDataGenerator  # type: ignore
+from keras.datasets import (cifar10,
+                            cifar100,
+                            mnist,
+                            fashion_mnist)
 
 from ..config_samples import (ICGC_CIFAR10,
                               ICGC_CIFAR100,
@@ -40,7 +44,6 @@ class DGC_CIFAR10(ICGC_CIFAR10,
 
     def auto_download(self):
         print('Downloading...')
-        from keras.datasets import cifar10  # type: ignore
         dataset = cifar10.load_data()
         for j, label in enumerate(self.LABELS):
             idx = (dataset[0][1] == j).reshape(-1)

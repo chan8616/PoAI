@@ -1,3 +1,4 @@
+from typing import Type
 from gooey import Gooey, GooeyParser
 
 from keras.preprocessing.image import ImageDataGenerator  # type: ignore
@@ -48,11 +49,11 @@ def directory_generator_parser(
     return parser
 
 
-def directory_generator(Generator: ImageDataGenerator,
+def directory_generator(Generator: Type[ImageDataGenerator],
                         directory_generator_config: DirectoryGeneratorConfig):
     generators = [(None
                    if directory is '' else
-                   Generator().flow_from_directory(
+                   Generator(rescale=1./255.).flow_from_directory(
                        directory,
                        target_size=directory_generator_config.TARGET_SIZE,
                        color_mode=directory_generator_config.COLOR_MODE,

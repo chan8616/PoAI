@@ -8,6 +8,7 @@ from gooey import GooeyParser
 from ..fix_validator import fix_validator
 from ..get_available_gpus import get_available_gpus
 
+WEIGHTS = ['imagenet', 'last']
 LOSSES = ('mean_squared_error binary_crossentropy '
           'categorical_crossentropy sparse_categorical_crossentropy '
           #  'kullback_leibler_divergence '
@@ -17,6 +18,8 @@ OPTIMIZERS = 'sgd'.split()
 
 
 class TrainConfig():
+    WEIGHT = None
+
     EPOCHS = 10
     VALIDATION_STEPS = 10
 
@@ -39,8 +42,8 @@ def train_config_parser(
     load_parser = parser.add_mutually_exclusive_group()
     load_parser.add_argument(
         '--load_pretrained_weights',
-        choices=['imagenet', 'last'],
-        #  default='imagenet',
+        choices=WEIGHTS,
+        default=train_config.WEIGHT,
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',
@@ -57,7 +60,8 @@ def train_config_parser(
         gooey_options={'columns': 3})
 
     steps_parser.add_argument(
-        "epochs", type=int, default=30,
+        "epochs", type=int,
+        default=train_config.EPOCHS,
         help="number of training per entire dataset"
     )
 

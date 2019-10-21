@@ -20,7 +20,7 @@ def run_parser(
         parser: GooeyParser = GooeyParser(),
         title="Train Setting",
         train_config=TrainConfig(),
-        train_imagenet_config=TrainConfig(),
+        train_configs={},
         ) -> GooeyParser:
 
     subs = parser.add_subparsers()
@@ -28,14 +28,18 @@ def run_parser(
     #  test_parser = subs.add_parser('test')
     #  test_config.test_config_parser(test_parser)
 
-    train_parser = subs.add_parser('train_check')
-    train_config_parser(train_parser, title, train_imagenet_config)
+    for k, v in train_configs.items():
+        train_parser = subs.add_parser(k)
+        train_config_parser(train_parser, title, v)
+
+    #  train_parser = subs.add_parser('train_check')
+    #  train_config_parser(train_parser, title, train_imagenet_config)
 
     train_parser = subs.add_parser('train')
     train_config_parser(train_parser, title, train_config)
 
-    train_parser = subs.add_parser('train_imagenet')
-    train_config_parser(train_parser, title, train_imagenet_config)
+    #  train_parser = subs.add_parser('train_imagenet')
+    #  train_config_parser(train_parser, title, train_imagenet_config)
 
     return parser
 
@@ -60,6 +64,7 @@ def run(model: KerasAppBaseModel, config):
 
     #  model = build.build(build_args)
     #  model.build(build_args)
+    print('before build')
     build(model, build_args)
 
     print('before load')
