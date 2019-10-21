@@ -17,10 +17,10 @@ def run_parser(
     return runlib.run_parser(parser,
                              title,
                              train_config=TrainConfig(),
-                             train_configs=OrderedDict({
-                                 'train_cifar10': CIFAR10Config(),
-                                 'train_imagenet': ImagenetConfig(),
-                             }))
+                             train_configs=OrderedDict([
+                                 ('train_cifar10', CIFAR10Config()),
+                                 ('train_imagenet', ImagenetConfig()),
+                             ]))
 
 
 def run(config):

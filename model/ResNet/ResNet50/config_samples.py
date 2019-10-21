@@ -18,7 +18,7 @@ class ImagenetConfig(
 class CIFAR10Config(ResNet50Config, TrainConfig):
     CLASSES = 10
 
-    WEIGHT = WEIGHTS[0]
+    WEIGHT = WEIGHTS[0]  # type: ignore
     EPOCHS = 200
 
     LOSS = LOSSES[2]

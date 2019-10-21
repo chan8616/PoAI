@@ -16,10 +16,10 @@ def build_parser(
         ) -> GooeyParser:
     return buildlib.build_parser(parser,
                                  build_config=ResNet50Config(),
-                                 build_configs=OrderedDict({
-                                     'build_cifar10': CIFAR10Config(),
-                                     'build_imagenet': ImagenetConfig(),
-                                 }))
+                                 build_configs=OrderedDict([
+                                     ('build_cifar10', CIFAR10Config()),
+                                     ('build_imagenet', ImagenetConfig()),
+                                 ]))
 
 
 #  def build(mode, build_args):
