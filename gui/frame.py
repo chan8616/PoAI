@@ -30,7 +30,7 @@ from gui.module_tree import ModuleTree
 from gui.notebook.notebook import Notebook
 # from gui.notebook.pages import Page
 from gui.utils import Redirection
-from gui.progbar import TrainWindow, TrainThread
+from gui.progbar import TrainWindowManager, TrainThread
 
 # if __name__ == '__main__':
 #    from trees.datasettree import DatasetTree
@@ -563,9 +563,9 @@ class Frame(wx.Frame):
 
     def train_with_progbar(self, train_function, config):
         stream = Queue()
-        window = TrainWindow(self, title='Train Progress', stream=stream)
+        window_manager = TrainWindowManager(self, stream=stream)
         train_thread = TrainThread(train_function, config, stream)
-        progbar_thread = Thread(target=window.main_loop)
+        progbar_thread = Thread(target=window_manager.main_loop)
 
         train_thread.start()
         progbar_thread.start()
