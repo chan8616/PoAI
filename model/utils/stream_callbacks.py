@@ -1,5 +1,6 @@
 from queue import Queue
 
+import tensorflow as tf
 from keras.callbacks import Callback
 
 
@@ -61,3 +62,15 @@ class KerasQueueLogger(Callback):
 
     def on_train_end(self, logs=None):
         self.stream.put('end')
+
+
+def tf_logger(stream: Queue):
+    def put_in_stream(tensors):
+        _loss = tensors.get('loss', None)
+        _acc = tensors.get('accuracy', None)
+        stream.put(('batch', (0, 1, _loss, _acc), None))
+    loss, accuracy = 0., 0.
+    log_hook = tf.train.LoggingTensorHook({"loss": loss, "accuracy": accuracy},
+                                          every_n_iter=10, at_end=True,
+                                          formatter=put_in_stream)
+    return log_hook
