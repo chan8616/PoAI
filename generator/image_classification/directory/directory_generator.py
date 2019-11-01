@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from typing import Type
 from gooey import Gooey, GooeyParser
 
@@ -17,34 +18,26 @@ from .config_samples import (DGC_CIFAR10,
 
 def directory_generator_parser(
         parser: GooeyParser = GooeyParser(),
+        title="Generator",
         directory_generator_config=DirectoryGeneratorConfig(),
-        cifar10_config=DGC_CIFAR10(),
-        cifar100_config=DGC_CIFAR100(),
-        mnist_config=DGC_MNIST(),
-        fashion_mnist_config=DGC_FashionMNIST(),
+        directory_generator_configs=OrderedDict([
+            ('directory_cifar10', DGC_CIFAR10()),
+            ('directory_cifar100', DGC_CIFAR100()),
+            ('directory_mnist', DGC_MNIST()),
+            ('directory_fashion_mnist', DGC_FashionMNIST()),
+            ]),
         ) -> GooeyParser:
 
     subs = parser.add_subparsers()
 
+    for k, v in directory_generator_configs.items():
+        directory_generator_parser = subs.add_parser(k)
+        directory_generator_config_parser(
+                directory_generator_parser, k, v)
+
     directory_parser = subs.add_parser('directory')
     directory_generator_config_parser(
             directory_parser, directory_generator_config)
-
-    directory_parser = subs.add_parser('directory_cifar10')
-    directory_generator_config_parser(
-            directory_parser, cifar10_config, auto_download=True)
-
-    directory_parser = subs.add_parser('directory_cifar100')
-    directory_generator_config_parser(
-            directory_parser, cifar100_config, auto_download=True)
-
-    directory_parser = subs.add_parser('directory_mnist')
-    directory_generator_config_parser(
-            directory_parser, mnist_config, auto_download=True)
-
-    directory_parser = subs.add_parser('directory_fashion_mnist')
-    directory_generator_config_parser(
-            directory_parser, fashion_mnist_config, auto_download=True)
 
     return parser
 
