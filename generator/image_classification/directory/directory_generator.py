@@ -44,17 +44,23 @@ def directory_generator_parser(
 
 def directory_generator(Generator: Type[ImageDataGenerator],
                         directory_generator_config: DirectoryGeneratorConfig):
-    generators = [(None
-                   if directory is '' else
-                   Generator(rescale=1./255.).flow_from_directory(
-                       directory,
+    generators = [Generator(rescale=1./255.).flow_from_directory(
+                       directory=directory_generator_config.DIRECTORY,
                        target_size=directory_generator_config.TARGET_SIZE,
                        color_mode=directory_generator_config.COLOR_MODE,
                        class_mode=directory_generator_config.CLASS_MODE,
                        batch_size=directory_generator_config.BATCH_SIZE,
                        shuffle=directory_generator_config.SHUFFLE,
-                       ))
-                  for directory in [directory_generator_config.DIRECTORY,
-                                    directory_generator_config.VAL_DIRECTORY]]
+                       ),
+                  (None
+                   if directory_generator_config.VAL_DIRECTORY is '' else
+                   Generator(rescale=1./255.).flow_from_directory(
+                       directory=directory_generator_config.VAL_DIRECTORY,
+                       target_size=directory_generator_config.TARGET_SIZE,
+                       color_mode=directory_generator_config.COLOR_MODE,
+                       class_mode=directory_generator_config.CLASS_MODE,
+                       #  batch_size=directory_generator_config.BATCH_SIZE,
+                       shuffle=False,
+                       ))]
 
     return generators
