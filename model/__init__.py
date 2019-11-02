@@ -1,1 +1,1 @@
-__all__ = ['Mask_RCNN', 'Xception', 'ResNet']
+__all__ = ['Mask_RCNN', 'ResNet', 'BERT']
