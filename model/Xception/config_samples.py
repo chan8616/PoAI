@@ -1,14 +1,14 @@
 import os
 
-from .build_config import XceptionConfig
-from model.keras_applications.train_config import (TrainConfig,
-                                                   WEIGHTS,
+from model.keras_applications.train_config import (WEIGHTS,
                                                    LOSSES)
 from generator.image_classification.config_samples import DIR_GEN_CIFAR10
+from .train_config import XceptionTrainConfig
+from .build_config import XceptionConfig
 
 
 class XceptionImagenetConfig(
-        XceptionConfig, TrainConfig):
+        XceptionConfig, XceptionTrainConfig):
     NAME = os.path.join(XceptionConfig.NAME, 'imagenet')
     CLASSES = 1000
 
@@ -17,7 +17,7 @@ class XceptionImagenetConfig(
 
 class XceptionCIFAR10Config(
         XceptionConfig,
-        TrainConfig,
+        XceptionTrainConfig,
         DIR_GEN_CIFAR10,
         ):
     NAME = os.path.join(XceptionConfig.NAME, DIR_GEN_CIFAR10.NAME)

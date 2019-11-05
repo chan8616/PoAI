@@ -1,4 +1,5 @@
 from argparse import Namespace
+from collections import OrderedDict
 from pathlib import Path
 from typing import Optional, Tuple, List, Type
 
@@ -10,6 +11,10 @@ from gooey import Gooey, GooeyParser
 #  from ..fix_validator import fix_validator
 from ..model_config import ModelConfig
 
+LAYERS = OrderedDict([
+    ('all', (None, None)),
+    ('heads', (-1, None)),
+    ])
 POOLINGS = 'flatten avg max'.split()
 
 
@@ -40,12 +45,12 @@ def build_config_parser(
         default=build_config.INPUT_SHAPE,
         help='input_shape',
     )
-    feature_layer_parser.add_argument(
-        "--weights", choices=['imagenet'], default=None,
-        metavar="Weights",
-        help="Load trained weights."
-             "\nDo random initailize if not selected (Ctrl+click)",
-    )
+    #  feature_layer_parser.add_argument(
+    #      "--weights", choices=['imagenet'], default=None,
+    #      metavar="Weights",
+    #      help="Load trained weights."
+    #           "\nDo random initailize if not selected (Ctrl+click)",
+    #  )
 
     top_layer_parser = parser.add_argument_group(
         "",

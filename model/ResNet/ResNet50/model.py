@@ -23,3 +23,11 @@ class Model(modellib.KerasAppBaseModel):
                                 cache_subdir='models',
                                 file_hash='a268eb855778b3df3c7506639542a6af')
         return weights_path
+
+    def set_trainable(self, layers):
+        for layer in self.keras_model.layers[
+                :self.TRAIN_LAYER[layers]]:
+            layers.trainable = False
+        for layer in self.keras_model.layers[
+                self.TRAIN_LAYER[layers]:]:
+            layers.trainable = True

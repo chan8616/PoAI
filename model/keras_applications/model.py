@@ -135,44 +135,20 @@ class KerasAppBaseModel():
     def get_imagenet_weights(self):
         pass
 
-    def set_trainable(self, layer_regex, keras_model=None,
+    def set_trainable(self, layers,  # keras_model=None,
                       indent=0, verbose=1):
-        """Sets model layers as trainable if their names match
-        the given regular expression.
         """
-        # Print message on the first call (but not on recursive calls)
-        if verbose > 0 and keras_model is None:
-            log("Selecting layers to train")
-
-        keras_model = keras_model or self.keras_model
-
-        # In multi-GPU training, we wrap the model. Get layers
-        # of the inner model because they have the weights.
-        layers = (keras_model.inner_model.layers
-                  if hasattr(keras_model, "inner_model")
-                  else keras_model.layers)
-
-        for layer in layers:
-            # Is the layer a model?
-            if layer.__class__.__name__ == 'Model':
-                print("In model: ", layer.name)
-                self.set_trainable(
-                    layer_regex, keras_model=layer, indent=indent + 4)
-                continue
-
-            if not layer.weights:
-                continue
-            # Is it trainable?
-            trainable = bool(re.fullmatch(layer_regex, layer.name))
-            # Update layer. If layer is a container, update inner layer.
-            if layer.__class__.__name__ == 'TimeDistributed':
-                layer.layer.trainable = trainable
-            else:
-                layer.trainable = trainable
-            # Print trainable layer names
-            if trainable and verbose > 0:
-                log("{}{:20}   ({})".format(" " * indent, layer.name,
-                                            layer.__class__.__name__))
+        layers: Allows selecting wich layers to train. It can be:
+            - One of these predefined values:
+              heads: Classifier heads of the network
+              all: All the layers
+              ...
+              3+: Train Block 3 and up
+              4+: Train Block 4 and up
+              5+: Train Block 5 and up
+              ...
+        """
+        pass
 
     def set_log_dir(self, model_path=None):
         """Sets the model log directory and epoch counter.
@@ -228,14 +204,6 @@ class KerasAppBaseModel():
                 are considered to be done alreay, so this actually determines
                 the epochs to train in total rather than in this particaular
                 call.
-        layers: Allows selecting wich layers to train. It can be:
-            - A regular expression to match layer names to train
-            - One of these predefined values:
-              heads: The RPN, classifier and mask heads of the network
-              all: All the layers
-              3+: Train Resnet stage 3 and up
-              4+: Train Resnet stage 4 and up
-              5+: Train Resnet stage 5 and up
         augmentation: Optional. An imgaug (https://github.com/aleju/imgaug)
             augmentation. For example, passing imgaug.augmenters.Fliplr(0.5)
             flips images right/left 50% of the time. You can pass complex
@@ -274,7 +242,8 @@ class KerasAppBaseModel():
         log("\nStarting at epoch {}. LR={}\n".format(
             self.epoch, train_config.LEARNING_RATE))
         log("Checkpoint Path: {}".format(self.checkpoint_path))
-        #  self.set_trainable(layers)
+        self.TRAIN_LAYERS = train_config.TRAIN_LAYERS
+        self.set_trainable(train_config.TRAIN_LAYER)
         #  self.compile(learning_rate, self.config.LEARNING_MOMENTUM)
         optimizer = train_config.OPTIMIZER
         self.keras_model.compile(optimizer=optimizer,

@@ -12,3 +12,4 @@ class XceptionImagenetConfig(
     CLASSES = 1000
 
     LOSS = LOSSES[2]
+    LEARNING_RATE = 0.045

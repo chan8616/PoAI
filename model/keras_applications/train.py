@@ -2,7 +2,7 @@
 #  from argparse import Namespace
 from gooey import GooeyParser
 
-from .train_config import train_config_parser, train_config, TrainConfig
+from .train_config import TrainConfig, train_config_parser  # , train_config
 from ..utils.stream_callbacks import KerasQueueLogger
 #  from .config_samples import (BalloonConfig, CocoConfig,
 #                               NucleusConfig, ShapesConfig)
@@ -33,7 +33,9 @@ def train(model, train_args, train_generator, val_generator, stream
           ) -> None:
     """Train the model."""
     callbacks = [KerasQueueLogger(stream)]
-    model.train(train_config(train_args),
+    train_config = TrainConfig()
+    train_config.update(train_args)
+    model.train(train_config,
                 train_generator, val_generator,
                 custom_callbacks=callbacks)
     """

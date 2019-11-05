@@ -4,7 +4,7 @@ from gooey import Gooey, GooeyParser
 from .model import XceptionModel
 from ..keras_applications import run as runlib
 #  from ..keras_applications.run import run
-from .config_samples import (TrainConfig,
+from .config_samples import (XceptionTrainConfig,
                              XceptionImagenetConfig,
                              XceptionCIFAR10Config)
 
@@ -13,10 +13,10 @@ def run_parser(
         parser: GooeyParser = GooeyParser(),
         title="Train Setting",
         ) -> GooeyParser:
-
+    XceptionCIFAR10Config().display()
     return runlib.run_parser(parser,
                              title,
-                             train_config=TrainConfig(),
+                             train_config=XceptionTrainConfig(),
                              train_configs=OrderedDict([
                                  ('train_cifar10', XceptionCIFAR10Config()),
                                  ('train_imagenet', XceptionImagenetConfig()),
