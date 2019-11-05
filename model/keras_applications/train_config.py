@@ -105,7 +105,7 @@ def train_config_parser(
 
     compile_parser = parser.add_argument_group(
             title="Compile Settings",
-            gooey_options={'show_border': True, 'columns': 3})
+            gooey_options={'show_border': True, 'columns': 2})
     compile_parser.add_argument(
         "--loss",
         metavar='Loss',

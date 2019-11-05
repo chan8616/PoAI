@@ -5,8 +5,8 @@ from .model import Model
 from model.keras_applications import run as runlib
 #  from ..keras_applications.run import run
 from .config_samples import (TrainConfig,
-                             ImagenetConfig,
-                             CIFAR10Config)
+                             ResNet50ImagenetConfig,
+                             ResNet50CIFAR10Config)
 
 
 def run_parser(
@@ -18,8 +18,8 @@ def run_parser(
                              title,
                              train_config=TrainConfig(),
                              train_configs=OrderedDict([
-                                 ('train_cifar10', CIFAR10Config()),
-                                 ('train_imagenet', ImagenetConfig()),
+                                 ('train_cifar10', ResNet50CIFAR10Config()),
+                                 ('train_imagenet', ResNet50ImagenetConfig()),
                              ]))
 
 

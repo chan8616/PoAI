@@ -21,5 +21,5 @@ class Model(modellib.KerasAppBaseModel):
         weights_path = get_file(str(Path(TF_WEIGHTS_PATH_NO_TOP).name),
                                 TF_WEIGHTS_PATH_NO_TOP,
                                 cache_subdir='models',
-                                file_hash='b0042744bf5b25fce3cb969f33bebb97')
+                                file_hash='a268eb855778b3df3c7506639542a6af')
         return weights_path

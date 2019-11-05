@@ -16,9 +16,16 @@ class ImageClassificationGeneratorConfig(GeneratorConfig):
     BATCH_SIZE = 32
     SHUFFLE = True
 
+    def update(self, args: Namespace):
+        self.TARGET_SIZE = args.target_size
+        self.COLOR_MODE = args.color_mode
+        self.CLASS_MODE = args.class_mode
+        self.BATCH_SIZE = args.batch_size
+
 
 def image_classification_generator_config_parser(
         parser: GooeyParser,
+        title: str = 'Image Classification Generator Options',
         image_classification_generator_config=(
             ImageClassificationGeneratorConfig()),
         ) -> GooeyParser:
@@ -62,8 +69,8 @@ def image_classification_generator_config_parser(
     return parser
 
 
+"""
 def image_classification_generator_config(
-        #  base_config: Type[ImageClassificationGeneratorConfig],
         args: Namespace) -> Type[ImageClassificationGeneratorConfig]:
 
     class Config(ImageClassificationGeneratorConfig):
@@ -73,3 +80,4 @@ def image_classification_generator_config(
         BATCH_SIZE = args.batch_size
 
     return Config
+"""
