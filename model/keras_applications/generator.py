@@ -23,7 +23,7 @@ def generator_parser(
             image_classification_generator_config=(
                 ImageClassificationGeneratorConfig),
             directory_dataset_config=DirectoryDatasetConfig(),
-            configs=OrderedDict([
+            dataset_generator_configs=OrderedDict([
                 ('directory_cifar10', DIR_GEN_CIFAR10()),
                 #  'directory_cifar100': DGC_CIFAR100(),
                 #  'directory_mnist': DGC_MNIST(),

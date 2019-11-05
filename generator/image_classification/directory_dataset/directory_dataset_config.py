@@ -26,7 +26,7 @@ class DirectoryDatasetConfig(Dataset):
     def save_to_dir(self, x, y, save_dir, save_prefix):
         if not Path(save_dir).exists():
             Path(save_dir).mkdir(parents=True)
-        if len(list(save_dir.iterdir())) != len(y):
+        if len(list(Path(save_dir).iterdir())) != len(y):
             generator = ImageDataGenerator()
             for xy in generator.flow(
                     x, y,

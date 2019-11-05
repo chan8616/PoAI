@@ -37,6 +37,7 @@ def build_parser(
 
 def build(model, build_args) -> None:
     model.build(build_config=build_config(build_args))
+    print(model.keras_model.layers)
 
     if build_args.print_model_summary:
         print(model.keras_model.summary())

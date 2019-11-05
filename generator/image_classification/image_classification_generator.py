@@ -64,11 +64,14 @@ def image_classification_generator(
     #  Generator = ImageDataGenerator
     #  print(Generator)
 
-    config = ImageClassificationGeneratorConfig().update(args)
+    config = ImageClassificationGeneratorConfig()
+    config.update(args)
+    config.display()
     generator = ImageDataGenerator(rescale=1./255.)
 
     if 'directory' in cmd:
         directory_config = directory_dataset(cmd, args)
+        directory_config.display()
         generators = [generator.flow_from_directory(
                            directory=directory_config.DIRECTORY,
                            target_size=config.TARGET_SIZE,

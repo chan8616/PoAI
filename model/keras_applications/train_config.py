@@ -54,6 +54,12 @@ def train_config_parser(
     #      widget = 'FildChooser'
     #      )
 
+    #  freeze_parser = parser.add_argument_group()
+    #  freeze_parser.add_argument(
+    #          '--freeze', type=str,
+    #          choices=['top', '3+']
+    #          )
+
     steps_parser = parser.add_argument_group(
         title="Train Steps",
         description="Train Steps Setting",
