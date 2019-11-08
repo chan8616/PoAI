@@ -242,8 +242,8 @@ class KerasAppBaseModel():
         log("\nStarting at epoch {}. LR={}\n".format(
             self.epoch, train_config.LEARNING_RATE))
         log("Checkpoint Path: {}".format(self.checkpoint_path))
-        self.TRAIN_LAYERS = train_config.TRAIN_LAYERS
-        self.set_trainable(train_config.TRAIN_LAYER)
+        # self.TRAIN_LAYERS = train_config.TRAIN_LAYERS
+        self.set_trainable(train_config.TRAIN_LAYERS[train_config.TRAIN_LAYER])
         #  self.compile(learning_rate, self.config.LEARNING_MOMENTUM)
         optimizer = train_config.OPTIMIZER
         self.keras_model.compile(optimizer=optimizer,

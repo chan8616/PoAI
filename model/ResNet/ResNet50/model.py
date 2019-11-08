@@ -26,8 +26,8 @@ class Model(modellib.KerasAppBaseModel):
 
     def set_trainable(self, layers):
         for layer in self.keras_model.layers[
-                :self.TRAIN_LAYER[layers]]:
-            layers.trainable = False
+                :layers]:
+            layer.trainable = False
         for layer in self.keras_model.layers[
-                self.TRAIN_LAYER[layers]:]:
-            layers.trainable = True
+                layers:]:
+            layer.trainable = True

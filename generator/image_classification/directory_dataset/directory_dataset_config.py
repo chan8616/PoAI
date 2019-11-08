@@ -3,6 +3,7 @@ from typing import Type, Any
 from argparse import Namespace
 
 from gooey import GooeyParser
+from keras.preprocessing.image import ImageDataGenerator
 
 from ..dataset import Dataset
 
@@ -32,11 +33,10 @@ class DirectoryDatasetConfig(Dataset):
                     x, y,
                     batch_size=len(y),
                     shuffle=False,
-                    save_dir=save_to_dir,
+                    save_to_dir=save_dir,
                     save_prefix=save_prefix,
                     ):
-                print('save_dir: {}\tcount: {}'.format(
-                    Path(save_dir).name), len(y))
+                print('save_dir: {}\tcount: {}'.format(Path(save_dir).name, len(y)))
                 break
 
     def auto_download(self):
