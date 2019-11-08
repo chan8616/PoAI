@@ -24,3 +24,11 @@ class XceptionModel(modellib.KerasAppBaseModel):
                                 cache_subdir='models',
                                 file_hash='b0042744bf5b25fce3cb969f33bebb97')
         return weights_path
+
+    def set_trainable(self):
+        for layer in self.keras_model.layers[
+                :self.TRAIN_LAYER[layers]]:
+            layers.trainable = False
+        for layer in self.keras_model.layers[
+                self.TRAIN_LAYER[layers]:]:
+            layers.trainable = True

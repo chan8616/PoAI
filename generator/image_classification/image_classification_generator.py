@@ -1,88 +1,107 @@
 from argparse import Namespace
+from collections import OrderedDict
+from typing import List, Iterator
+
 from gooey import GooeyParser
 
-from .image_classification_generator_config import (
-        ImageClassificationGeneratorConfig,
-        image_classification_generator_config,
-        )
-from .directory.directory_generator import (
-        DirectoryGeneratorConfig,
-        directory_generator_config_parser,
-        directory_generator_config,
-        directory_generator,
-        DGC_CIFAR10,
-        DGC_CIFAR100,
-        DGC_MNIST,
-        DGC_FashionMNIST,
-        )
 from ..image_preprocess.image_preprocess_keras import (
         image_preprocess_parser,
         image_preprocess,
         ImageDataGenerator,
         )
+from .image_classification_generator_config import (
+        ImageClassificationGeneratorConfig,
+        image_classification_generator_config_parser,
+        )
+from .directory_dataset.directory_dataset_config import (
+        DirectoryDatasetConfig,
+        directory_dataset_config_parser,
+        #  directory_dataset_config,
+        )
+from .directory_dataset.directory_dataset import (
+        directory_dataset,
+        )
+from .config_samples import DIR_GEN_CIFAR10
+#  from .directory_dataset.config_samles import CIFAR10
 
 
 def image_classification_generator_parser(
         parser: GooeyParser = GooeyParser(),
-        directory_generator_config=(
-                DirectoryGeneratorConfig()),
-        cifar10_config=DGC_CIFAR10(),
-        cifar100_config=DGC_CIFAR100(),
-        mnist_config=DGC_MNIST(),
-        fashion_mnist_config=DGC_FashionMNIST(),
+        title="Generator",
+        image_classification_generator_config=(
+            ImageClassificationGeneratorConfig()),
+        directory_dataset_config=DirectoryDatasetConfig(),
+        dataset_generator_configs=OrderedDict([
+            ('directory_cifar10', DIR_GEN_CIFAR10()),
+            ]),
         ) -> GooeyParser:
 
     subs = parser.add_subparsers()
 
-    directory_parser = subs.add_parser('directory_check')
-    directory_generator_config_parser(
-            directory_parser, cifar10_config, auto_download=True)
+    for k, v in dataset_generator_configs.items():
+        generator_parser = subs.add_parser(k)
+        directory_dataset_config_parser(
+                generator_parser, v, True)
+        image_classification_generator_config_parser(
+                generator_parser, k, v)
 
-    directory_parser = subs.add_parser('directory')
-    directory_generator_config_parser(
-            directory_parser, directory_generator_config)
-
-    directory_parser = subs.add_parser('directory_cifar10')
-    directory_generator_config_parser(
-            directory_parser, cifar10_config, auto_download=True)
-
-    directory_parser = subs.add_parser('directory_cifar100')
-    directory_generator_config_parser(
-            directory_parser, cifar100_config, auto_download=True)
-
-    directory_parser = subs.add_parser('directory_mnist')
-    directory_generator_config_parser(
-            directory_parser, mnist_config, auto_download=True)
-
-    directory_parser = subs.add_parser('directory_fashion_mnist')
-    directory_generator_config_parser(
-            directory_parser, fashion_mnist_config, auto_download=True)
+    generator_parser = subs.add_parser('directory_generator')
+    directory_dataset_config_parser(
+            generator_parser,
+            directory_dataset_config)
+    image_classification_generator_config_parser(
+            generator_parser, title,
+            image_classification_generator_config)
 
     return parser
 
 
 def image_classification_generator(
         cmd: str,
-        args: Namespace):
+        args: Namespace) -> List[Iterator]:
     #  generator = image_preprocess(args)
     print(cmd, args)
-    Generator = ImageDataGenerator
-    print(Generator)
-    #  ICGConfig = image_classification_generator_config(args)
-    #  print(ICGConfig().display())
+    #  Generator = ImageDataGenerator
+    #  print(Generator)
 
-    #  class Config(ImageClassificationGeneratorConfig,
-    #               DirectoryGeneratorConfig,):
-    #      ...
+    config = ImageClassificationGeneratorConfig()
+    config.update(args)
+    config.display()
+    generator = ImageDataGenerator(rescale=1./255.)
+
     if 'directory' in cmd:
-        DGConfig = directory_generator_config(args)
-        generator_config = DGConfig()
-        generator_config.display()
+        directory_config = directory_dataset(cmd, args)
+        directory_config.display()
+        generators = [generator.flow_from_directory(
+                           directory=directory_config.DIRECTORY,
+                           target_size=config.TARGET_SIZE,
+                           color_mode=config.COLOR_MODE,
+                           class_mode=config.CLASS_MODE,
+                           batch_size=config.BATCH_SIZE,
+                           shuffle=True,
+                           ),
+                      (None
+                       if directory_config.VAL_DIRECTORY is '' else
+                       generator.flow_from_directory(
+                           directory=directory_config.VAL_DIRECTORY,
+                           target_size=config.TARGET_SIZE,
+                           color_mode=config.COLOR_MODE,
+                           class_mode=config.CLASS_MODE,
+                           batch_size=config.BATCH_SIZE,
+                           shuffle=False,
+                           ))]
+        """
+        return directory_generator(generator, args, img_clsf_gen_config)
+
         if hasattr(args, 'auto_download'):
             if args.auto_download:
-                generator_config.auto_download()
+                direc_gen_config.auto_download()
 
-        return directory_generator(Generator,
-                                   generator_config)
+        #  return directory_generator(Generator,
+        return directory_generator(
+                generator,
+                direc_gen_config,
+        """
     else:
         raise NotImplementedError('wrong dataset_cmd:', cmd)
+    return generators

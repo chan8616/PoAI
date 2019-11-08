@@ -4,14 +4,13 @@ from .image_classification_generator_config import (
         )
 
 #  from .dataset_samples.cifar10 import CIFAR10 as CIFAR10sample
-from .generator_config_samples import GEN_CIFAR10
-from .directory_dataset.dataset_config_samples import DIR_CIFAR10
+from . import dataset
 
 
-class DIR_GEN_CIFAR10(DIR_CIFAR10,
-                      GEN_CIFAR10):
+class GEN_CIFAR10(dataset.CIFAR10,
+                  ImageClassificationGeneratorConfig):
     def __init__(self):
-        super(DIR_GEN_CIFAR10, self).__init__()
+        super(GEN_CIFAR10, self).__init__()
         self.TARGET_SIZE = self.IMAGE_SIZE
 
 

@@ -6,28 +6,19 @@ from gooey import GooeyParser
 #  import tensorflow as tf
 #  from tensorflow.python.client import device_lib
 
-from ..fix_validator import fix_validator
-from ..get_available_gpus import get_available_gpus
-from .build_config import LAYERS
+#  from ..fix_validator import fix_validator
+#  from ..get_available_gpus import get_available_gpus
 
-WEIGHTS = ['imagenet', 'last']
-LOSSES = ('mean_squared_error binary_crossentropy '
-          'categorical_crossentropy sparse_categorical_crossentropy '
-          #  'kullback_leibler_divergence '
-          ).split()
-
-TRAIN_LAYERS = OrderedDict([(k, v[0]) for k, v in LAYERS.items()])
-OPTIMIZERS = 'sgd'.split()
+from model.keras_applications.train_config import (
+        WEIGHTS, LOSSES, OPTIMIZERS, TrainConfig)
+from .build_config import ResNet50LAYERS
 
 
-class TrainConfig():
+class ResNet50TrainConfig(TrainConfig):
     WEIGHT = None
 
     EPOCHS = 10
     VALIDATION_STEPS = 10
-
-    TRAIN_LAYERS = TRAIN_LAYERS
-    TRAIN_LAYER = list(TRAIN_LAYERS.keys())[0]
 
     LOSS = LOSSES[0]
 
@@ -38,7 +29,20 @@ class TrainConfig():
     MONITOR = 'loss'
 
     def __init__(self):
-        super(TrainConfig, self).__init__()
+        super(ResNet50TrainConfig, self).__init__()
+        for k, v in ResNet50LAYERS.items():
+            if 'all' == k:
+                pass
+            elif 'heads' == k:
+                pass
+            elif v[0] == 0:
+                self.TRAIN_LAYERS.update([
+                    ('{}+ (all)'.format(k), v[0])
+                    ])
+            else:
+                self.TRAIN_LAYERS.update([
+                    ('{}+'.format(k), v[0])
+                    ])
 
     def update(self, train_args: Namespace):
         EPOCHS = train_args.epochs

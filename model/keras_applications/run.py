@@ -3,7 +3,7 @@ from pathlib import Path
 from gooey import Gooey, GooeyParser
 
 from .model import KerasAppBaseModel
-from .train import train_config_parser, train_config, TrainConfig
+from .train import TrainConfig, train_config_parser  # , train_config
 from .generator import generator
 
 #  from . import (train_config,
