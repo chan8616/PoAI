@@ -20,16 +20,11 @@ def generator_config_parser(
         gooey_options={'columns': 2, 'show_border': True})
 
     dataset_parser.add_argument(
-        '--train_file',
+        '--run_file',
         metavar='Train/Test File',
         help="Json file to train/test",
         widget='FileChooser',
         )
-    dataset_parser.add_argument(
-        '--predict_file',
-        metavar='Predict File',
-        help="Json file to predict",
-        widget='FileChooser')
 
     setting_parser = parser.add_argument_group(
         title='data setting',
@@ -69,8 +64,8 @@ def generator_config_parser(
 
 def generator_config(args: Namespace) -> Config:
     class GeneratorConfig(Config):
-        TRAIN_FILE = args.train_file
-        PREDICT_FILE = args.predict_file
+        TRAIN_FILE = args.run_file
+        PREDICT_FILE = args.run_file
         DO_LOWER_CASE = args.do_lower_case
         MAX_SEQ_LENGTH = args.max_seq_length
         DOC_STRIDE = args.doc_stride

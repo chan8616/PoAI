@@ -66,7 +66,7 @@ class TrainWindowManager(object):
         self.loss_graph_buf = None
         self.acc_graph_buf = None
 
-        self.epoch_text = "Epoch 0"
+        self.cur_step_text = "Epoch 0"
         self.msg_text = ""
 
     def main_loop(self):
@@ -86,24 +86,25 @@ class TrainWindowManager(object):
             elif data_head == 'epoch':
                 current_epoch_num, epoch_loss, epoch_acc, epoch_val_loss, epoch_val_acc = data_body
                 current_batch = len(self.batch_losses)
-                self.epoch_text = f"Epoch {current_epoch_num}"
+                self.cur_step_text = f"Epoch {current_epoch_num}"
                 self.epoch_losses.append((current_batch, epoch_loss))
                 self.epoch_acces.append((current_batch, epoch_acc))
                 self.epoch_val_losses.append((current_batch, epoch_val_loss))
                 self.epoch_val_acces.append((current_batch, epoch_val_acc))
             else:
-                raise Exception(f"Head must be 'batch' or 'epoch', but it is '{data_head}'.")
+                self.cur_step_text = data_head
 
             if data_msg is not None:
                 self.msg_text = data_msg
 
-            self.train_window.update_msg(self.msg_text + " " + self.epoch_text)
+            self.train_window.update_msg(self.msg_text + " " + self.cur_step_text)
             self.train_window.update_loss_graph(self.generate_loss_graph_img())
 
         self.train_window.Close()
 
     def generate_loss_graph_img(self):
         batches = range(1, len(self.batch_losses)+1, 1)
+        batches_losses = self.batch_losses
         epoch_losses = self.epoch_losses
         val_losses = self.epoch_val_losses
 
@@ -112,14 +113,14 @@ class TrainWindowManager(object):
         ax.set_xlim(xmin=0., xmax=None, auto=True)
         ax.set_ylim(ymin=0., ymax=None, auto=True)
         ax.set(xlabel='Batch', ylabel='Loss', title='Loss Graph')
-
-        ax.plot(batches, self.batch_losses, 'g--', label='Batch')
+        if batches_losses:
+            ax.plot(batches, batches_losses, 'g--', label='Batch')
         if epoch_losses:
             ax.plot(*zip(*epoch_losses), 'c.-', label='Epoch')
         if val_losses:
             ax.plot(*zip(*val_losses), 'bo-', label='Validation')
-
-        ax.legend()
+        if batches_losses or epoch_losses or val_losses:
+            ax.legend()
 
         buf = io.BytesIO()
         plt.savefig(buf, format='png')

@@ -63,5 +63,8 @@ def train(t_config):
         is_training=True,
         drop_remainder=True)
 
+    # accuracy = tf.metrics.accuracy()
+    # train_hook = tf_logger(stream)
+
     model.train(input_fn=train_input_fn, max_steps=num_train_steps)
 

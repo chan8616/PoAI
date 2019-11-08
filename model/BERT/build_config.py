@@ -3,7 +3,6 @@ from gooey import GooeyParser
 from pathlib import Path
 
 from .config import Config
-from .fix_validator import fix_validator
 
 MODEL_DIR = Path("checkpoint/BERT/")
 
@@ -30,30 +29,28 @@ def build_config_parser(
         widget='FileChooser',
     )
 
-    require_parser.add_argument(
-        '--output_dir',
-        metavar='Output directory',
-        help="The output directory where the model checkpoints will be written",
-        widget='DirChooser',
-    )
+    # require_parser.add_argument(
+    #     '--output_dir',
+    #     metavar='Output directory',
+    #     help="The output directory where the model checkpoints will be written",
+    #     widget='DirChooser',
+    # )
 
     log_parser = parser.add_argument_group(
         'Log',
         "Show and Save model options",
         gooey_options={'show_border': True, 'columns': 4}
         )
-    log_parser.add_argument(
-        "--print-model-summary", action='store_true',
-        )
+
     log_parser.add_argument(
         "--log-dir", type=str,
         metavar="Log Directory Path",
-        default=(MODEL_DIR.joinpath('untitled')
-                 if config.NAME is None
+        default=(MODEL_DIR.joinpath('untitled') if config.NAME is None
                  else MODEL_DIR.joinpath(str(config.NAME))),
         help='{}{}TIME{}/'.format(
             MODEL_DIR.joinpath('LOG_NAME'),
-            '{', '}')
+            '{', '}'),
+        widget='DirChooser'
         )
 
     #  show_and_save_parser.add_argument(
@@ -77,6 +74,6 @@ def build_config(args: Namespace) -> Config:
         NAME = Path(args.log_dir).name
         BERT_CONFIG_FILE = args.bert_config_file
         VOCAB_FILE = args.vocab_file
-        OUTPUT_DIR = args.output_dir
+        OUTPUT_DIR = args.log_dir
 
     return BuildConfig()

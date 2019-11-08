@@ -9,9 +9,6 @@ from . import (build, build_config,
                generator, generator_config,
                )
 
-#  from generator.image.image_preprocess.image_preprocess_mask_rcnn import (
-#          generator, generator_config) as (a, b)
-
 
 def run_parser(
         parser: GooeyParser = GooeyParser(),
@@ -36,12 +33,13 @@ def run(config):
     build_cmd = build_cmds[0]
     run_cmd = run_cmds[0]
     generator_cmd = generator_cmds[0]
-
+    stream.put(('Generating Dataset...', None, None))
     #  build_config = build_config.build_config(build_args)
     #  generator_config = generator_config.generator_config(generator_args)
     dataset, dataset_val = generator.generator(generator_cmd, generator_args)
 
     model_config = None
+    stream.put(('Generating...', None, None))
     if 'train' in run_cmd:
         model_config = model_config_builder('train',
                                             build_config.build_config(build_args),
@@ -65,10 +63,13 @@ def run(config):
     #  setting = train.train_setting(model, run_args)
     if 'train' in run_cmd:
         print('before train')
+        stream.put(('Training...', None, None))
         return train.train((model, model_config, dataset, dataset_val, stream))
     elif 'test' == run_cmd:
         print('before test')
+        stream.put(('Testing...', None, None))
         return test.test(model, model_config, dataset)
+    stream.put(('End', None, None))
 
 
 def model_config_builder(mode, build_config_: Config, run_config: Config, gen_config: Config):
