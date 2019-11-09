@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from argparse import Namespace
 from gooey import GooeyParser
 
 from generator.image_classification.image_classification_generator \
@@ -11,7 +10,6 @@ from model.keras_applications.generator_config_samples \
 
 from .config_samples import (
         XceptionCIFAR10Config,
-        XceptionImagenetConfig,
         )
 
 
