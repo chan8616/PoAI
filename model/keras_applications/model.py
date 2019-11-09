@@ -10,6 +10,7 @@ from keras.layers import Dense, Flatten  # type: ignore
 from keras.layers import GlobalAveragePooling2D  # type: ignore
 from keras.layers import GlobalMaxPooling2D  # type: ignore
 from keras.callbacks import ModelCheckpoint  # type: ignore
+from keras.optimizers import sgd, adam
 
 from ..model_config import ModelConfig
 from .build_config import BuildConfig
@@ -245,7 +246,13 @@ class KerasAppBaseModel():
         # self.TRAIN_LAYERS = train_config.TRAIN_LAYERS
         self.set_trainable(train_config.TRAIN_LAYERS[train_config.TRAIN_LAYER])
         #  self.compile(learning_rate, self.config.LEARNING_MOMENTUM)
-        optimizer = train_config.OPTIMIZER
+        if train_config.OPTIMIZER == 'sgd':
+            optimizer = sgd(lr=train_config.LEARNING_RATE)
+        elif train_config.OPTIMIZER == 'adam':
+            optimizer = adam(lr=train_config.LEARNING_RATE)
+        else:
+            raise AttributeError(f'{train_config.OPTIMIZER} is not exist!')
+
         self.keras_model.compile(optimizer=optimizer,
                                  loss=train_config.LOSS
                                  #  metrics=['accuracy'],

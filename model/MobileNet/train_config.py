@@ -36,18 +36,6 @@ class MobileNetTrainConfig(TrainConfig):
                     ('{}+'.format(k), v[0])
                     ])
 
-    def update(self, train_args: Namespace):
-        EPOCHS = train_args.epochs
-        VALIDATION_STEPS = train_args.validation_steps
-
-        TRAIN_LAYER = train_args.train_layer
-
-        LOSS = train_args.loss
-
-        OPTIMIZER = train_args.optimizer
-        LEARNING_RATE = train_args.learning_rate
-        #  LEARNING_MOMENTUM = train_args.
-
 
 def train_config_parser(
         parser: GooeyParser = GooeyParser(),

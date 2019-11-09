@@ -17,7 +17,7 @@ LOSSES = ('mean_squared_error binary_crossentropy '
           ).split()
 
 TRAIN_LAYERS = OrderedDict([(k, v[0]) for k, v in LAYERS.items()])
-OPTIMIZERS = 'sgd'.split()
+OPTIMIZERS = ['sgd', 'adam']
 
 
 class TrainConfig():
@@ -41,16 +41,16 @@ class TrainConfig():
         super(TrainConfig, self).__init__()
 
     def update(self, train_args: Namespace):
-        EPOCHS = train_args.epochs
-        VALIDATION_STEPS = train_args.validation_steps
+        self.EPOCHS = train_args.epochs
+        self.VALIDATION_STEPS = train_args.validation_steps
 
-        TRAIN_LAYER = train_args.train_layer
+        self.TRAIN_LAYER = train_args.train_layer
 
-        LOSS = train_args.loss
+        self.LOSS = train_args.loss
 
-        OPTIMIZER = train_args.optimizer
-        LEARNING_RATE = train_args.learning_rate
-        #  LEARNING_MOMENTUM = train_args.
+        self.OPTIMIZER = train_args.optimizer
+        self.LEARNING_RATE = train_args.learning_rate
+        #  self.LEARNING_MOMENTUM = train_args.
 
 
 def train_config_parser(
