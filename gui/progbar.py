@@ -40,7 +40,8 @@ class TrainWindow(wx.Frame):
         self.ToggleWindowStyle(wx.FRAME_FLOAT_ON_PARENT)
 
     def update_msg(self, msg):
-        self.msg.SetLabelText(msg)
+        #  self.msg.SetLabelText(msg)
+        wx.CallAfter(self.msg.SetLabelText, msg)
 
     def update_gauge(self, ratio):
         self.progbar.SetValue(int(ratio * self.progbar_range))
