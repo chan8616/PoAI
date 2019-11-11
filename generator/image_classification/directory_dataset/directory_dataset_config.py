@@ -36,7 +36,7 @@ class DirectoryDatasetConfig(Dataset):
                     save_to_dir=save_dir,
                     save_prefix=save_prefix,
                     ):
-                print('save_dir: {}\tcount: {}'.format(Path(save_dir).name, len(y)))
+                print('save_dir: {}\tcount: {}'.format(Path(save_dir), len(y)))
                 break
 
     def auto_download(self):

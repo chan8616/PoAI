@@ -19,7 +19,6 @@ class DIR_CIFAR10(dataset.CIFAR10,
 
     def __init__(self):
         super(DIR_CIFAR10, self).__init__()
-        self.TRAIN_DIRECTORY = self.TEST_DIRECTORY
         self.VAL_DIRECTORY = self.TEST_DIRECTORY
 
 
