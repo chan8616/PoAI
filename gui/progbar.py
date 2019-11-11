@@ -22,8 +22,9 @@ class TrainWindow(wx.Frame):
 
         self.progbar = wx.Gauge(pnl, range=self.progbar_range, size=(self.image_width, 25), style=wx.GA_HORIZONTAL)
         self.msg = wx.StaticText(pnl, label="Test Message")
-        self.loss_graph = wx.StaticBitmap(pnl, bitmap=wx.NullBitmap,
-                                          size=(self.image_width, self.image_height), style=wx.GA_HORIZONTAL)
+        #  self.loss_graph = wx.StaticBitmap(pnl, bitmap=wx.NullBitmap,
+        #                                    size=(self.image_width, self.image_height), style=wx.GA_HORIZONTAL)
+        self.loss_graph = self.generate_loss_graph_canvas(pnl)
 
         hbox_progbar.Add(self.msg, proportion=1, flag=wx.ALIGN_RIGHT)
         hbox_progbar.Add(self.progbar, proportion=1, flag=wx.ALIGN_CENTRE)
@@ -36,9 +37,26 @@ class TrainWindow(wx.Frame):
         vbox.Add((0, 30))
         pnl.SetSizer(vbox)
 
+        #  self.Fit()
         self.SetSize((520, 480))
         self.Centre()
         self.ToggleWindowStyle(wx.FRAME_FLOAT_ON_PARENT)
+
+    def generate_loss_graph_canvas(self, parent):
+        #  fig = plt.figure(figsize=(16, 9))
+        fig = plt.figure(figsize=(8, 4.5))
+        self.ax = ax = fig.add_subplot(1, 1, 1)
+        ax.set_xlim(xmin=0., xmax=None, auto=True)
+        ax.set_ylim(ymin=0., ymax=None, auto=True)
+        ax.set(xlabel='Epoch', ylabel='Loss', title='Loss Graph')
+
+        self.batch_losses_plot, = ax.plot([], [], 'g--', label='Train Batch', alpha=0.3)
+        self.epoch_losses_plot, = ax.plot([], [], 'c.-', label='Train Epoch')
+        self.epoch_val_losses_plot, = ax.plot([], [], 'b.-', label='Validation Epoch')
+
+        self.legend = ax.legend()
+
+        return FigureCanvas(parent, -1, fig)
 
     def update_msg(self, msg):
         #  self.msg.SetLabelText(msg)
@@ -48,11 +66,23 @@ class TrainWindow(wx.Frame):
         self.progbar.SetValue(int(ratio * self.progbar_range))
         #  wx.CallAfter(self.progbar.SetValue, int(ratio * self.progbar_range))
 
-    def update_loss_graph(self, img_buf):
-        image = wx.Image(img_buf, wx.BITMAP_TYPE_ANY)
-        image = image.Scale(self.image_width, self.image_height, wx.IMAGE_QUALITY_HIGH)
-        self.loss_graph.SetBitmap(wx.Bitmap(image))
-        #  wx.CallAfter(self.loss_graph.SetBitmap, wx.Bitmap(image))
+    def update_loss_graph(self, batch_losses, epoch_losses, epoch_val_losses):
+        print(bool(batch_losses), bool(epoch_losses), bool(epoch_val_losses))
+        self.ax.clear()
+        self.batch_losses_plot, = self.ax.plot(
+                *(([], []) if not batch_losses else zip(*batch_losses)),
+                'g--', label='Train Batch', alpha=0.3)
+        epochs = range(1, len(epoch_losses) + 1, 1)
+        self.epoch_losses_plot, = self.ax.plot(
+                *(([], []) if not epoch_losses else (epochs, epoch_losses)),
+                'c.-', label='Train Epoch')
+        self.epoch_val_losses_plot, = self.ax.plot(
+                *(([], []) if not epoch_val_losses else (epochs, epoch_val_losses)),
+                'b.-', label='Validation Epoch')
+        if batch_losses or epoch_losses or epoch_val_losses:
+            self.ax.legend()
+            #  self.loss_graph.draw()
+            wx.CallAfter(self.loss_graph.draw, ())
 
 
 class TrainWindowManager(object):
@@ -77,7 +107,6 @@ class TrainWindowManager(object):
         self.train_window.Show()
         self.train_window.update_msg(self.cur_step_text)
 
-        fig = plt.figure(figsize=(8, 4.5))
         batch_print_target_ratio = 0.0
         batch_print_ratio_steps = 0.1
         current_epoch = 0
@@ -115,36 +144,12 @@ class TrainWindowManager(object):
 
             self.train_window.update_msg(self.msg_text + " " + self.cur_step_text)
             if print_graph:
-                self.train_window.update_loss_graph(self.generate_loss_graph_img(fig))
+                self.train_window.update_loss_graph(self.batch_losses,
+                                                    self.epoch_losses,
+                                                    self.epoch_val_losses,)
 
-        plt.close(fig)
+        #  plt.close(fig)
         self.train_window.Close()
-
-    def generate_loss_graph_img(self, fig):
-        ax = fig.add_subplot(1, 1, 1)
-
-        batches_losses = self.batch_losses
-        epochs = range(1, len(self.epoch_losses) + 1, 1)
-        epoch_losses = self.epoch_losses
-        val_losses = self.epoch_val_losses
-
-        ax.set_xlim(xmin=0., xmax=None, auto=True)
-        ax.set_ylim(ymin=0., ymax=None, auto=True)
-        ax.set(xlabel='Epoch', ylabel='Loss', title='Loss Graph')
-        if batches_losses:
-            ax.plot(*zip(*batches_losses), 'g--', label='Batch', alpha=0.5)
-        if epoch_losses:
-            ax.plot(epochs, epoch_losses, 'c.-', label='Train Epoch')
-        if val_losses:
-            ax.plot(epochs, val_losses, 'bo-', label='Validation')
-        if batches_losses or epoch_losses or val_losses:
-            ax.legend()
-
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        buf.seek(0)
-        plt.cla()
-        return buf
 
 
 class TrainThread(Thread):
