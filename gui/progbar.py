@@ -81,8 +81,8 @@ class TrainWindow(wx.Frame):
                 'b.-', label='Validation Epoch')
         if batch_losses or epoch_losses or epoch_val_losses:
             self.ax.legend()
-            #  self.loss_graph.draw()
-            wx.CallAfter(self.loss_graph.draw, ())
+            self.loss_graph.draw()
+            #  wx.CallAfter(self.loss_graph.draw, ())
 
 
 class TrainWindowManager(object):
@@ -144,6 +144,7 @@ class TrainWindowManager(object):
 
             self.train_window.update_msg(self.msg_text + " " + self.cur_step_text)
             if print_graph:
+            #  if True:
                 self.train_window.update_loss_graph(self.batch_losses,
                                                     self.epoch_losses,
                                                     self.epoch_val_losses,)
