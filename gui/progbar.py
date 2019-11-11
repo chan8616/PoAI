@@ -3,6 +3,7 @@ from queue import Queue
 from threading import Thread
 import io
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
 
 class TrainWindow(wx.Frame):
@@ -44,14 +45,14 @@ class TrainWindow(wx.Frame):
         wx.CallAfter(self.msg.SetLabelText, msg)
 
     def update_gauge(self, ratio):
-        #  self.progbar.SetValue(int(ratio * self.progbar_range))
-        wx.CallAfter(self.progbar.SetValue, int(ratio * self.progbar_range))
+        self.progbar.SetValue(int(ratio * self.progbar_range))
+        #  wx.CallAfter(self.progbar.SetValue, int(ratio * self.progbar_range))
 
     def update_loss_graph(self, img_buf):
         image = wx.Image(img_buf, wx.BITMAP_TYPE_ANY)
         image = image.Scale(self.image_width, self.image_height, wx.IMAGE_QUALITY_HIGH)
-        #  self.loss_graph.SetBitmap(wx.Bitmap(image))
-        wx.CallAfter(self.loss_graph.SetBitmap, wx.Bitmap(image))
+        self.loss_graph.SetBitmap(wx.Bitmap(image))
+        #  wx.CallAfter(self.loss_graph.SetBitmap, wx.Bitmap(image))
 
 
 class TrainWindowManager(object):
@@ -77,7 +78,7 @@ class TrainWindowManager(object):
         self.train_window.update_msg(self.cur_step_text)
 
         fig = plt.figure(figsize=(8, 4.5))
-        ax = fig.add_subplot(1, 1, 1)
+
 
         while True:
             data = self.stream.get(block=True)
@@ -105,12 +106,14 @@ class TrainWindowManager(object):
                 self.msg_text = data_msg
 
             self.train_window.update_msg(self.msg_text + " " + self.cur_step_text)
-            self.train_window.update_loss_graph(self.generate_loss_graph_img(fig, ax))
+            self.train_window.update_loss_graph(self.generate_loss_graph_img(fig))
 
         plt.close(fig)
         self.train_window.Close()
 
-    def generate_loss_graph_img(self, fig, ax):
+    def generate_loss_graph_img(self, fig):
+        ax = fig.add_subplot(1, 1, 1)
+
         batches = range(1, len(self.batch_losses)+1, 1)
         batches_losses = self.batch_losses
         epoch_losses = self.epoch_losses
@@ -130,8 +133,8 @@ class TrainWindowManager(object):
 
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
-        plt.cla()
         buf.seek(0)
+        plt.cla()
         return buf
 
 
