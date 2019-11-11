@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
-from model.keras_applications.build_config import BuildConfig, LAYERS
+from model.keras_applications.build_config import (
+        BuildConfig, LAYERS, POOLINGS)
 
 VGG16LAYERS = LAYERS.copy()
 VGG16LAYERS.update(OrderedDict([
@@ -16,5 +17,8 @@ VGG16LAYERS.update(OrderedDict([
 class VGG16Config(BuildConfig):
     NAME = 'VGG16'
 
-    #  INPUT_SHAPE: Optional[Tuple]
     INPUT_SHAPE = (224, 224, 3)  # type: ignore
+
+    POOLING = POOLINGS[0]
+    HIDDEN_LAYERS = [4096, 4096]
+    CLASSES = 1000

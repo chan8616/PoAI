@@ -7,18 +7,18 @@ from .build_config import VGG16LAYERS
 
 
 class VGG16TrainConfig(TrainConfig):
-    WEIGHT = None
+    #  WEIGHT = None
 
-    EPOCHS = 10
-    VALIDATION_STEPS = 10
+    #  EPOCHS = 10
+    #  VALIDATION_STEPS = 10
 
-    LOSS = LOSSES[0]
+    LOSS = LOSSES[2]
 
-    OPTIMIZER = OPTIMIZERS[0]
-    LEARNING_RATE = .01
-    LEARNING_MOMENTUM = .9
+    #  OPTIMIZER = OPTIMIZERS[0]
+    #  LEARNING_RATE = 1e-2
+    #  LEARNING_MOMENTUM = 0.9
 
-    MONITOR = 'loss'
+    #  MONITOR = 'loss'
 
     def __init__(self):
         super(VGG16TrainConfig, self).__init__()

@@ -1,18 +1,20 @@
 import os
 
-from model.keras_applications.train_config import (WEIGHTS,
-                                                   LOSSES)
+from model.keras_applications.train_config import (
+        WEIGHTS, LOSSES, OPTIMIZERS)
 from generator.image_classification.config_samples import DIR_GEN_CIFAR10
 from .train_config import VGG19TrainConfig
 from .build_config import VGG19Config
 
 
+"""
 class VGG19ImagenetConfig(
         VGG19Config, VGG19TrainConfig):
     NAME = os.path.join(VGG19Config.NAME, 'imagenet')
     CLASSES = 1000
 
     LOSS = LOSSES[2]
+"""
 
 
 class VGG19CIFAR10Config(
@@ -23,9 +25,13 @@ class VGG19CIFAR10Config(
     NAME = os.path.join(VGG19Config.NAME, DIR_GEN_CIFAR10.NAME)
 
     WEIGHT = WEIGHTS[0]  # type: ignore
-    #  EPOCHS = 10
+    EPOCHS = 30
 
     LOSS = LOSSES[2]
+
+    OPTIMIZER = OPTIMIZERS[1]
+    LEARNING_RATE = 1e-4
+    LEARNING_MOMENTUM = 0.0
 
     def __init__(self):
         super(VGG19CIFAR10Config, self).__init__()

@@ -1,18 +1,20 @@
 import os
 
-from model.keras_applications.train_config import (WEIGHTS,
-                                                   LOSSES)
+from model.keras_applications.train_config import (
+        WEIGHTS, LOSSES, OPTIMIZERS)
 from generator.image_classification.config_samples import DIR_GEN_CIFAR10
 from .train_config import VGG16TrainConfig
-from .build_config import VGG16Config
+from .build_config import VGG16Config, POOLINGS
 
 
+"""
 class VGG16ImagenetConfig(
         VGG16Config, VGG16TrainConfig):
     NAME = os.path.join(VGG16Config.NAME, 'imagenet')
     CLASSES = 1000
 
     LOSS = LOSSES[2]
+"""
 
 
 class VGG16CIFAR10Config(
@@ -22,10 +24,20 @@ class VGG16CIFAR10Config(
         ):
     NAME = os.path.join(VGG16Config.NAME, DIR_GEN_CIFAR10.NAME)
 
+    INPUT_SHAPE = (64, 64, 3)  # type: ignore
+
+    POOLINGS = POOLINGS[0]
+    HIDDEN_LAYERS = [64, 64]
+
     WEIGHT = WEIGHTS[0]  # type: ignore
-    #  EPOCHS = 10
+    EPOCHS = 20
+    #  VALIDATION_STEPS = 10
 
     LOSS = LOSSES[2]
+
+    OPTIMIZER = OPTIMIZERS[1]
+    LEARNING_RATE = 1e-4
+    LEARNING_MOMENTUM = 0.0
 
     def __init__(self):
         super(VGG16CIFAR10Config, self).__init__()

@@ -270,7 +270,7 @@ class KerasAppBaseModel():
             train_generator,
             initial_epoch=self.epoch,
             epochs=train_config.EPOCHS,
-            #  steps_per_epoch=train_config.steps_per_epoch,
+            steps_per_epoch=len(train_generator),
             callbacks=callbacks,
             validation_data=val_generator,
             validation_steps=train_config.VALIDATION_STEPS,

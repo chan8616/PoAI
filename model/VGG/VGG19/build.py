@@ -5,7 +5,7 @@ from . import model as modellib
 from model.keras_applications import build as buildlib
 from model.keras_applications.build import build
 from .config_samples import (VGG19Config,
-                             VGG19ImagenetConfig,
+                             #  VGG19ImagenetConfig,
                              VGG19CIFAR10Config)
 
 
@@ -17,7 +17,7 @@ def build_parser(
                                  build_config=VGG19Config(),
                                  build_configs=OrderedDict([
                                      ('build_cifar10', VGG19CIFAR10Config()),
-                                     ('build_imagenet', VGG19ImagenetConfig()),
+                                     #  ('build_imagenet', VGG19ImagenetConfig()),
                                  ]))
 
 
