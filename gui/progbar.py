@@ -66,15 +66,16 @@ class TrainWindowManager(object):
         self.loss_graph_buf = None
         self.acc_graph_buf = None
 
-        self.cur_step_text = "Epoch 0"
+        self.cur_step_text = "Starting..."
         self.msg_text = ""
 
     def main_loop(self):
         self.train_window.Show()
-        self.train_window.update_msg("Starting...")
+        self.train_window.update_msg(self.cur_step_text)
         while True:
             data = self.stream.get(block=True)
             if data == 'end':
+                self.train_window.update_msg('End')
                 break
 
             data_head, data_body, data_msg = data
@@ -86,7 +87,6 @@ class TrainWindowManager(object):
             elif data_head == 'epoch':
                 current_epoch_num, epoch_loss, epoch_acc, epoch_val_loss, epoch_val_acc = data_body
                 current_batch = len(self.batch_losses)
-                self.cur_step_text = f"Epoch {current_epoch_num}"
                 self.epoch_losses.append((current_batch, epoch_loss))
                 self.epoch_acces.append((current_batch, epoch_acc))
                 self.epoch_val_losses.append((current_batch, epoch_val_loss))

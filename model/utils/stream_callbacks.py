@@ -26,9 +26,7 @@ class KerasQueueLogger(Callback):
         else:
             self.target = self.params['samples']
 
-        if self.verbose:
-            if self.epochs > 1:
-                print('Epoch %d/%d' % (epoch + 1, self.epochs))
+        self.stream.put((f'Epoch {epoch+1}', None, None))
 
     def on_batch_begin(self, batch, logs=None):
         pass
