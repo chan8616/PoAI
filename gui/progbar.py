@@ -130,7 +130,7 @@ class TrainWindowManager(object):
 
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
-        plt.clf()
+        plt.cla()
         buf.seek(0)
         return buf
 
