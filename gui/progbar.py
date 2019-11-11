@@ -125,6 +125,7 @@ class TrainWindowManager(object):
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
         buf.seek(0)
+        plt.close(fig)
         return buf
 
 
