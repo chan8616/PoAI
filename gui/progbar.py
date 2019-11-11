@@ -130,7 +130,7 @@ class TrainWindowManager(object):
                 self.train_window.update_gauge(batch_progress_ratio)
             elif data_head == 'epoch':
                 current_epoch_num, epoch_loss, epoch_acc, epoch_val_loss, epoch_val_acc = data_body
-                current_epoch = current_epoch_num + 1
+                current_epoch = current_epoch_num
                 self.epoch_losses.append(epoch_loss)
                 self.epoch_acces.append(epoch_acc)
                 self.epoch_val_losses.append(epoch_val_loss)
