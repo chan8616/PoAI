@@ -26,7 +26,7 @@ class KerasQueueLogger(Callback):
         else:
             self.target = self.params['samples']
 
-        self.stream.put((f'Epoch {epoch+1}', None, None))
+        self.stream.put((f'Epoch {epoch}', None, None))
 
     def on_batch_begin(self, batch, logs=None):
         pass
