@@ -22,7 +22,7 @@ class TrainWindow(wx.Frame):
 
         self.progbar = wx.Gauge(pnl, range=self.progbar_range, size=(self.image_width, 25), style=wx.GA_HORIZONTAL)
         self.msg = wx.StaticText(pnl, label="Test Message")
-        self.loss_graph = wx.StaticBitmap(pnl, bitmap=wx.Bitmap(self.image_width, self.image_height),
+        self.loss_graph = wx.StaticBitmap(pnl, bitmap=wx.NullBitmap,
                                           size=(self.image_width, self.image_height), style=wx.GA_HORIZONTAL)
 
         hbox_progbar.Add(self.msg, proportion=1, flag=wx.ALIGN_RIGHT)
@@ -78,9 +78,13 @@ class TrainWindowManager(object):
         self.train_window.update_msg(self.cur_step_text)
 
         fig = plt.figure(figsize=(8, 4.5))
-
+        batch_print_target_ratio = 0.0
+        batch_print_ratio_steps = 0.1
+        current_epoch = 0
 
         while True:
+            print_graph = False
+
             data = self.stream.get(block=True)
             if data == 'end':
                 self.train_window.update_msg('End')
@@ -90,23 +94,28 @@ class TrainWindowManager(object):
             if data_head == 'batch':
                 current_batch_num, total_batch_num, batch_loss, batch_acc = data_body
                 batch_progress_ratio = current_batch_num / total_batch_num
-                self.batch_losses.append(batch_loss)
+                if batch_progress_ratio + current_epoch >= batch_print_target_ratio:
+                    print_graph = True
+                    batch_print_target_ratio += batch_print_ratio_steps
+                self.batch_losses.append((batch_progress_ratio + current_epoch, batch_loss))
                 self.train_window.update_gauge(batch_progress_ratio)
             elif data_head == 'epoch':
                 current_epoch_num, epoch_loss, epoch_acc, epoch_val_loss, epoch_val_acc = data_body
-                current_batch = len(self.batch_losses)
-                self.epoch_losses.append((current_batch, epoch_loss))
-                self.epoch_acces.append((current_batch, epoch_acc))
-                self.epoch_val_losses.append((current_batch, epoch_val_loss))
-                self.epoch_val_acces.append((current_batch, epoch_val_acc))
+                current_epoch = current_epoch_num + 1
+                self.epoch_losses.append(epoch_loss)
+                self.epoch_acces.append(epoch_acc)
+                self.epoch_val_losses.append(epoch_val_loss)
+                self.epoch_val_acces.append(epoch_val_acc)
             else:
+                print_graph = True
                 self.cur_step_text = data_head
 
             if data_msg is not None:
                 self.msg_text = data_msg
 
             self.train_window.update_msg(self.msg_text + " " + self.cur_step_text)
-            self.train_window.update_loss_graph(self.generate_loss_graph_img(fig))
+            if print_graph:
+                self.train_window.update_loss_graph(self.generate_loss_graph_img(fig))
 
         plt.close(fig)
         self.train_window.Close()
@@ -114,20 +123,20 @@ class TrainWindowManager(object):
     def generate_loss_graph_img(self, fig):
         ax = fig.add_subplot(1, 1, 1)
 
-        batches = range(1, len(self.batch_losses)+1, 1)
         batches_losses = self.batch_losses
+        epochs = range(1, len(self.epoch_losses) + 1, 1)
         epoch_losses = self.epoch_losses
         val_losses = self.epoch_val_losses
 
         ax.set_xlim(xmin=0., xmax=None, auto=True)
         ax.set_ylim(ymin=0., ymax=None, auto=True)
-        ax.set(xlabel='Batch', ylabel='Loss', title='Loss Graph')
+        ax.set(xlabel='Epoch', ylabel='Loss', title='Loss Graph')
         if batches_losses:
-            ax.plot(batches, batches_losses, 'g--', label='Batch')
+            ax.plot(*zip(*batches_losses), 'g--', label='Batch', alpha=0.5)
         if epoch_losses:
-            ax.plot(*zip(*epoch_losses), 'c.-', label='Epoch')
+            ax.plot(epochs, epoch_losses, 'c.-', label='Train Epoch')
         if val_losses:
-            ax.plot(*zip(*val_losses), 'bo-', label='Validation')
+            ax.plot(epochs, val_losses, 'bo-', label='Validation')
         if batches_losses or epoch_losses or val_losses:
             ax.legend()
 
