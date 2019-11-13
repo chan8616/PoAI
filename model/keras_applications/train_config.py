@@ -39,6 +39,7 @@ class TrainConfig():
 
     def __init__(self):
         super(TrainConfig, self).__init__()
+        self.TRAIN_LAYERS = TRAIN_LAYERS.copy()
 
     def update(self, train_args: Namespace):
         self.EPOCHS = train_args.epochs
