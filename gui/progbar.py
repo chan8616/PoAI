@@ -85,6 +85,9 @@ class TrainWindow(wx.Frame):
             #  self.loss_graph.draw()
             wx.CallAfter(self.loss_graph.draw, ())
 
+    def threadsafe_close(self):
+        wx.CallAfter(self.Close, ())
+
 
 class TrainWindowManager(object):
     def __init__(self, parent, stream: Queue):
@@ -103,9 +106,9 @@ class TrainWindowManager(object):
 
         self.cur_step_text = "Starting..."
         self.msg_text = ""
+        self.train_window.Show()
 
     def main_loop(self):
-        self.train_window.Show()
         self.train_window.update_msg(self.cur_step_text)
 
         batch_print_target_ratio = 0.0
@@ -145,13 +148,12 @@ class TrainWindowManager(object):
 
             self.train_window.update_msg(self.msg_text + " " + self.cur_step_text)
             if print_graph:
-            #  if True:
                 self.train_window.update_loss_graph(self.batch_losses,
                                                     self.epoch_losses,
                                                     self.epoch_val_losses,)
 
         #  plt.close(fig)
-        self.train_window.Close()
+        self.train_window.threadsafe_close()
 
 
 class TrainThread(Thread):
