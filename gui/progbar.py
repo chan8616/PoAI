@@ -86,7 +86,7 @@ class TrainWindow(wx.Frame):
             wx.CallAfter(self.loss_graph.draw, ())
 
     def threadsafe_close(self):
-        wx.CallAfter(self.Close, ())
+        wx.CallAfter(self.Close)
 
 
 class TrainWindowManager(object):
@@ -157,15 +157,17 @@ class TrainWindowManager(object):
 
 
 class TrainThread(Thread):
-    def __init__(self, train_function, config, stream: Queue):
+    def __init__(self, train_function, config, stream: Queue, train_close_function):
         super(TrainThread, self).__init__()
         self.train_function = train_function
         config_list = list(config)
         config_list.append(stream)
         self.config = tuple(config_list)
+        self.train_close_function = train_close_function
 
     def run(self):
         self.train_function(self.config)
+        wx.CallAfter(self.train_close_function)
 
 
 if __name__ == "__main__":

@@ -525,7 +525,7 @@ class Frame(wx.Frame):
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
                     raise NotImplementedError
-                
+
                 # args = page.parser.parse_args()
                 # args.func(args)
                 # except:
@@ -564,12 +564,15 @@ class Frame(wx.Frame):
     def train_with_progbar(self, train_function, config):
         stream = Queue()
         window_manager = TrainWindowManager(self, stream=stream)
-        train_thread = TrainThread(train_function, config, stream)
+        train_thread = TrainThread(
+                train_function, config, stream,
+                lambda: self.tool_bar.EnableTool(self.tool_run.GetId(), True))
         progbar_thread = Thread(target=window_manager.main_loop)
 
         train_thread.start()
         progbar_thread.start()
 
+        self.tool_bar.EnableTool(self.tool_run.GetId(), False)
 
 
 
