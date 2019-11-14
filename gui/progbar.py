@@ -63,12 +63,13 @@ class TrainWindow(wx.Frame):
         wx.CallAfter(self.msg.SetLabelText, msg)
 
     def update_gauge(self, ratio):
-        self.progbar.SetValue(int(ratio * self.progbar_range))
-        #  wx.CallAfter(self.progbar.SetValue, int(ratio * self.progbar_range))
+        #  self.progbar.SetValue(int(ratio * self.progbar_range))
+        wx.CallAfter(self.progbar.SetValue, int(ratio * self.progbar_range))
 
     def update_loss_graph(self, batch_losses, epoch_losses, epoch_val_losses):
-        print(bool(batch_losses), bool(epoch_losses), bool(epoch_val_losses))
+        #  print(bool(batch_losses), bool(epoch_losses), bool(epoch_val_losses))
         self.ax.clear()
+        self.ax.set(xlabel='Epoch', ylabel='Loss', title='Loss Graph')
         self.batch_losses_plot, = self.ax.plot(
                 *(([], []) if not batch_losses else zip(*batch_losses)),
                 'g--', label='Train Batch', alpha=0.3)
@@ -81,8 +82,8 @@ class TrainWindow(wx.Frame):
                 'b.-', label='Validation Epoch')
         if batch_losses or epoch_losses or epoch_val_losses:
             self.ax.legend()
-            self.loss_graph.draw()
-            #  wx.CallAfter(self.loss_graph.draw, ())
+            #  self.loss_graph.draw()
+            wx.CallAfter(self.loss_graph.draw, ())
 
 
 class TrainWindowManager(object):
