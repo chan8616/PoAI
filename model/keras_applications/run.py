@@ -93,6 +93,8 @@ def run(model: KerasAppBaseModel, config):
                 str(Path(test_args.result_path).parent), now))
         if not result_dir.exists():
             result_dir.mkdir(parents=True)
+    del model
+    del train_generator, val_generator
         #  model.result_dir = result_dir
         #  print('before test')
         #  return test.test(model, test_args, dataset)
