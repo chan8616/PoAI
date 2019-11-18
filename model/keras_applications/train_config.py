@@ -24,7 +24,7 @@ class TrainConfig():
     WEIGHT = None
 
     EPOCHS = 10
-    VALIDATION_STEPS = 10
+    #  VALIDATION_STEPS = 10
 
     TRAIN_LAYERS = TRAIN_LAYERS
     TRAIN_LAYER = list(TRAIN_LAYERS.keys())[0]
@@ -43,7 +43,7 @@ class TrainConfig():
 
     def update(self, train_args: Namespace):
         self.EPOCHS = train_args.epochs
-        self.VALIDATION_STEPS = train_args.validation_steps
+        #  self.VALIDATION_STEPS = train_args.validation_steps
 
         self.TRAIN_LAYER = train_args.train_layer
 
@@ -100,12 +100,12 @@ def train_config_parser(
     #      default=config.STEPS_PER_EPOCH,
     #      help="Number of training steps per epoch.",
     #  )
-    steps_parser.add_argument(
-        "--validation_steps", type=int,
-        default=train_config.VALIDATION_STEPS,
-        help="Number of validation steps to run "
-             "at the end of every training epoch.",
-    )
+    #  steps_parser.add_argument(
+    #      "--validation_steps", type=int,
+    #      default=train_config.VALIDATION_STEPS,
+    #      help="Number of validation steps to run "
+    #           "at the end of every training epoch.",
+    #  )
 
     #  gpu_parser = parser.add_argument_group(
     #      title='GPU',

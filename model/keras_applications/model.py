@@ -4,6 +4,7 @@ import datetime
 from pathlib import Path
 
 import numpy as np
+import pandas as pd  # type: ignore
 
 from keras.models import Model  # type: ignore
 from keras.layers import Dense, Flatten  # type: ignore
@@ -273,15 +274,42 @@ class KerasAppBaseModel():
             steps_per_epoch=len(train_generator),
             callbacks=callbacks,
             validation_data=val_generator,
-            validation_steps=train_config.VALIDATION_STEPS,
+            validation_steps=len(val_generator),
             #  max_queue_size=100,
             #  workers=workers,
             #  use_multiprocessing=True,
         )
         self.epoch = max(self.epoch, train_config.EPOCHS)
 
-    def predict(self, images, verbose=0):
-        pass
+    def test(self, test_generator, result_save_path):
+        #  now = datetime.datetime.now()
+        #  result_dir = Path("{}{:%Y%m%dT%H%M}".format(
+        #          str(Path(test_args.result_path).parent), now))
+        result_dir = Path(result_save_path).parent
+        if not result_dir.exists():
+            result_dir.mkdir(parents=True)
+
+        filepaths = np.array(test_generator._filepaths)
+        columns = ['filename', 'prediction']
+
+        df = pd.DataFrame(columns=columns)
+        df.to_csv(result_save_path, index=False)
+        steps_done = 0
+
+        while steps_done < len(test_generator):
+            idx = next(test_generator.index_generator)
+            x, y = test_generator._get_batches_of_transformed_samples(idx)
+
+            pred = self.keras_model.predict_on_batch(x)
+
+            df = pd.DataFrame(
+                np.stack(
+                    [filepaths[idx], np.argmax(pred, axis=1)],
+                    axis=1),
+                columns=columns)
+            df.to_csv(result_save_path, mode='a', index=False, header=False)
+
+            steps_done += 1
 
     def find_trainable_layer(self, layer):
         """If a layer is encapsulated by another layer, this function
