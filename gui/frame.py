@@ -473,6 +473,7 @@ class Frame(wx.Frame):
                                              generator_cmds, generator_args))
                 except Exception as e:
                     print(e)
+                    self.tool_bar.EnableTool(self.tool_run.GetId(), True)
 
         elif self.notebook.isOnDoublePage():
             model_config = page.panel_1.navbar.getActiveConfig()
@@ -573,8 +574,6 @@ class Frame(wx.Frame):
         progbar_thread.start()
 
         self.tool_bar.EnableTool(self.tool_run.GetId(), False)
-
-
 
 
 if __name__ == '__main__':
