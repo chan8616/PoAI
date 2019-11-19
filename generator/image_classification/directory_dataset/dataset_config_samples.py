@@ -13,12 +13,15 @@ from .directory_dataset_config import (
 
 class DIR_CIFAR10(dataset.CIFAR10,
                   DirectoryDatasetConfig):
-    #  NAME = 'CIFAR10'
-    #  LABELS = ('airplane automobile bird cat deer '
-    #            'dog frog horse ship truck ').split()
-
     def __init__(self):
         super(DIR_CIFAR10, self).__init__()
+        self.VAL_DIRECTORY = self.TEST_DIRECTORY
+
+
+class DIR_MNIST(dataset.MNIST,
+                DirectoryDatasetConfig):
+    def __init__(self):
+        super(DIR_MNIST, self).__init__()
         self.VAL_DIRECTORY = self.TEST_DIRECTORY
 
 
@@ -29,17 +32,6 @@ class DGC_CIFAR100(ICGC_CIFAR100,
 
     def __init__(self):
         super(DGC_CIFAR100, self).__init__()
-
-    def auto_download(self):
-        pass
-
-
-class DGC_MNIST(ICGC_MNIST,
-                DirectoryGeneratorConfig):
-    NAME = 'MNIST'
-
-    def __init__(self):
-        super(DGC_MNIST, self).__init__()
 
     def auto_download(self):
         pass

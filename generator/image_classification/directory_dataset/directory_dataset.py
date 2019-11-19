@@ -15,6 +15,7 @@ from .directory_dataset_config import (
         #  directory_dataset_config,
         )
 from .dataset_config_samples import (DIR_CIFAR10,
+                                     DIR_MNIST,
                                      )
 
 """
@@ -56,12 +57,14 @@ def directory_dataset(
         cmd: str,
         args: Namespace,
         ) -> DirectoryDatasetConfig:
-    from typing import Any
+    #  from typing import Any
     #  config: Any
     if 'cifar10' in cmd:
-        config = DIR_CIFAR10()
+        config = DIR_CIFAR10()  # type: ignore
+    elif 'mnist' in cmd:
+        config = DIR_MNIST()  # type: ignore
     else:
-        config = DirectoryDatasetConfig()
+        config = DirectoryDatasetConfig()  # type: ignore
     config.update(args)
 
     if hasattr(config, 'auto_download'):

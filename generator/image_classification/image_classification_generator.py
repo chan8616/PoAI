@@ -73,7 +73,7 @@ def image_classification_generator(
         directory_config = directory_dataset(cmd, args)
         directory_config.display()
         generators = [generator.flow_from_directory(
-                           directory=directory_config.DIRECTORY,
+                           directory=directory_config.TRAIN_DIRECTORY,
                            target_size=config.TARGET_SIZE,
                            color_mode=config.COLOR_MODE,
                            class_mode=config.CLASS_MODE,
@@ -83,7 +83,7 @@ def image_classification_generator(
                       (None
                        if directory_config.VAL_DIRECTORY is '' else
                        generator.flow_from_directory(
-                           directory=directory_config.VAL_DIRECTORY,
+                           directory=directory_config.TEST_DIRECTORY,
                            target_size=config.TARGET_SIZE,
                            color_mode=config.COLOR_MODE,
                            class_mode=config.CLASS_MODE,

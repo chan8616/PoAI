@@ -15,14 +15,13 @@ class DirectoryDatasetConfig(Dataset):
         super(DirectoryDatasetConfig, self).__init__()
         self.DATASET_DIR = str(Path(self.DATASET_DIR).joinpath(
             Path(self.NAME).name))
-        self.DIRECTORY = str(Path(self.DATASET_DIR).joinpath('train'))
 
-        self.set_log_dir()
-
-    def set_log_dir(self):
         self.TRAIN_DIRECTORY = str(Path(self.DATASET_DIR).joinpath('train'))
-        self.VAL_DIRECTORY = str(Path(self.DATASET_DIR).joinpath('valid'))
         self.TEST_DIRECTORY = str(Path(self.DATASET_DIR).joinpath('test'))
+
+    def update(self, args: Namespace):
+        self.TRAIN_DIRECTORY = args.directory
+        self.TEST_DIRECTORY = args.val_directory
 
     def save_to_dir(self, x, y, save_dir, save_prefix):
         if not Path(save_dir).exists():
@@ -58,11 +57,6 @@ class DirectoryDatasetConfig(Dataset):
                              )
         print('Downloading complete!')
 
-    def update(self, args: Namespace):
-        self.DIRECTORY = args.directory
-        self.VAL_DIRECTORY = args.val_directory
-        super(DirectoryDatasetConfig, self).__init__()
-
 
 def directory_dataset_config_parser(
         parser: GooeyParser,
@@ -73,17 +67,11 @@ def directory_dataset_config_parser(
 
     dir_parser = parser.add_argument_group(
         description='Data folder',
-        gooey_options={'columns': 3, 'show_border': True})
-    dir_parser.add_argument('directory', type=str,
-                            default=directory_dataset_config.DIRECTORY,
-                            metavar='Train/Test Directory',
-                            help="data for train/test",
-                            widget='DirChooser')
-    dir_parser.add_argument('--val-directory', type=str,
-                            default=directory_dataset_config.VAL_DIRECTORY,
-                            metavar='Validation Directory',
-                            help="data for validation with train "
-                                 "(optional).",
+        gooey_options={'columns': 2, 'show_border': True})
+    dir_parser.add_argument('--directory', type=str,
+                            default=directory_dataset_config.TRAIN_DIRECTORY,
+                            metavar='Train Directory',
+                            help="data for train",
                             widget='DirChooser')
     if auto_download:
         dir_parser.add_argument(
@@ -92,17 +80,11 @@ def directory_dataset_config_parser(
                 action='store_true',
                 default=True,
                 )
+    dir_parser.add_argument('--val-directory', type=str,
+                            default=directory_dataset_config.TEST_DIRECTORY,
+                            metavar='Validation/Test Directory',
+                            help="data for validation with train "
+                                 "(optional) or data for test.",
+                            widget='DirChooser')
 
     return parser
-
-
-def directory_dataset_config(
-        args: Namespace) -> Type[DirectoryDatasetConfig]:
-
-    class Config(DirectoryDatasetConfig):
-        def __init__(self):
-            super(DirectoryDatasetConfig, self).__init__()
-            self.DIRECTORY = args.directory
-            self.VAL_DIRECTORY = args.val_directory
-
-    return Config
