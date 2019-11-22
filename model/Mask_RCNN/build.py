@@ -87,5 +87,5 @@ def build(mode,
 
     if build_args.print_model_summary:
         config.display()
-        model.summary()
+        model.keras_model.summary()
     return model

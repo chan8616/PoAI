@@ -2,6 +2,7 @@ import os
 import json
 import shutil
 
+from pathlib import Path
 import numpy as np
 import skimage
 import urllib.request
@@ -85,32 +86,29 @@ class BalloonDataset(utils.Dataset):
         """
 
         # Setup paths and file names
-        imgDir = "{}/{}".format(dataDir, dataType)
-        imgZipFile = "{}/{}.zip".format(dataDir, dataType)
+        imgZipFile = "{}.zip".format(dataDir)
         imgURL = 'https://github.com/matterport/Mask_RCNN/releases/'\
                  'download/v2.1/balloon_dataset.zip'
         print("Image paths:")
-        print(imgDir)
         print(imgZipFile)
         print(imgURL)
 
-        # Create main folder if it doesn't exist yet
-        if not os.path.exists(dataDir):
-            os.makedirs(dataDir)
-
         # Download images if not available locally
-        if not os.path.exists(imgDir):
-            os.makedirs(imgDir)
+        if not os.path.exists(imgZipFile):
             print("Downloading images to " + imgZipFile + " ...")
             with urllib.request.urlopen(imgURL) as resp, \
                     open(imgZipFile, 'wb') as out:
                 shutil.copyfileobj(resp, out)
             print("... done downloading.")
+        # Unzip zip file if it doesn't exist yet
+        if not os.path.exists(dataDir):
             print("Unzipping " + imgZipFile)
             with zipfile.ZipFile(imgZipFile, "r") as zip_ref:
-                zip_ref.extractall(dataDir)
+                for file in zip_ref.namelist():
+                    if file.startswith('balloon/'):
+                        zip_ref.extract(file, str(Path(dataDir).parent))
             print("... done unzipping")
-        print("Will use images in " + imgDir)
+        print("Will use images in " + dataDir)
 
     def load_mask(self, image_id):
         """Generate instance masks for an image.
