@@ -64,6 +64,7 @@ def train(t_config):
     # no need to train all layers, just the heads should do it.
     callback = KerasQueueLogger(stream)
     print("Training network heads")
+    print('stream', stream)
     model.train(dataset_train, dataset_val,
                 learning_rate=train_args.learning_rate,
                 epochs=train_args.epochs,

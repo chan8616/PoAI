@@ -3,8 +3,9 @@ from pathlib import Path
 from gooey import Gooey, GooeyParser
 
 from .model import KerasAppBaseModel
-from .train import TrainConfig, train_config_parser  # , train_config
-from .test import TestConfig, test_config_parser
+from .build import build
+from .train import TrainConfig, train_config_parser, train  # , train_config
+from .test import TestConfig, test_config_parser, test
 from .generator import generator
 
 from keras import backend as K
@@ -45,10 +46,6 @@ def run_parser(
 
 # Should be fixed. It is directly used in gui/frame.py
 def run(model: KerasAppBaseModel, config):
-    from .build import build
-    from .train import train
-    from .test import test
-
     print(config)
     (build_cmds, build_args,
      run_cmds, run_args,

@@ -466,11 +466,19 @@ class Frame(wx.Frame):
                     #          ['-h'])
                     #  generator_args = page.generator_parser.parse_args(
                     #          ['generator_balloon', '-h'])
+                    config = (build_cmds, build_args,
+                              run_cmds, run_args,
+                              generator_cmds, generator_args)
+                    print(run_cmds)
 
-                    self.train_with_progbar(page.run,
-                                            (build_cmds, build_args,
-                                             run_cmds, run_args,
-                                             generator_cmds, generator_args))
+                    if 'train' in run_cmds[0]:
+                        self.train_with_progbar(page.run, config)
+                    elif'test' in run_cmds[0]:
+                        config = list(config)
+                        config.append(None)
+                        page.run(config)
+                    else:
+                        raise Exception('wrong run cmds')
                 except Exception as e:
                     print(e)
                     self.tool_bar.EnableTool(self.tool_run.GetId(), True)

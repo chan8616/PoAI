@@ -98,4 +98,7 @@ def build_config(args: Namespace) -> Config:
 
         RPN_ANCHOR_SCALES = args.rpn_anchor_scales
 
+        def __init__(self):
+            super(BuildConfig, self).__init__()
+
     return BuildConfig()

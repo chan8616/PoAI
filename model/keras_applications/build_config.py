@@ -29,6 +29,15 @@ class BuildConfig(ModelConfig):
     HIDDEN_LAYERS = []  # type: ignore
     CLASSES = 0
 
+    def update(self, args: Namespace):
+        self.NAME = str(Path(args.log_dir).name)
+
+        self.INPUT_SHAPE = args.input_shape
+
+        self.POOLING = args.pooling
+        self.HIDDEN_LAYERS = args.hidden_layers
+        self.CLASSES = args.classes
+
 
 def build_config_parser(
         parser: GooeyParser = GooeyParser(),
@@ -93,16 +102,3 @@ def build_config_parser(
         )
 
     return parser
-
-
-def build_config(args: Namespace) -> Type[BuildConfig]:
-    class Config(BuildConfig):
-        NAME = str(Path(args.log_dir).name)
-
-        INPUT_SHAPE = args.input_shape
-
-        POOLING = args.pooling
-        HIDDEN_LAYERS = args.hidden_layers
-        CLASSES = args.classes
-
-    return Config

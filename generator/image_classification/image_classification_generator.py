@@ -81,7 +81,7 @@ def image_classification_generator(
                            shuffle=True,
                            ),
                       (None
-                       if directory_config.VAL_DIRECTORY is '' else
+                       if directory_config.TEST_DIRECTORY is '' else
                        generator.flow_from_directory(
                            directory=directory_config.TEST_DIRECTORY,
                            target_size=config.TARGET_SIZE,

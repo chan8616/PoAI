@@ -57,7 +57,7 @@ def build(mode,
           generator_config,
           #  model_dir
           ):
-
+    print('before model config')
     class ModelConfig(Config):
         NAME = build_config.NAME
 
@@ -76,15 +76,19 @@ def build(mode,
         IMAGE_MIN_SCALE = generator_config.IMAGE_MIN_SCALE
         MEAN_PIXEL = generator_config.MEAN_PIXEL
 
+        def __init__(self):
+            super(ModelConfig, self).__init__()
+
     log_dir = Path(build_args.log_dir).parent
     if not log_dir.exists():
         log_dir.mkdir()
 
     config = ModelConfig()
+    print('after model config')
     model = modellib.MaskRCNN(mode=mode,
                               config=config,
                               model_dir=str(log_dir))
-
+    print('build model')
     if build_args.print_model_summary:
         config.display()
         model.keras_model.summary()

@@ -47,6 +47,7 @@ def run(config):
     dataset, dataset_val = generator.generator(generator_cmd, generator_args)
 
     if 'train' in run_cmd:
+        print('train build')
         train_args = run_args
         #  train_config = train_config.train_config(run_args)
         model = build.build('training',
@@ -57,6 +58,7 @@ def run(config):
                             generator_config.generator_config(generator_args),
                             )
     elif 'test' == run_cmd:
+        print('test build')
         test_args = run_args
         model = build.build('inference',
                             build_args,

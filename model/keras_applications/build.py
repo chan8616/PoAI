@@ -1,9 +1,11 @@
+from argparse import Namespace
 from pathlib import Path
 from typing import Union
 from gooey import Gooey, GooeyParser
 
 import model as modellib
-from .build_config import build_config_parser, build_config, BuildConfig
+from .model import KerasAppBaseModel
+from .build_config import BuildConfig, build_config_parser
 
 
 def build_parser(
@@ -35,8 +37,10 @@ def build_parser(
     return parser
 
 
-def build(model, build_args) -> None:
-    model.build(build_config=build_config(build_args))
+def build(model: KerasAppBaseModel, build_args: Namespace) -> None:
+    build_config = BuildConfig()
+    build_config.update(build_args)
+    model.build(build_config=build_config)
     print([layer.name for layer in model.keras_model.layers])
 
     if build_args.print_model_summary:
