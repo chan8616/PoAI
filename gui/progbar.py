@@ -1,7 +1,7 @@
 import wx
 from queue import Queue
 from threading import Thread
-from colorama import Fore
+from colorama import Fore, Style
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
@@ -245,6 +245,7 @@ class RunThread(Thread):
         except Exception as e:
             print(Fore.RED + str(e))
             self.stream.put('error')
+            print(Style.RESET_ALL)
         finally:
             self.after_run_function()
 
