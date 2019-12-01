@@ -162,8 +162,8 @@ class Frame(wx.Frame):
                         style=wx.HSCROLL | wx.TE_LEFT |
                         wx.TE_MULTILINE | wx.TE_READONLY)
         self.redir = Redirection(self.text_log)
-        sys.stdout = self.redir
-        sys.stderr = self.redir
+        #  sys.stdout = self.redir
+        #  sys.stderr = self.redir
         # log window end
 
         self.__set_properties()
