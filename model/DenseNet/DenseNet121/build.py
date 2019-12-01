@@ -6,7 +6,8 @@ from model.keras_applications import build as buildlib
 from model.keras_applications.build import build
 from .config_samples import (DenseNet121Config,
                              DenseNet121ImagenetConfig,
-                             DenseNet121CIFAR10Config)
+                             DenseNet121CIFAR10Config,
+                             DenseNet121OlivettiFacesConfig)
 
 
 def build_parser(
@@ -16,6 +17,7 @@ def build_parser(
     return buildlib.build_parser(parser,
                                  build_config=DenseNet121Config(),
                                  build_configs=OrderedDict([
+                                     ('build_olivetti_faces', DenseNet121OlivettiFacesConfig()),
                                      ('build_cifar10', DenseNet121CIFAR10Config()),
                                      ('build_imagenet', DenseNet121ImagenetConfig()),
                                  ]))

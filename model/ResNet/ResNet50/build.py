@@ -7,7 +7,8 @@ from model.keras_applications import build as buildlib
 from model.keras_applications.build import build
 from .config_samples import (ResNet50Config,
                              ResNet50ImagenetConfig,
-                             ResNet50CIFAR10Config)
+                             ResNet50CIFAR10Config,
+                             ResNet50OlivettiFacesConfig,)
 
 
 def build_parser(
@@ -17,6 +18,7 @@ def build_parser(
     return buildlib.build_parser(parser,
                                  build_config=ResNet50Config(),
                                  build_configs=OrderedDict([
+                                     ('build_olivetti_faces', ResNet50OlivettiFacesConfig()),
                                      ('build_cifar10', ResNet50CIFAR10Config()),
                                      ('build_imagenet', ResNet50ImagenetConfig()),
                                  ]))
