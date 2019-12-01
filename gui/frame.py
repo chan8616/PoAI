@@ -162,8 +162,8 @@ class Frame(wx.Frame):
                         style=wx.HSCROLL | wx.TE_LEFT |
                         wx.TE_MULTILINE | wx.TE_READONLY)
         self.redir = Redirection(self.text_log)
-        #  sys.stdout = self.redir
-        #  sys.stderr = self.redir
+        sys.stdout = self.redir
+        sys.stderr = self.redir
         # log window end
 
         self.__set_properties()
@@ -298,12 +298,9 @@ class Frame(wx.Frame):
 
         node = self.model_tree.GetItemData(ItemID)
         ItemData = node.data
-        print(node)
         if isinstance(ItemData, ModuleType):
             if hasattr(ItemData, 'build_parser'):
                 title = _("Build Page")
-                print('/'.join(ItemData.__name__.split('.')[1:]))
-                print(node.identifier)
                 parser = ItemData.build_parser(
                     # save_path=Path(
                     #     'checkpoint/' +
@@ -469,7 +466,6 @@ class Frame(wx.Frame):
                     config = (build_cmds, build_args,
                               run_cmds, run_args,
                               generator_cmds, generator_args)
-                    print(run_cmds)
 
                     if 'train' in run_cmds[0]:
                         self.train_with_progbar(page.run, config)
@@ -492,8 +488,6 @@ class Frame(wx.Frame):
                 model_cmd, setting_cmds = cmds
                 cmds = page.panel_2.buildCmd()
                 dataset_cmd, dataset_generator_cmds = cmds
-                print(model_cmd, setting_cmds)
-                print(dataset_cmd, dataset_generator_cmds)
 
                 # try:
                 # print(page.train_setting_parser,
@@ -515,18 +509,16 @@ class Frame(wx.Frame):
                         page.dataset_generator_parser.parse_args(
                             dataset_generator_cmds)
 
-                    pprint(setting_args)
-                    pprint(dataset_generator_args)
+                    # pprint(setting_args)
+                    # pprint(dataset_generator_args)
 
                     setting = get_setting(model_cmd[0],
                                           setting_args)
-                    print('setting', setting)
                     dataset_generator =\
                         page.dataset_generator(
                             dataset_cmd[0], dataset_generator_args)
                         #  page.dataset_generator_parser._defaults[
                         #      dataset_cmd[0]](dataset_generator_args)
-                    print('dataset_generator', dataset_generator)
                     # page.train(train_setting, dataset_generator)
                     page.run(model_cmd[0], setting, dataset_generator)
                 except:
@@ -547,7 +539,6 @@ class Frame(wx.Frame):
             config.resetErrors()
             if config.isValid():
                 cmd, cmds = page.buildCmd()
-                print('cmds:', cmds)
 
                 parser = page.build_parser
                 # print(parser)

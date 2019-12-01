@@ -60,13 +60,12 @@ def image_classification_generator(
         cmd: str,
         args: Namespace) -> List[Iterator]:
     #  generator = image_preprocess(args)
-    print(cmd, args)
     #  Generator = ImageDataGenerator
     #  print(Generator)
 
     config = ImageClassificationGeneratorConfig()
     config.update(args)
-    config.display()
+    # config.display()
     generator = ImageDataGenerator(rescale=1./255.)
 
     if 'directory' in cmd:

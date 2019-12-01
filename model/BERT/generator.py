@@ -30,7 +30,7 @@ def generator(generator_cmd,
         dataset_val = read_squad_examples(input_file=generator_args.run_file, is_training=False)
 
     else:
-        print("ERROR!!!")
+        # print("ERROR!!!")
         # Exception
         # Training dataset.
         dataset_train = read_squad_examples(input_file=generator_args.run_file, is_training=True)

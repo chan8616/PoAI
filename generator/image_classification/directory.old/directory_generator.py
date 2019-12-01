@@ -60,7 +60,6 @@ def directory_generator(generator: ImageDataGenerator,
     class Config(ICGConfig, DGConfig):  # type: ignore
         pass
     config = Config()
-    config.display()
 
     if hasattr(directory_generator_args, 'auto_download'):
         if directory_generator_args.auto_download:
