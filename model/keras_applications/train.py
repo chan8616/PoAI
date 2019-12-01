@@ -29,12 +29,10 @@ def train_parser(
     return parser
 
 
-def train(model, train_args, train_generator, val_generator, stream
+def train(model, train_config, train_generator, val_generator, stream
           ) -> None:
     """Train the model."""
     callbacks = [KerasQueueLogger(stream)]
-    train_config = TrainConfig()
-    train_config.update(train_args)
     model.train(train_config,
                 train_generator, val_generator,
                 custom_callbacks=callbacks)

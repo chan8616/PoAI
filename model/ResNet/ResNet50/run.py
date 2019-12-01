@@ -24,4 +24,4 @@ def run_parser(
 
 
 def run(config):
-    return runlib.run(Model(), config)
+    return runlib.run(Model(), config, ResNet50TrainConfig())

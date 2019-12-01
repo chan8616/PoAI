@@ -26,7 +26,7 @@ class TrainConfig():
     EPOCHS = 10
     #  VALIDATION_STEPS = 10
 
-    TRAIN_LAYERS = TRAIN_LAYERS
+    # TRAIN_LAYERS = TRAIN_LAYERS
     TRAIN_LAYER = list(TRAIN_LAYERS.keys())[0]
 
     LOSS = LOSSES[0]

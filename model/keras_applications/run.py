@@ -45,7 +45,7 @@ def run_parser(
 
 
 # Should be fixed. It is directly used in gui/frame.py
-def run(model: KerasAppBaseModel, config):
+def run(model: KerasAppBaseModel, config, train_config: TrainConfig = TrainConfig()):
     print(config)
     (build_cmds, build_args,
      run_cmds, run_args,
@@ -81,8 +81,9 @@ def run(model: KerasAppBaseModel, config):
     if 'train' in run_cmd:
         print('before train')
         train_args = run_args
+        train_config.update(train_args)
         #  model.train(train_args, train_generator, val_generator)
-        train(model, train_args, train_generator, val_generator, stream)
+        train(model, train_config, train_generator, val_generator, stream)
         print('train complete')
     elif 'test' == run_cmd:
         print('before test')
