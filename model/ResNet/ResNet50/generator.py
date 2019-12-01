@@ -12,6 +12,7 @@ from model.keras_applications.generator_config_samples \
 from .config_samples import (
         ResNet50CIFAR10Config,
         ResNet50ImagenetConfig,
+        ResNet50OlivettiFacesConfig,
         )
 
 
@@ -26,6 +27,7 @@ def generator_parser(
                 ImageClassificationGeneratorConfig()),
             directory_dataset_config=DirectoryDatasetConfig(),
             dataset_generator_configs=OrderedDict([
+                ('directory_olivetti_faces', ResNet50OlivettiFacesConfig()),
                 ('directory_cifar10', ResNet50CIFAR10Config()),
                 #  'directory_cifar100': DGC_CIFAR100(),
                 #  'directory_mnist': DGC_MNIST(),

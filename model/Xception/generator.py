@@ -10,6 +10,7 @@ from model.keras_applications.generator_config_samples \
 
 from .config_samples import (
         XceptionCIFAR10Config,
+        XceptionOlivettiFacesConfig,
         )
 
 
@@ -24,6 +25,7 @@ def generator_parser(
                 ImageClassificationGeneratorConfig()),
             directory_dataset_config=DirectoryDatasetConfig(),
             dataset_generator_configs=OrderedDict([
+                ('directory_olivetti_faces', XceptionOlivettiFacesConfig()),
                 ('directory_cifar10', XceptionCIFAR10Config()),
                 #  'directory_cifar100': DGC_CIFAR100(),
                 #  'directory_mnist': DGC_MNIST(),

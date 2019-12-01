@@ -31,7 +31,7 @@ class ModuleTree(wx.TreeCtrl):
 
     def extendTree(self, parent_item_id):
         parent_module = self.GetItemData(parent_item_id)
-        print('parent', parent_module.__name__)
+        # print('parent', parent_module.__name__)
 
         if hasattr(parent_module, '__all__'):
             #  from parent_module import *
@@ -72,7 +72,7 @@ class ModuleTree(wx.TreeCtrl):
     def TreeOnActivated(self, event):
         item_id = event.GetItem()
         module = self.GetItemData(item_id)
-        print(module)
+        # print(module)
 
     def TreeOnExpand(self, event):
         item_id = event.GetItem()

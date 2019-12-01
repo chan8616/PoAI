@@ -6,7 +6,8 @@ from model.keras_applications import build as buildlib
 from model.keras_applications.build import build
 from .config_samples import (MobileNetConfig,
                              MobileNetImagenetConfig,
-                             MobileNetCIFAR10Config)
+                             MobileNetCIFAR10Config,
+                             MobileNetOlivettiFacesConfig)
 
 
 def build_parser(
@@ -16,6 +17,7 @@ def build_parser(
     return buildlib.build_parser(parser,
                                  build_config=MobileNetConfig(),
                                  build_configs=OrderedDict([
+                                     ('build_olivetti_faces', MobileNetOlivettiFacesConfig()),
                                      ('build_cifar10', MobileNetCIFAR10Config()),
                                      ('build_imagenet', MobileNetImagenetConfig()),
                                  ]))

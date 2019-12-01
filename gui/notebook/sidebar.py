@@ -29,19 +29,19 @@ class Sidebar(wx.Panel):
 
 
     def getSelectedGroup(self):
-        print("getSelectedGroup")
+        # print("getSelectedGroup")
         """Return the currently active 'group' i.e. the root SubParser """
         return self.options[self.activeSelection]
 
 
     def getActiveConfig(self):
-        print("GetActiveConfig")
+        # print("GetActiveConfig")
         """Return the currently visible config screen"""
         return self.configPanels[self.activeSelection]
 
 
     def swapConfigPanels(self, event):
-        print("swapConfigPanels")
+        # print("swapConfigPanels")
         """Hide/show configuration panels based on the currently selected
          option in the sidebar """
         for id, panel in enumerate(self.configPanels):

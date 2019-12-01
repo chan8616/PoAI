@@ -41,7 +41,6 @@ def build(model: KerasAppBaseModel, build_args: Namespace) -> None:
     build_config = BuildConfig()
     build_config.update(build_args)
     model.build(build_config=build_config)
-    print([layer.name for layer in model.keras_model.layers])
 
     if build_args.print_model_summary:
         print(model.keras_model.summary())

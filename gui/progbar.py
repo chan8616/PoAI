@@ -243,6 +243,8 @@ class RunThread(Thread):
         try:
             self.run_function(self.config)
         except Exception as e:
+            from keras import backend as K
+            K.clear_session()
             print(Fore.RED + str(e))
             self.stream.put('error')
             print(Style.RESET_ALL)

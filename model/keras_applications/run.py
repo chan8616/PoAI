@@ -46,7 +46,6 @@ def run_parser(
 
 # Should be fixed. It is directly used in gui/frame.py
 def run(model: KerasAppBaseModel, config, train_config: TrainConfig = TrainConfig()):
-    print(config)
     (build_cmds, build_args,
      run_cmds, run_args,
      generator_cmds, generator_args,
@@ -55,10 +54,10 @@ def run(model: KerasAppBaseModel, config, train_config: TrainConfig = TrainConfi
 
     #  model = build.build(build_args)
     #  model.build(build_args)
-    print('before build')
+    stream.put(('Building...', None, None))
     build(model, build_args)
 
-    print('before load')
+    stream.put(('Loading...', None, None))
     if run_args.load_pretrained_weights:
         if run_args.load_pretrained_weights == "imagenet":
             # Start from ImageNet trained weights
@@ -70,26 +69,22 @@ def run(model: KerasAppBaseModel, config, train_config: TrainConfig = TrainConfi
             weights_path = run_args.load_pretrained_weights
 
         model.load_weights(weights_path, by_name=True)
-    print('load complete')
 
-    print('before generator')
+    stream.put(('Generating...', None, None))
     generator_cmd = generator_cmds[0]
 
     train_generator, val_generator = generator(generator_cmd, generator_args)
-    print('generator complete')
 
     if 'train' in run_cmd:
-        print('before train')
+        stream.put(('Training', None, None))
         train_args = run_args
         train_config.update(train_args)
         #  model.train(train_args, train_generator, val_generator)
         train(model, train_config, train_generator, val_generator, stream)
-        print('train complete')
     elif 'test' == run_cmd:
-        print('before test')
+        stream.put(('Testing', None, None))
         test_args = run_args
         test_generator = val_generator
 
         test(model, test_args, test_generator, stream)
-        print('test complete')
     K.clear_session()

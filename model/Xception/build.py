@@ -6,7 +6,8 @@ from model.keras_applications import build as buildlib
 from model.keras_applications.build import build
 from .config_samples import (XceptionConfig,
                              XceptionImagenetConfig,
-                             XceptionCIFAR10Config)
+                             XceptionCIFAR10Config,
+                             XceptionOlivettiFacesConfig)
 
 
 def build_parser(
@@ -16,6 +17,7 @@ def build_parser(
     return buildlib.build_parser(parser,
                                  build_config=XceptionConfig(),
                                  build_configs=OrderedDict([
+                                     ('build_olivetti_faces', XceptionOlivettiFacesConfig()),
                                      ('build_cifar10', XceptionCIFAR10Config()),
                                      ('build_imagenet', XceptionImagenetConfig()),
                                  ]))

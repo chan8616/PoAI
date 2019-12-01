@@ -57,7 +57,7 @@ def build(mode,
           generator_config,
           #  model_dir
           ):
-    print('before model config')
+    # print('before model config')
     class ModelConfig(Config):
         NAME = build_config.NAME
 
@@ -84,11 +84,11 @@ def build(mode,
         log_dir.mkdir()
 
     config = ModelConfig()
-    print('after model config')
+    # print('after model config')
     model = modellib.MaskRCNN(mode=mode,
                               config=config,
                               model_dir=str(log_dir))
-    print('build model')
+    # print('build model')
     if build_args.print_model_summary:
         config.display()
         model.keras_model.summary()

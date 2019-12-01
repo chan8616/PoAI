@@ -109,19 +109,19 @@ class Page(wx.Panel):
         #  cmd_string = compact(chain(optional, positionals))
         cmd_string = compact(chain(positionals, optional))
         cmd_string = [cmd.replace('"', "'") for cmd in cmd_string]
-        print(cmd_string)  # [" ''", ' ', " ''"]
+        # print(cmd_string)  # [" ''", ' ', " ''"]
         cmd_string = ["{} ''".format(cmd) if cmd.find("'") == -1 else cmd
                       for cmd in cmd_string]
-        print(cmd_string)  # [" ''", " ", " ''"]
+        # print(cmd_string)  # [" ''", " ", " ''"]
         cmd_string = ' '.join(cmd_string)  # " '' ''"
-        print(cmd_string)
+        # print(cmd_string)
         cmd_string = cmd_string.split("'")  # [' ', ' ', '']
-        print(cmd_string)
+        # print(cmd_string)
         cmd_string = [cmd.strip() for cmd in cmd_string
                       if cmd.strip() != '']  # [' ', ' ']
-        print(cmd_string)
+        # print(cmd_string)
         cmd_string = [group['command']] + cmd_string
-        print(cmd_string)
+        # print(cmd_string)
         return cmd_string
 
     def buildCliString(self):
@@ -332,9 +332,9 @@ class TriplePage(wx.Panel):
         super(TriplePage, self).__init__(*args, **kwds)
         self.SetSize(610*2, 530)
 
-        print(parser_1)
-        print(parser_2)
-        print(parser_3)
+        # print(parser_1)
+        # print(parser_2)
+        # print(parser_3)
 
         spec_1 = build_spec_from_parser(
             parser_1,

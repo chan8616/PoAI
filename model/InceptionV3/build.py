@@ -6,7 +6,8 @@ from model.keras_applications import build as buildlib
 from model.keras_applications.build import build
 from .config_samples import (InceptionV3Config,
                              InceptionV3ImagenetConfig,
-                             InceptionV3CIFAR10Config)
+                             InceptionV3CIFAR10Config,
+                             InceptionV3OlivettiFacesConfig)
 
 
 def build_parser(
@@ -16,6 +17,7 @@ def build_parser(
     return buildlib.build_parser(parser,
                                  build_config=InceptionV3Config(),
                                  build_configs=OrderedDict([
+                                     ('build_olivetti_faces', InceptionV3OlivettiFacesConfig()),
                                      ('build_cifar10', InceptionV3CIFAR10Config()),
                                      ('build_imagenet', InceptionV3ImagenetConfig()),
                                  ]))
