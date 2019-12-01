@@ -1,7 +1,7 @@
 import wx
 from queue import Queue
 from threading import Thread
-import io
+from colorama import Fore
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 
@@ -122,6 +122,9 @@ class TrainWindowManager(object):
             if data == 'end':
                 self.train_window.update_msg('End')
                 break
+            if data == 'error':
+                self.train_window.threadsafe_close()
+                break
 
             data_head, data_body, data_msg = data
             if data_head == 'batch':
@@ -151,9 +154,6 @@ class TrainWindowManager(object):
                 self.train_window.update_loss_graph(self.batch_losses,
                                                     self.epoch_losses,
                                                     self.epoch_val_losses,)
-
-        #  plt.close(fig)
-        self.train_window.threadsafe_close()
 
 
 class TestWindow(wx.Frame):
@@ -211,6 +211,9 @@ class TestWindowManager(object):
             if data == 'end':
                 self.test_window.update_msg('End')
                 break
+            if data == 'error':
+                self.test_window.threadsafe_close()
+                break
 
             data_head, data_body, data_msg = data
             if data_head == 'test':
@@ -225,21 +228,25 @@ class TestWindowManager(object):
 
             self.test_window.update_msg(self.msg_text + " " + self.cur_step_text)
 
-        self.test_window.threadsafe_close()
-
 
 class RunThread(Thread):
     def __init__(self, run_function, config, stream: Queue, after_run_function):
         super(RunThread, self).__init__()
         self.run_function = run_function
+        self.stream = stream
         config_list = list(config)
         config_list.append(stream)
         self.config = tuple(config_list)
         self.after_run_function = after_run_function
 
     def run(self):
-        self.run_function(self.config)
-        self.after_run_function()
+        try:
+            self.run_function(self.config)
+        except Exception as e:
+            print(Fore.RED + str(e))
+            self.stream.put('error')
+        finally:
+            self.after_run_function()
 
 
 if __name__ == "__main__":
