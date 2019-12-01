@@ -5,10 +5,10 @@ from argparse import Namespace
 from gooey import GooeyParser
 from keras.preprocessing.image import ImageDataGenerator
 
-from ..dataset import Dataset
+from ..image_classification_generator_config import ImageClassificationGeneratorConfig
 
 
-class DirectoryDatasetConfig(Dataset):
+class DirectoryDatasetConfig(ImageClassificationGeneratorConfig):
     NAME = 'Directory'
 
     def __init__(self):
@@ -20,6 +20,7 @@ class DirectoryDatasetConfig(Dataset):
         self.TEST_DIRECTORY = str(Path(self.DATASET_DIR).joinpath('test'))
 
     def update(self, args: Namespace):
+        super(DirectoryDatasetConfig, self).update(args)
         self.TRAIN_DIRECTORY = args.directory
         self.TEST_DIRECTORY = args.val_directory
 
@@ -28,7 +29,7 @@ class DirectoryDatasetConfig(Dataset):
             Path(save_dir).mkdir(parents=True)
         if len(list(Path(save_dir).iterdir())) != len(y):
             generator = ImageDataGenerator()
-            for xy in generator.flow(
+            for _ in generator.flow(
                     x, y,
                     batch_size=len(y),
                     shuffle=False,
@@ -78,7 +79,7 @@ def directory_dataset_config_parser(
                 '--auto_download',
                 metavar='Auto Download',
                 action='store_true',
-                default=True,
+                default=False,
                 )
     dir_parser.add_argument('--val-directory', type=str,
                             default=directory_dataset_config.TEST_DIRECTORY,
