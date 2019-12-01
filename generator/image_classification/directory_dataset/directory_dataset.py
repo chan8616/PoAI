@@ -67,8 +67,8 @@ def directory_dataset(
         config = DirectoryDatasetConfig()  # type: ignore
     config.update(args)
 
-    if hasattr(config, 'auto_download'):
-        if config.auto_download:
+    if hasattr(args, 'auto_download'):
+        if args.auto_download:
             config.auto_download()
 
     return config
