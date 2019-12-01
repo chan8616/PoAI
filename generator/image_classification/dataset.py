@@ -2,6 +2,7 @@
 import numpy as np
 
 from keras.datasets import cifar10, mnist
+from sklearn.datasets import fetch_olivetti_faces
 from keras.preprocessing.image import ImageDataGenerator
 
 from ..generator_config import GeneratorConfig
@@ -35,3 +36,14 @@ class CIFAR10(Dataset):
 
     def load_data(self):
         return cifar10.load_data()
+
+
+class OlivettFaces(Dataset):
+    NAME = 'OlivettiFaces'
+    LABELS = np.array(np.arange(40), dtype=str).tolist()
+    IMAGE_SIZE = (64, 64)
+
+    def load_data(self):
+        data = fetch_olivetti_faces()
+        return ((np.expand_dims(data.images, 3), np.expand_dims(data.target, 1)),
+                (np.expand_dims(data.images, 3), np.expand_dims(data.target, 1)))
