@@ -29,7 +29,9 @@ def test_parser(
 def test(model,
          test_args,
          test_generator,
+         stream
          ):
     """Test the model."""
     results = model.test(test_generator,
-                         result_save_path=test_args.result_path)
+                         result_save_path=test_args.result_path,
+                         stream=stream)

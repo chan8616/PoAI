@@ -156,18 +156,90 @@ class TrainWindowManager(object):
         self.train_window.threadsafe_close()
 
 
-class TrainThread(Thread):
-    def __init__(self, train_function, config, stream: Queue, train_close_function):
-        super(TrainThread, self).__init__()
-        self.train_function = train_function
+class TestWindow(wx.Frame):
+    def __init__(self, parent, title):
+        super(TestWindow, self).__init__(parent, wx.ID_ANY, title=title, size=(520, 480))
+        self.progbar_range = 1000
+        self.image_width = 480
+        self.InitUI()
+
+    def InitUI(self):
+        pnl = wx.Panel(self)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        hbox_progbar = wx.BoxSizer(wx.VERTICAL)
+
+        self.progbar = wx.Gauge(pnl, range=self.progbar_range, size=(self.image_width, 25), style=wx.GA_HORIZONTAL)
+        self.msg = wx.StaticText(pnl, label="Test Message")
+
+        hbox_progbar.Add(self.msg, proportion=1, flag=wx.ALIGN_RIGHT)
+        hbox_progbar.Add(self.progbar, proportion=1, flag=wx.ALIGN_CENTRE)
+
+        vbox.Add((0, 30))
+        vbox.Add(hbox_progbar, flag=wx.ALIGN_CENTRE)
+        vbox.Add((0, 30))
+        pnl.SetSizer(vbox)
+
+        #  self.Fit()
+        self.SetSize((520, 480))
+        self.Centre()
+        self.ToggleWindowStyle(wx.FRAME_FLOAT_ON_PARENT)
+
+    def update_msg(self, msg):
+        wx.CallAfter(self.msg.SetLabelText, msg)
+
+    def update_gauge(self, ratio):
+        wx.CallAfter(self.progbar.SetValue, int(ratio * self.progbar_range))
+
+    def threadsafe_close(self):
+        wx.CallAfter(self.Close)
+
+
+class TestWindowManager(object):
+    def __init__(self, parent, stream: Queue):
+        self.test_window = TestWindow(parent, title="Test Window")
+        self.stream = stream
+
+        self.cur_step_text = "Starting..."
+        self.msg_text = ""
+        self.test_window.Show()
+
+    def main_loop(self):
+        self.test_window.update_msg(self.cur_step_text)
+
+        while True:
+            data = self.stream.get(block=True)
+            if data == 'end':
+                self.test_window.update_msg('End')
+                break
+
+            data_head, data_body, data_msg = data
+            if data_head == 'test':
+                current_test_num, total_test_num = data_body
+                test_progress_ratio = current_test_num / total_test_num
+                self.test_window.update_gauge(test_progress_ratio)
+            else:
+                self.cur_step_text = data_head
+
+            if data_msg is not None:
+                self.msg_text = data_msg
+
+            self.test_window.update_msg(self.msg_text + " " + self.cur_step_text)
+
+        self.test_window.threadsafe_close()
+
+
+class RunThread(Thread):
+    def __init__(self, run_function, config, stream: Queue, after_run_function):
+        super(RunThread, self).__init__()
+        self.run_function = run_function
         config_list = list(config)
         config_list.append(stream)
         self.config = tuple(config_list)
-        self.train_close_function = train_close_function
+        self.after_run_function = after_run_function
 
     def run(self):
-        self.train_function(self.config)
-        wx.CallAfter(self.train_close_function)
+        self.run_function(self.config)
+        self.after_run_function()
 
 
 if __name__ == "__main__":

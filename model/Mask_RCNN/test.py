@@ -54,7 +54,8 @@ def test_parser(
 
 def test(model,
          test_args,
-         dataset_test):
+         dataset_test,
+         stream=None):
     # Pick COCO images from the dataset
     image_ids = dataset_test.image_ids
 

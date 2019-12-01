@@ -281,7 +281,7 @@ class KerasAppBaseModel():
         )
         self.epoch = max(self.epoch, train_config.EPOCHS)
 
-    def test(self, test_generator, result_save_path):
+    def test(self, test_generator, result_save_path, stream=None):
         #  now = datetime.datetime.now()
         #  result_dir = Path("{}{:%Y%m%dT%H%M}".format(
         #          str(Path(test_args.result_path).parent), now))
@@ -295,8 +295,12 @@ class KerasAppBaseModel():
         df = pd.DataFrame(columns=columns)
         df.to_csv(result_save_path, index=False)
         steps_done = 0
+        total = len(test_generator)
 
-        while steps_done < len(test_generator):
+        if stream is not None:
+            stream.put(('Testing...', None, None))
+
+        while steps_done < total:
             idx = next(test_generator.index_generator)
             x, y = test_generator._get_batches_of_transformed_samples(idx)
 
@@ -310,6 +314,11 @@ class KerasAppBaseModel():
             df.to_csv(result_save_path, mode='a', index=False, header=False)
 
             steps_done += 1
+            if stream is not None:
+                stream.put(('test', (steps_done, total), None))
+
+        if stream is not None:
+            stream.put('end')
 
     def find_trainable_layer(self, layer):
         """If a layer is encapsulated by another layer, this function

@@ -30,7 +30,7 @@ from gui.module_tree import ModuleTree
 from gui.notebook.notebook import Notebook
 # from gui.notebook.pages import Page
 from gui.utils import Redirection
-from gui.progbar import TrainWindowManager, TrainThread
+from gui.progbar import TrainWindowManager, TestWindowManager, RunThread
 
 # if __name__ == '__main__':
 #    from trees.datasettree import DatasetTree
@@ -474,9 +474,7 @@ class Frame(wx.Frame):
                     if 'train' in run_cmds[0]:
                         self.train_with_progbar(page.run, config)
                     elif'test' in run_cmds[0]:
-                        config = list(config)
-                        config.append(None)
-                        page.run(config)
+                        self.test_with_progbar(page.run, config)
                     else:
                         raise Exception('wrong run cmds')
                 except Exception as e:
@@ -573,9 +571,22 @@ class Frame(wx.Frame):
     def train_with_progbar(self, train_function, config):
         stream = Queue()
         window_manager = TrainWindowManager(self, stream=stream)
-        train_thread = TrainThread(
+        train_thread = RunThread(
                 train_function, config, stream,
-                lambda: self.tool_bar.EnableTool(self.tool_run.GetId(), True))
+                lambda: wx.CallAfter(self.tool_bar.EnableTool, self.tool_run.GetId(), True))
+        progbar_thread = Thread(target=window_manager.main_loop)
+
+        train_thread.start()
+        progbar_thread.start()
+
+        self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+
+    def test_with_progbar(self, test_function, config):
+        stream = Queue()
+        window_manager = TestWindowManager(self, stream=stream)
+        train_thread = RunThread(
+            test_function, config, stream,
+            lambda: wx.CallAfter(self.tool_bar.EnableTool, self.tool_run.GetId(), True))
         progbar_thread = Thread(target=window_manager.main_loop)
 
         train_thread.start()

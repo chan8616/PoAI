@@ -28,7 +28,8 @@ def test_parser(
 
 def test(model,
          model_config,
-         dataset_test):
+         dataset_test,
+         stream=None):
     eval_examples = dataset_test
 
     tokenizer = tokenization.FullTokenizer(
