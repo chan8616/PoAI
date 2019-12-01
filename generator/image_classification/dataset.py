@@ -45,5 +45,16 @@ class OlivettFaces(Dataset):
 
     def load_data(self):
         data = fetch_olivetti_faces()
-        return ((np.expand_dims(data.images, 3), np.expand_dims(data.target, 1)),
-                (np.expand_dims(data.images, 3), np.expand_dims(data.target, 1)))
+
+        label = data.target.reshape(40, 10)
+        images = data.images.reshape(40, 10, 64, 64)
+        X_train = images[:, :9].reshape(-1, 64, 64)*255
+        y_train = label[:, :9].reshape(-1)
+        X_test = images[:, 9:].reshape(-1, 64, 64)*255
+        y_test = label[:, 9:].reshape(-1)
+        print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
+
+        return ((np.array(np.expand_dims(X_train, 3), dtype=int),
+                 np.expand_dims(y_train, 1)),
+                (np.array(np.expand_dims(X_test, 3), dtype=int),
+                 np.expand_dims(y_test, 1)))
