@@ -70,12 +70,16 @@ def test(model,
             Path(test_args.result_path).name)
 
     #  image_results = []
+    if stream is not None:
+        stream.put(('Testing...', None, None))
+    total = len(image_ids)
     for i, image_id in enumerate(image_ids):
         # Load image
         image = dataset_test.load_image(image_id)
-
+        if stream is not None:
+            stream.put(('test', (i, total), None))
         print('predict {}/{} images...'.format(
-            i+1, len(image_ids)))
+            i+1, total))
         # Run detection
         r = model.detect([image], verbose=0)[0]
 
@@ -109,7 +113,8 @@ def test(model,
     with open(str(result_path), 'w') as f:
         json.dump(results, f, cls=NumpyEncoder)
     print('test complete')
-
+    if stream is not None:
+        stream.put('end')
     return results
 
 

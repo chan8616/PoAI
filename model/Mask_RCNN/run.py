@@ -109,7 +109,7 @@ def run(config):
             result_dir.mkdir(parents=True)
         model.result_dir = result_dir
         print('before test')
-        return test.test(model, test_args, dataset)
+        return test.test(model, test_args, dataset, stream)
     #      setting = train.test_setting(model, run_args)
     #      dataset = generator(generator_args)
     #      return test.test(setting, dataset)
