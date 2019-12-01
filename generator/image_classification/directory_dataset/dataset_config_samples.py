@@ -47,3 +47,8 @@ class DGC_FashionMNIST(ICGC_FashionMNIST,
     def auto_download(self):
         pass
 """
+
+class DIR_OlivettiFaces(dataset.OlivettFaces,
+                        DirectoryDatasetConfig):
+    def __init__(self):
+        super(DIR_OlivettiFaces, self).__init__()

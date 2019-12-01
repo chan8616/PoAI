@@ -42,6 +42,8 @@ class DirectoryDatasetConfig(ImageClassificationGeneratorConfig):
     def auto_download(self):
         print('Downloading...')
         dataset = self.load_data()
+        Path(self.TRAIN_DIRECTORY).mkdir(parents=True, exist_ok=True)
+        Path(self.TEST_DIRECTORY).mkdir(parents=True, exist_ok=True)
         for j, label in enumerate(self.LABELS):
             idx = (dataset[0][1] == j).reshape(-1)
             self.save_to_dir(dataset[0][0][idx],

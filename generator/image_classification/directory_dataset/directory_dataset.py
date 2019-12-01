@@ -16,6 +16,7 @@ from .directory_dataset_config import (
         )
 from .dataset_config_samples import (DIR_CIFAR10,
                                      DIR_MNIST,
+                                     DIR_OlivettiFaces,
                                      )
 
 """
@@ -63,6 +64,8 @@ def directory_dataset(
         config = DIR_CIFAR10()  # type: ignore
     elif 'mnist' in cmd:
         config = DIR_MNIST()  # type: ignore
+    elif 'olivetti_faces' in cmd:
+        config = DIR_OlivettiFaces()  # type: ignore
     else:
         config = DirectoryDatasetConfig()  # type: ignore
     config.update(args)

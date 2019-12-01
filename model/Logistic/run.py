@@ -88,6 +88,6 @@ def run(config):
         test_args = run_args
         test_generator = val_generator
 
-        test(model, test_args, test_generator)
+        test(model, test_args, test_generator, stream)
         print('test complete')
     K.clear_session()
