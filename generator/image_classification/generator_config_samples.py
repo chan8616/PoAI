@@ -36,6 +36,5 @@ class GEN_OlivettiFaces(dataset.OlivettFaces,
                         ImageClassificationGeneratorConfig):
     def __init__(self):
         super(GEN_OlivettiFaces, self).__init__()
-        self.display()
         self.TARGET_SIZE = self.IMAGE_SIZE
         self.COLOR_MODE = COLOR_MODES[0]
