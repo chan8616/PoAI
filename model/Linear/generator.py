@@ -47,6 +47,11 @@ class LinearGenerator():
     def train_valid_generator(self):
         try:
             dataframe = pd.read_csv(self.config.DATAFRAME_PATH)
+
+            standard_scaler = StandardScaler()
+            standard_scaler.fit(dataframe[self.config.X_COL])
+            dataframe[self.config.X_COL] = \
+                standard_scaler.transform(dataframe[self.config.X_COL])
         except Exception as e:
             print(e)
             assert False, "wrong dataframe path {}.".format(
@@ -62,6 +67,8 @@ class LinearGenerator():
         if self.config.VALID_DATAFRAME_PATH:
             try:
                 valid_dataframe = pd.read_csv(self.config.VALID_DATAFRAME_PATH)
+                valid_dataframe[self.config.X_COL] = \
+                    standard_scaler.transform(valid_dataframe[self.config.X_COL])
             except Exception as e:
                 print(e)
                 assert False, "wrong dataframe path {}.".format(
