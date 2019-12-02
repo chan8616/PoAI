@@ -267,7 +267,7 @@ class Frame(wx.Frame):
         if set(('build', 'run', 'generator')) < set(model.__dict__.keys()):
             build_parser = \
                 model.build.build_parser(GooeyParser())
-            build = model.build.build
+            #  build = model.build.build
 
             run_parser = \
                 model.run.run_parser(GooeyParser())
@@ -275,7 +275,7 @@ class Frame(wx.Frame):
 
             generator_parser = \
                 model.generator.generator_parser(GooeyParser())
-            generator = model.generator.generator
+            #  generator = model.generator.generator
 
             # model_parser.parse_args(['--help'])
             # dataset_parser.parse_args(['--help'])
@@ -288,11 +288,11 @@ class Frame(wx.Frame):
             #  page = self.notebook.AddParserPage(
             #      build_parser, "Build Page")
             page.build_parser = build_parser
-            page.build = build
+            #  page.build = build
             page.run_parser = run_parser
             page.run = run
             page.generator_parser = generator_parser
-            page.generator = generator
+            #  page.generator = generator
             self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         return
 
@@ -535,6 +535,7 @@ class Frame(wx.Frame):
                 page.Layout()
 
         else:
+            assert False, "wrong line frame.py:538"
             config = page.navbar.getActiveConfig()
             config.resetErrors()
             if config.isValid():
