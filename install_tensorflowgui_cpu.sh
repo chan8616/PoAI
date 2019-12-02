@@ -15,5 +15,5 @@ apt-get install -y dpkg-dev \
     libxtst-dev \
     libcanberra-gtk3-module
 
-conda create -n TensorflowGUI_CPU -c anaconda python=3.6 tensorflow==1.11 keras=2.2.4 scikit-learn pandas xlsxwriter colorama 
-conda install -n TensorflowGUI_CPU -c conda-forge wxpython treelib gooey==1.0.2 pycocotools Cython imgaug
+conda create -n TensorflowGUI_CPU -c anaconda python=3.6 tensorflow==1.11 keras=2.2.4 scikit-learn pandas xlsxwriter colorama -y
+conda install -n TensorflowGUI_CPU -c conda-forge wxpython treelib gooey==1.0.2 pycocotools Cython imgaug -y
