@@ -18,7 +18,7 @@ class ViaRegionDataset(utils.Dataset):
         annotation_file: Annotation file to load (.json)
         """
         # Load annotations
-        # VGG Image Annotator (up to version 1.6) saves each image in the form:
+        # VGG Image Annotator (version 2.0.8) saves each image in the form:
         # { 'filename': '28503151_5b5b7ec140_b.jpg',
         #   'regions': {
         #       '0': {
@@ -80,15 +80,15 @@ class ViaRegionDataset(utils.Dataset):
                 shapes = [r['shape_attributes']
                           for r in a['regions']]
                 categories = [r['region_attributes']
-                              for r in a['regions'].values()]
+                              for r in a['regions']]
 
             for category in categories:
                 class_name, object_name = list(category.items())[0]
                 if class_name not in list(classes.values()):
                     # Add classes. We have only one class to add.
-                    self.add_class("via_region", len(classes),
+                    self.add_class("via_region", len(classes)+1,
                                    class_name)
-                    classes.update({str(len(classes)): class_name})
+                    classes.update({len(classes)+1: class_name})
 
             # load_mask() needs the image size to convert shapes to masks.
             # Unfortunately, VIA doesn't include it in JSON, so we must read
@@ -146,10 +146,12 @@ class ViaRegionDataset(utils.Dataset):
                 mask[rr, cc, i] = 1
             else:
                 print(p['name'])
-                raise NotImplementedError()
+                assert False, 'wrong image shapes, name {} is strange.'.format(
+                        p['name'])
 
         # Return mask, and array of class IDs of each instance.
-        class_ids = np.array([self.class_names.index(list(c.keys())[0])
+        class_names = [d['name'] for d in self.class_info]
+        class_ids = np.array([class_names.index(list(c.keys())[0])
                               for c in info['categories']])
         return mask.astype(np.bool), class_ids
 
