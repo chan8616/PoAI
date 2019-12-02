@@ -4,16 +4,17 @@ from typing import Union
 from gooey import Gooey, GooeyParser
 
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 from .generator_config import LinearGeneratorConfig
 from model.Linear.dataframe_iterator import DataFrameIterator
-from model.Linear.config_samples import LinearSINEConfig
+from model.Linear.config_samples import LinearBostonHousePricesConfig
 
 
 class LinearGeneratorConfigList():
     def __init__(self,
                  linear_generator_config_list=[
-                     LinearSINEConfig(),
+                     LinearBostonHousePricesConfig(),
                      LinearGeneratorConfig(),
                      ],
                  ):

@@ -6,13 +6,13 @@ from gooey import Gooey, GooeyParser
 import model as modellib
 from .build_config import LinearBuildConfig
 from model.Linear.model import LinearModel
-from model.Linear.config_samples import LinearSINEBuildConfig
+from model.Linear.config_samples import LinearBostonHousePricesBuildConfig
 
 
 class LinearBuildConfigList():
     def __init__(self,
                  linear_build_config_list=[
-                     LinearSINEBuildConfig(),
+                     LinearBostonHousePricesBuildConfig(),
                      LinearBuildConfig(),
                      ],
                  ):

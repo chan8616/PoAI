@@ -20,7 +20,7 @@ from model.Linear.test_config import LinearTestConfig, LinearTest
 from model.Linear.config_samples \
         import (
                 #  LinearTrainConfig,
-                LinearSINETrainConfig)
+                LinearBostonHousePricesTrainConfig)
 
 from keras import backend as K
 
@@ -28,7 +28,7 @@ from keras import backend as K
 class Run():
     def __init__(self,
                  train_config_list=[
-                     LinearSINETrainConfig(),
+                     LinearBostonHousePricesTrainConfig(),
                      LinearTrainConfig(),
                      ],
                  test_config_list=[LinearTestConfig(),
