@@ -4,6 +4,7 @@ from gooey import Gooey, GooeyParser
 from .model import Model
 from model.keras_applications import run as runlib
 from .config_samples import (MobileNetTrainConfig,
+                             MobileNetOlivettiFacesConfig,
                              MobileNetImagenetConfig,
                              MobileNetCIFAR10Config)
 
@@ -17,8 +18,9 @@ def run_parser(
                              title,
                              train_config=MobileNetTrainConfig(),
                              train_configs=OrderedDict([
+                                 ('train_olivetti_faces', MobileNetOlivettiFacesConfig()),
                                  ('train_cifar10', MobileNetCIFAR10Config()),
-                                 ('train_imagenet', MobileNetImagenetConfig()),
+                                 #  ('train_imagenet', MobileNetImagenetConfig()),
                              ]))
 
 

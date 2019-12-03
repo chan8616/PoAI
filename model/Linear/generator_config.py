@@ -7,7 +7,7 @@ import numpy as np
 from generator.generator_config import GeneratorConfig
 
 
-CLASS_MODES = ['binary', 'categorical', 'multi_output', 'raw', 'sparse']
+CLASS_MODES = ['categorical', 'raw']
 
 
 class LinearGeneratorConfig(GeneratorConfig):
@@ -17,7 +17,7 @@ class LinearGeneratorConfig(GeneratorConfig):
     VALID_DATAFRAME_PATH = ""
     X_COL = ["x_col"]
     Y_COL = ["y_col"]
-    CLASS_MODE = CLASS_MODES[3]
+    CLASS_MODE = 'raw'
     BATCH_SIZE = 32
 
     def update(self, args: Namespace):
@@ -41,32 +41,32 @@ class LinearGeneratorConfig(GeneratorConfig):
             '--dataframe_path', type=str,
             metavar='DataFrame Path (for train)',
             default=self.DATAFRAME_PATH,
-            help="dataframe path (file path of .csv format)",
+            help="Dataframe path (file path of .csv format)",
             )
         dataframe_parser.add_argument(
             '--valid_dataframe_path', type=str,
             metavar='DataFrame Path (for valid/test)',
             default=self.VALID_DATAFRAME_PATH,
-            help="dataframe path (file path of .csv format)",
+            help="Dataframe path (file path of .csv format)",
             )
         dataframe_parser.add_argument(
             '--x_col', nargs='*', type=str,
             metavar='Input Data Columns',
             default=np.array2string(np.array(self.X_COL)).strip('[]'),
-            help="input data colum of dataframe.",
+            help="Input data colum of dataframe.",
             )
         dataframe_parser.add_argument(
             '--y_col', nargs='*', type=str,
-            metavar='Input Data Columns',
+            metavar='Target Data Columns',
             default=np.array2string(np.array(self.Y_COL)).strip('[]'),
-            help="target data colum of dataframe.",
+            help="Target data colum of dataframe.",
             )
         dataframe_parser.add_argument(
             '--class_mode', type=str,
             choices=CLASS_MODES,
-            metavar='Input Data Columns',
+            metavar='Class Mode',
             default=self.CLASS_MODE,
-            help="target data colum of dataframe.",
+            help="Mode fot yielding the targets.",
             )
 
         generate_parser = parser.add_argument_group(

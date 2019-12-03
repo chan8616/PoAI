@@ -5,6 +5,7 @@ from .model import Model
 from model.keras_applications import run as runlib
 from .config_samples import (XceptionTrainConfig,
                              XceptionImagenetConfig,
+                             XceptionOlivettiFacesConfig,
                              XceptionCIFAR10Config)
 
 
@@ -17,8 +18,9 @@ def run_parser(
                              title,
                              train_config=XceptionTrainConfig(),
                              train_configs=OrderedDict([
+                                 ('train_olivetti_faces', XceptionOlivettiFacesConfig()),
                                  ('train_cifar10', XceptionCIFAR10Config()),
-                                 ('train_imagenet', XceptionImagenetConfig()),
+                                 #  ('train_imagenet', XceptionImagenetConfig()),
                              ]))
 
 

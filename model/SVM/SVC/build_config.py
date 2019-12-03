@@ -59,7 +59,7 @@ class SVCBuildConfig(ModelConfig):
         kernel_parser = parser.add_argument_group(
             title,
             "Kernel Option",
-            gooey_options={'show_border': True, 'columns': 3})
+            gooey_options={'show_border': True, 'columns': 1})
         kernel_parser.add_argument(
             "--kernel", type=str,
             choices=KERNELS,
@@ -71,13 +71,14 @@ class SVCBuildConfig(ModelConfig):
             "--degree", type=int,
             metavar='Degree',
             default=self.DEGREE,
-            help='degree of the polynomial kernel function.',
+            help='Degree of the polynomial kernel function.',
         )
         kernel_parser.add_argument(
             "--gamma", type=str,
             metavar='Gamma',
+            choices=GAMMAS,
             default=self.GAMMA,
-            help='kernel coefficient for "rbf", "poly" and "sigmoid"',
+            help='Kernel coefficient for "rbf", "poly" and "sigmoid".'
         )
 
         log_parser = parser.add_argument_group(

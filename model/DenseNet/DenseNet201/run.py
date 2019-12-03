@@ -5,6 +5,7 @@ from .model import Model
 from model.keras_applications import run as runlib
 from .config_samples import (DenseNet201TrainConfig,
                              DenseNet201ImagenetConfig,
+                             DenseNet201OlivettiFacesConfig,
                              DenseNet201CIFAR10Config)
 
 
@@ -17,8 +18,9 @@ def run_parser(
                              title,
                              train_config=DenseNet201TrainConfig(),
                              train_configs=OrderedDict([
+                                 ('train_cifar10', DenseNet201OlivettiFacesConfig()),
                                  ('train_cifar10', DenseNet201CIFAR10Config()),
-                                 ('train_imagenet', DenseNet201ImagenetConfig()),
+                                 #  ('train_imagenet', DenseNet201ImagenetConfig()),
                              ]))
 
 

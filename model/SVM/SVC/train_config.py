@@ -8,13 +8,14 @@ class SVCTrainConfig():
     WEIGHT_PATH = None
 
     def update(self, args: Namespace):
-        WEIGHT_PATH = args.load_pretrained_weights
+        #  WEIGHT_PATH = args.load_pretrained_weights
+        pass
 
     def _parser(self, parser=GooeyParser(),
                 ) -> GooeyParser:
         title="Train Setting"
 
-        load_parser = parser.add_mutually_exclusive_group()
+        #  load_parser = parser.add_mutually_exclusive_group()
         #  load_parser.add_argument(
         #      '--load_pretrained_weights',
         #      choices=WEIGHTS,
@@ -24,10 +25,10 @@ class SVCTrainConfig():
         #      '--load_specific_weights',
         #      choices=
         #      )
-        load_parser.add_argument(
-            '--load_pretrained_weights',
-            widget = 'FileChooser'
-            )
+        #  load_parser.add_argument(
+        #      '--load_pretrained_weights',
+        #      widget = 'FileChooser'
+        #      )
 
         return parser
 
@@ -41,8 +42,9 @@ class SVCTrain():
         stream.put(('Loading...', None, None))
         #  if self.config.WEIGHT in WEIGHTS:
             #  weights_path = self.config.WEIGHT_PATH
-        if self.config.WEIGHT_PATH:
-            model = pickle.load(open(self.config.WEIGHT_PATH, 'rb'))
+        #  if self.config.WEIGHT_PATH:
+        #      model = pickle.load(open(self.config.WEIGHT_PATH, 'rb'))
+
         #  model.load_weights(weights_path, by_name=True)
         train_df = train_generator
         stream.put(('Training', None, None))

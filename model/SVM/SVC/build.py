@@ -7,11 +7,13 @@ from gooey import Gooey, GooeyParser
 import model as modellib
 from sklearn.svm import SVC
 from model.SVM.SVC.build_config import SVCBuildConfig
+from model.SVM.SVC.config_samples import SVCIRISBuildConfig
 
 
 class SVCBuildConfigList():
     def __init__(self,
                  svc_build_config_list=[
+                     SVCIRISBuildConfig(),
                      SVCBuildConfig(),
                      ],
                  ):

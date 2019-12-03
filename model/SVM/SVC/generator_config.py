@@ -34,25 +34,25 @@ class SVCGeneratorConfig(GeneratorConfig):
             '--dataframe_path', type=str,
             metavar='DataFrame Path (for train)',
             default=self.DATAFRAME_PATH,
-            help="dataframe path (file path of .csv format)",
+            help="Dataframe path (file path of .csv format)",
             )
         dataframe_parser.add_argument(
             '--valid_dataframe_path', type=str,
             metavar='DataFrame Path (for valid/test)',
             default=self.VALID_DATAFRAME_PATH,
-            help="dataframe path (file path of .csv format)",
+            help="Dataframe path (file path of .csv format)",
             )
         dataframe_parser.add_argument(
             '--x_col', nargs='*', type=str,
             metavar='Input Data Columns',
             default=np.array2string(np.array(self.X_COL)).strip('[]'),
-            help="input data colum of dataframe.",
+            help="Input data colum of dataframe.",
             )
         dataframe_parser.add_argument(
             '--y_col', nargs='*', type=str,
-            metavar='Input Data Columns',
+            metavar='Target Data Columns',
             default=np.array2string(np.array(self.Y_COL)).strip('[]'),
-            help="target data colum of dataframe.",
+            help="Target data colum of dataframe.",
             )
 
         return parser

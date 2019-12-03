@@ -5,6 +5,7 @@ from .model import Model
 from model.keras_applications import run as runlib
 from .config_samples import (InceptionV3TrainConfig,
                              InceptionV3ImagenetConfig,
+                             InceptionV3OlivettiFacesConfig,
                              InceptionV3CIFAR10Config)
 
 
@@ -17,8 +18,9 @@ def run_parser(
                              title,
                              train_config=InceptionV3TrainConfig(),
                              train_configs=OrderedDict([
+                                 ('train_olivetti_faces', InceptionV3OlivettiFacesConfig()),
                                  ('train_cifar10', InceptionV3CIFAR10Config()),
-                                 ('train_imagenet', InceptionV3ImagenetConfig()),
+                                 #  ('train_imagenet', InceptionV3ImagenetConfig()),
                              ]))
 
 

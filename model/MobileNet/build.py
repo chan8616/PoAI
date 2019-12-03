@@ -19,7 +19,7 @@ def build_parser(
                                  build_configs=OrderedDict([
                                      ('build_olivetti_faces', MobileNetOlivettiFacesConfig()),
                                      ('build_cifar10', MobileNetCIFAR10Config()),
-                                     ('build_imagenet', MobileNetImagenetConfig()),
+                                     #  ('build_imagenet', MobileNetImagenetConfig()),
                                  ]))
 
 

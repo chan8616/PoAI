@@ -12,6 +12,7 @@ class SVCIRISBuildConfig(
 
     def __init__(self):
         super(SVCIRISBuildConfig, self).__init__()
+        self.DEGREE = 0
 
 
 class SVCIRISTrainConfig(
