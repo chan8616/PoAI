@@ -17,21 +17,21 @@ def generator_parser(
 
     subs = parser.add_subparsers()
 
-    generator_parser = subs.add_parser('generator')
-    generator_config_parser(generator_parser, open_dataset=False)
-
     balloon_generator_parser = subs.add_parser('generator_balloon')
     generator_config_parser(balloon_generator_parser,
                             BalloonConfig(),)
+
+    generator_parser = subs.add_parser('generator')
+    generator_config_parser(generator_parser, open_dataset=False)
 
     #  balloon_generator_parser = subs.add_parser('generator_balloon')
     #  generator_config_parser(balloon_generator_parser,
     #                          BalloonConfig(),)
 
-    coco_generator_parser = subs.add_parser('generator_coco')
-    generator_config_parser(coco_generator_parser,
-                            CocoConfig(),
-                            years=['2014', '2017'])
+    #  coco_generator_parser = subs.add_parser('generator_coco')
+    #  generator_config_parser(coco_generator_parser,
+    #                          CocoConfig(),
+    #                          years=['2014', '2017'])
 
     #  nucleus_generator_parser = subs.add_parser('generator_nucleus')
     #  generator_config_parser(nucleus_generator_parser, NucleusConfig())
