@@ -5,6 +5,9 @@ from pathlib import Path
 from gettext import gettext as _
 from argparse import ArgumentParser
 from pprint import pprint
+from queue import Queue
+from threading import Thread
+# from multiprocessing import Process
 
 import wx
 from gooey import GooeyParser
@@ -22,10 +25,12 @@ from gooey.gui.containers.application import GooeyApplication as Page
 # from gui.trees.dicttree import DictTree
 # from gui.trees.modeltree import ModelTree
 # from gui.trees.datasettree import DatasetTree
-from gui.tree_tree import TreeTree
+#  from gui.tree_tree import TreeTree
+from gui.module_tree import ModuleTree
 from gui.notebook.notebook import Notebook
 # from gui.notebook.pages import Page
 from gui.utils import Redirection
+from gui.progbar import TrainWindowManager, TestWindowManager, RunThread
 
 # if __name__ == '__main__':
 #    from trees.datasettree import DatasetTree
@@ -46,7 +51,8 @@ os.environ["UBUNTU_MENUPROXY"] = "0"
 class Frame(wx.Frame):
     # begin wxGlade: MyFrame.__init__
     # def __init__(self, DATASETDICT, MODELDICT,
-    def __init__(self, DATASET_TREE, MODEL_TREE,
+    #  def __init__(self, DATASET_TREE, MODEL_TREE,
+    def __init__(self, dataset_module, model_module,
                  *args, **kwds):
         super(Frame, self).__init__(*args, **kwds)
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
@@ -93,12 +99,14 @@ class Frame(wx.Frame):
         #         "./icons/diskette(1).png", wx.BITMAP_TYPE_ANY),
         #     wx.NullBitmap, wx.ITEM_NORMAL, _("Save"), "")
         # self.tool_bar.AddSeparator()
+        """
         self.tool_train_page = self.tool_bar.AddTool(
             4, _("Train Page"), wx.Bitmap(
                 "gui/icons/3d-modeling.png", wx.BITMAP_TYPE_ANY),
             wx.NullBitmap, wx.ITEM_NORMAL, _("Train Spec"), "")
 
         self.tool_bar.AddSeparator()
+        """
 
         self.tool_run = self.tool_bar.AddTool(
             5, _("Run"), wx.Bitmap(
@@ -106,25 +114,29 @@ class Frame(wx.Frame):
             wx.NullBitmap, wx.ITEM_NORMAL, _("Run"), "")
         self.tool_bar.EnableTool(self.tool_run.GetId(), False)
 
+        """
         self.tool_bar.AddSeparator()
 
         self.tool_test_page = self.tool_bar.AddTool(
             6, _("Test Page"), wx.Bitmap(
                 "gui/icons/background.png", wx.BITMAP_TYPE_ANY),
             wx.NullBitmap, wx.ITEM_NORMAL, _("Test"), "")
+        """
         # Tool Bar end
 
         # TreeCtrl
         self.dataset_tree = self.tree_ctrl_1 = \
-            TreeTree(tree=DATASET_TREE, parent=self, id=wx.ID_ANY)
-#            DatasetTree(DATASETDICT=DATASETDICT, parent=self, id=wx.ID_ANY)
-#            DictTree(trees, self, wx.ID_ANY)
-#            wx.TreeCtrl(self, wx.ID_ANY)
+            ModuleTree(root_module=dataset_module, parent=self, id=wx.ID_ANY)
+        #      TreeTree(tree=DATASET_TREE, parent=self, id=wx.ID_ANY)
+        #      DatasetTree(DATASETDICT=DATASETDICT, parent=self, id=wx.ID_ANY)
+        #      DictTree(trees, self, wx.ID_ANY)
+        #      wx.TreeCtrl(self, wx.ID_ANY)
         self.model_tree = self.tree_ctrl_2 = \
-            TreeTree(tree=MODEL_TREE, parent=self, id=wx.ID_ANY)
-#            ModelTree(MODELDICT=MODELDICT, parent=self, id=wx.ID_ANY)
-#            DictTree(trees, self, wx.ID_ANY)
-#            wx.TreeCtrl(self, wx.ID_ANY)
+            ModuleTree(root_module=model_module, parent=self, id=wx.ID_ANY)
+        #      TreeTree(tree=MODEL_TREE, parent=self, id=wx.ID_ANY)
+        #      ModelTree(MODELDICT=MODELDICT, parent=self, id=wx.ID_ANY)
+        #      DictTree(trees, self, wx.ID_ANY)
+        #      wx.TreeCtrl(self, wx.ID_ANY)
         self.item_to_page = dict()
         self.page_to_item = dict()
         # TreeCtrl end
@@ -192,13 +204,13 @@ class Frame(wx.Frame):
             wx.EVT_TOOL, self.OnLoad, id=self.tool_load.GetId())
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnSave, id=self.tool_save.GetId())
-        """
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnTrainPage,
             id=self.tool_train_page.GetId())
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnTestPage,
             id=self.tool_test_page.GetId())
+        """
         self.tool_bar.Bind(
             wx.EVT_TOOL, self.OnRun,
             id=self.tool_run.GetId())
@@ -211,7 +223,7 @@ class Frame(wx.Frame):
             wx.EVT_TREE_ITEM_ACTIVATED,
             self.modelTreeOnActivated)
         """
-        self.dataset_tree.Bind(
+        strainelf.dataset_tree.Bind(
             wx.EVT_TREE_ITEM_ACTIVATED, self.OnClosed)
         self.dataset_tree.Bind(
             wx.EVT_TREE_ITEM_EXPANDING, self.dataTreeOnExpand)
@@ -251,34 +263,44 @@ class Frame(wx.Frame):
                 self.notebook.SetSelection(idx)
                 return
 
-        node = self.model_tree.GetItemData(ItemID)
-        print(node.tag, node.data)
+        model = self.model_tree.GetItemData(ItemID)
+        if set(('build', 'run', 'generator')) < set(model.__dict__.keys()):
+            build_parser = \
+                model.build.build_parser(GooeyParser())
+            #  build = model.build.build
 
-        build_parser = \
-            node.data.build.build_parser(GooeyParser())
-        print(build_parser)
-        build = node.data.build.build
+            run_parser = \
+                model.run.run_parser(GooeyParser())
+            run = model.run.run
 
-        # model_parser.parse_args(['--help'])
-        # dataset_parser.parse_args(['--help'])
+            generator_parser = \
+                model.generator.generator_parser(GooeyParser())
+            #  generator = model.generator.generator
 
-        page = self.notebook.AddParserPage(
-            build_parser, "Build Page")
-        page.build_parser = build_parser
-        page.build = build
-        # page.build_parser = build_parser
-        # page.build = build_parser._defaults['build']
-        self.tool_bar.EnableTool(self.tool_run.GetId(), True)
+            # model_parser.parse_args(['--help'])
+            # dataset_parser.parse_args(['--help'])
+
+            #  page = self.notebook.AddDoublePage(
+            page = self.notebook.AddTriplePage(
+                build_parser, run_parser, generator_parser,
+                self.model_tree.GetItemText(ItemID))
+
+            #  page = self.notebook.AddParserPage(
+            #      build_parser, "Build Page")
+            page.build_parser = build_parser
+            #  page.build = build
+            page.run_parser = run_parser
+            page.run = run
+            page.generator_parser = generator_parser
+            #  page.generator = generator
+            self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         return
 
         node = self.model_tree.GetItemData(ItemID)
         ItemData = node.data
-        print(node)
         if isinstance(ItemData, ModuleType):
             if hasattr(ItemData, 'build_parser'):
                 title = _("Build Page")
-                print('/'.join(ItemData.__name__.split('.')[1:]))
-                print(node.identifier)
                 parser = ItemData.build_parser(
                     # save_path=Path(
                     #     'checkpoint/' +
@@ -326,6 +348,7 @@ class Frame(wx.Frame):
         #     self.page_to_item[event.GetSelection()], True)
         pass
 
+    """
     def OnTrainPage(self, event):
         model_node = self.model_tree.GetItemData(
             self.model_tree.GetRootItem())
@@ -338,7 +361,7 @@ class Frame(wx.Frame):
         train_setting = model_node.data.train.train_setting
         dataset_generator_parser = \
             dataset_node.data.image_generator_parser(GooeyParser())
-        # dataset_generator = dataset_node.data.image_generator
+        dataset_generator = dataset_node.data.image_generator
         print(train_setting_parser, dataset_generator_parser)
 
         # model_parser.parse_args(['--help'])
@@ -348,8 +371,10 @@ class Frame(wx.Frame):
             train_setting_parser, dataset_generator_parser, "Train Page")
         page.train_setting_parser = train_setting_parser
         page.train_setting = train_setting
+
         page.dataset_generator_parser = dataset_generator_parser
-        # page.dataset_generator = dataset_generator
+        page.dataset_generator = dataset_generator
+
         page.run = model_node.data.train.train
         # page.test = model_node.data.test
         # page.model_parser = model_node.data.trainParser
@@ -400,12 +425,59 @@ class Frame(wx.Frame):
 
         # page
         pass
+    """
 
     def OnRun(self, event):
         print("OnRun")
         page = self.notebook.GetPage(self.notebook.GetSelection())
 
-        if self.notebook.isOnDoublePage():
+        if self.notebook.isOnTriplePage():
+            model_config = page.panel_1.navbar.getActiveConfig()
+            model_config.resetErrors()
+            run_config = page.panel_2.navbar.getActiveConfig()
+            run_config.resetErrors()
+            dataset_config = page.panel_3.navbar.getActiveConfig()
+            dataset_config.resetErrors()
+
+            if (model_config.isValid()
+                    and run_config.isValid()
+                    and dataset_config.isValid()):
+                #  build_cmds = page.panel_1.buildCmd()
+                #  build_cmds = page.panel_1.buildCliString()
+                build_cmds = page.panel_1.buildString()
+                #  run_cmds = page.panel_2.buildCmd()
+                #  run_cmds = page.panel_2.buildCliString()
+                run_cmds = page.panel_2.buildString()
+                #  generator_cmds = page.panel_3.buildCmd()
+                #  generator_cmds = page.panel_3.buildCliString()
+                generator_cmds = page.panel_3.buildString()
+
+                build_args = page.build_parser.parse_args(build_cmds)
+                #  run_args = page.run_parser.parse_args(['train', '-h'])
+                #  print(run_args)
+                run_args = page.run_parser.parse_args(run_cmds)
+                generator_args = page.generator_parser.parse_args(
+                            generator_cmds)
+                try:
+                    #  generator_args = page.generator_parser.parse_args(
+                    #          ['-h'])
+                    #  generator_args = page.generator_parser.parse_args(
+                    #          ['generator_balloon', '-h'])
+                    config = (build_cmds, build_args,
+                              run_cmds, run_args,
+                              generator_cmds, generator_args)
+
+                    if 'train' in run_cmds[0]:
+                        self.train_with_progbar(page.run, config)
+                    elif'test' in run_cmds[0]:
+                        self.test_with_progbar(page.run, config)
+                    else:
+                        raise Exception('wrong run cmds')
+                except Exception as e:
+                    print(e)
+                    self.tool_bar.EnableTool(self.tool_run.GetId(), True)
+
+        elif self.notebook.isOnDoublePage():
             model_config = page.panel_1.navbar.getActiveConfig()
             model_config.resetErrors()
             dataset_config = page.panel_2.navbar.getActiveConfig()
@@ -416,8 +488,6 @@ class Frame(wx.Frame):
                 model_cmd, setting_cmds = cmds
                 cmds = page.panel_2.buildCmd()
                 dataset_cmd, dataset_generator_cmds = cmds
-                print(model_cmd, setting_cmds)
-                print(dataset_cmd, dataset_generator_cmds)
 
                 # try:
                 # print(page.train_setting_parser,
@@ -439,24 +509,22 @@ class Frame(wx.Frame):
                         page.dataset_generator_parser.parse_args(
                             dataset_generator_cmds)
 
-                    pprint(setting_args)
-                    pprint(dataset_generator_args)
+                    # pprint(setting_args)
+                    # pprint(dataset_generator_args)
 
                     setting = get_setting(model_cmd[0],
                                           setting_args)
-                    print('setting', setting)
                     dataset_generator =\
                         page.dataset_generator(
                             dataset_cmd[0], dataset_generator_args)
                         #  page.dataset_generator_parser._defaults[
                         #      dataset_cmd[0]](dataset_generator_args)
-                    print('dataset_generator', dataset_generator)
                     # page.train(train_setting, dataset_generator)
                     page.run(model_cmd[0], setting, dataset_generator)
                 except:
                     print("Unexpected error:", sys.exc_info()[0])
                     raise NotImplementedError
-                
+
                 # args = page.parser.parse_args()
                 # args.func(args)
                 # except:
@@ -467,11 +535,11 @@ class Frame(wx.Frame):
                 page.Layout()
 
         else:
+            assert False, "wrong line frame.py:538"
             config = page.navbar.getActiveConfig()
             config.resetErrors()
             if config.isValid():
                 cmd, cmds = page.buildCmd()
-                print('cmds:', cmds)
 
                 parser = page.build_parser
                 # print(parser)
@@ -491,6 +559,32 @@ class Frame(wx.Frame):
 
         # page
         pass
+
+    def train_with_progbar(self, train_function, config):
+        stream = Queue()
+        window_manager = TrainWindowManager(self, stream=stream)
+        train_thread = RunThread(
+                train_function, config, stream,
+                lambda: wx.CallAfter(self.tool_bar.EnableTool, self.tool_run.GetId(), True))
+        progbar_thread = Thread(target=window_manager.main_loop)
+
+        train_thread.start()
+        progbar_thread.start()
+
+        self.tool_bar.EnableTool(self.tool_run.GetId(), False)
+
+    def test_with_progbar(self, test_function, config):
+        stream = Queue()
+        window_manager = TestWindowManager(self, stream=stream)
+        train_thread = RunThread(
+            test_function, config, stream,
+            lambda: wx.CallAfter(self.tool_bar.EnableTool, self.tool_run.GetId(), True))
+        progbar_thread = Thread(target=window_manager.main_loop)
+
+        train_thread.start()
+        progbar_thread.start()
+
+        self.tool_bar.EnableTool(self.tool_run.GetId(), False)
 
 
 if __name__ == '__main__':

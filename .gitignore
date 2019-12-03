@@ -7,12 +7,16 @@ tags
 ### Python ###
 __pycache__/
 *.pyc
+venv/
 
 ### checkpoint ###
 checkpoint/
-*.ckpt* # tf weight
-*.h5 # keras model
-*.hdf5 # keras model
+# tf weight
+*.ckpt*
+# keras model
+*.h5
+# keras model
+*.hdf5
 
 ### result ###
 *.pickle

@@ -9,11 +9,12 @@ from gooey import Gooey, GooeyParser
 from svm import train as svm_
 from logistic.simple_logistic import train as simple_
 from logistic.multilayer_logistic import train as multi_
-from vgg.vgg16 import train as vgg16_
-from vgg.vgg19 import train as vgg19_
+#  from vgg.vgg16 import train as vgg16_
+#  from vgg.vgg19 import train as vgg19_
 from Xception import train as Xception_
 from MobileNet import train as MobileNet_
 from InceptionV3 import train as InceptionV3_
+from Mask_RCNN import train as Mask_RCNN_
 
 # from dataset.parser import generator
 
@@ -24,29 +25,32 @@ def train_setting_parser(
     assert isinstance(parser, (ArgumentParser, GooeyParser)), type(parser)
     subs = parser.add_subparsers()
 
-    svm_parser = subs.add_parser('svm')
-    svm_.train_setting_parser(svm_parser)
+    Mask_RCNN_parser = subs.add_parser('Mask_RCNN')
+    Mask_RCNN_.train_setting_parser(Mask_RCNN_parser)
 
-    simple_parser = subs.add_parser('simple_logistic')
-    simple_.train_setting_parser(simple_parser)
+    #  svm_parser = subs.add_parser('svm')
+    #  svm_.train_setting_parser(svm_parser)
 
-    multi_parser = subs.add_parser('multilayer_logistic')
-    multi_.train_setting_parser(multi_parser)
+    #  simple_parser = subs.add_parser('simple_logistic')
+    #  simple_.train_setting_parser(simple_parser)
 
-    vgg16_parser = subs.add_parser('vgg16')
-    vgg16_.train_setting_parser(vgg16_parser)
+    #  multi_parser = subs.add_parser('multilayer_logistic')
+    #  multi_.train_setting_parser(multi_parser)
 
-    vgg19_parser = subs.add_parser('vgg19')
-    vgg19_.train_setting_parser(vgg19_parser)
+    #  vgg16_parser = subs.add_parser('vgg16')
+    #  vgg16_.train_setting_parser(vgg16_parser)
 
-    Xception_parser = subs.add_parser('Xception')
-    Xception_.train_setting_parser(Xception_parser)
+    #  vgg19_parser = subs.add_parser('vgg19')
+    #  vgg19_.train_setting_parser(vgg19_parser)
 
-    MobileNet_parser = subs.add_parser('MobileNet')
-    MobileNet_.train_setting_parser(MobileNet_parser)
+    #  Xception_parser = subs.add_parser('Xception')
+    #  Xception_.train_setting_parser(Xception_parser)
 
-    InceptionV3_parser = subs.add_parser('InceptionV3')
-    InceptionV3_.train_setting_parser(InceptionV3_parser)
+    #  MobileNet_parser = subs.add_parser('MobileNet')
+    #  MobileNet_.train_setting_parser(MobileNet_parser)
+
+    #  InceptionV3_parser = subs.add_parser('InceptionV3')
+    #  InceptionV3_.train_setting_parser(InceptionV3_parser)
 
     return parser
     # return train_setting
@@ -69,16 +73,18 @@ def train_setting(model_cmd, args):
         return simple_.train_setting(args)
     elif 'multilayer_logistic' == model_cmd:
         return multi_.train_setting(args)
-    elif 'vgg16' == model_cmd:
-        return vgg16_.train_setting(args)
-    elif 'vgg19' == model_cmd:
-        return vgg19_.train_setting(args)
+    #  elif 'vgg16' == model_cmd:
+        #  return vgg16_.train_setting(args)
+    #  elif 'vgg19' == model_cmd:
+        #  return vgg19_.train_setting(args)
     elif 'Xception' == model_cmd:
         return Xception_.train_setting(args)
     elif 'MobileNet' == model_cmd:
         return MobileNet_.train_setting(args)
     elif 'InceptionV3' == model_cmd:
         return InceptionV3_.train_setting(args)
+    elif 'Mask_RCNN' == model_cmd:
+        return Mask_RCNN_.train_setting(args)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 
@@ -90,16 +96,18 @@ def train(model_cmd, args1, args2):
         simple_.train(args1, args2)
     elif 'multilayer_logistic' == model_cmd:
         multi_.train(args1, args2)
-    elif 'vgg16' == model_cmd:
-        vgg16_.train(args1, args2)
-    elif 'vgg19' == model_cmd:
-        vgg19_.train(args1, args2)
+    #  elif 'vgg16' == model_cmd:
+        #  vgg16_.train(args1, args2)
+    #  elif 'vgg19' == model_cmd:
+        #  vgg19_.train(args1, args2)
     elif 'Xception' == model_cmd:
         Xception_.train(args1, args2)
     elif 'MobileNet' == model_cmd:
         MobileNet_.train(args1, args2)
     elif 'InceptionV3' == model_cmd:
         InceptionV3_.train(args1, args2)
+    elif 'Mask_RCNN' == model_cmd:
+        return Mask_RCNN_.train(args1, args2)
     else:
         raise NotImplementedError('wrong model_cmd:', model_cmd)
 

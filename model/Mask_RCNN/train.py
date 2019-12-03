@@ -1,42 +1,72 @@
-from typing import Union, Callable
-from argparse import ArgumentParser
+#  from typing import Union, Callable
+from argparse import Namespace
 from gooey import Gooey, GooeyParser
 
-#  from model.Mask_RCNN import 
+from .train_config import train_config_parser, train_config
+from .config_samples import (BalloonConfig, CocoConfig,
+                             NucleusConfig, ShapesConfig)
+from ..utils.stream_callbacks import KerasQueueLogger
 
-from model.utils.callbacks import get_callbacks_parser, get_callbacks
 
+def train_parser(
+        parser: GooeyParser = GooeyParser(),
+        title="train Setting",
+        description="") -> GooeyParser:
 
-def train_setting_parser(
-        parser: Union[ArgumentParser, GooeyParser] = GooeyParser(),
-        title="Train Setting",
-        description="") -> Callable:
+    subs = parser.add_subparsers()
 
-    compile_.compile_parser(parser)
-    # compile_parser = parser.add_argument_group(
-    #     "Compile Parser")
-    # compile_parser = compileParser(compile_parser)
+    balloon_train_parser = subs.add_parser('train_balloon')
+    train_config_parser(balloon_train_parser,
+                        BalloonConfig(),)
 
-    train_setting_parser = parser.add_argument_group(
-        title=title,
-        description=description,
-        gooey_options={'columns': 3})
+    train_parser = subs.add_parser('train')
+    train_config_parser(train_parser)
 
-    train_setting_parser.add_argument(
-        "epoch-schedule", type=eval, nargs='+', default=[40, 120, 160],
-        metavar='<train epoch schdule>'
-        help="Epoch schedule per each training."
-    )
-    train_setting_parser.add_argument(
-        "--validation_steps", type=int, default=None,
-        help="number of steps (batches of samples) to validate before stopping"
-    )
-    train_setting_parser.add_argument(
-        "--shuffle",
-        action='store_true',
-        default=True
-    )
+    #  balloon_train_parser = subs.add_parser('train_balloon')
+    #  train_config_parser(balloon_train_parser,
+    #                      BalloonConfig(),)
 
-    get_callbacks_parser(parser)
+    #  coco_train_parser = subs.add_parser('train_coco')
+    #  train_config_parser(coco_train_parser,
+    #                      CocoConfig(),)
+
+    #  nucleus_train_parser = subs.add_parser('train_nucleus')
+    #  train_config_parser(nucleus_train_parser,
+    #                      NucleusConfig(),)
+
+    #  shapes_train_parser = subs.add_parser('train_shapes')
+    #  train_config_parser(shapes_train_parser,
+    #                      ShapesConfig(),)
 
     return parser
+    #  model = compile_.compile_(args)
+    #  return (model, args.epochs,
+    #          args.epochs if args.validation_steps is None
+    #          else args.validation_steps,
+    #          get_callbacks(args), args.shuffle)
+
+
+def train(t_config):
+    """Train the model."""
+    # Training dataset.
+    #  dataset_train = BalloonDataset()
+    #  dataset_train.load_balloon(args.dataset, "train")
+    #  dataset_train.prepare()
+
+    # Validation dataset
+    #  dataset_val = BalloonDataset()
+    #  dataset_val.load_balloon(args.dataset, "val")
+    #  dataset_val.prepare()
+    model, train_args, dataset_train, dataset_val, stream = t_config
+    # *** This training schedule is an example. Update to your needs ***
+    # Since we're using a very small dataset, and starting from
+    # COCO trained weights, we don't need to train too long. Also,
+    # no need to train all layers, just the heads should do it.
+    callback = KerasQueueLogger(stream)
+    print("Training network heads")
+    print('stream', stream)
+    model.train(dataset_train, dataset_val,
+                learning_rate=train_args.learning_rate,
+                epochs=train_args.epochs,
+                layers='heads',
+                custom_callbacks=[callback])

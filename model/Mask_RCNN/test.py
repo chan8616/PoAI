@@ -1,125 +1,125 @@
-import sys
+import json
+import datetime
+import numpy as np
 from pathlib import Path
+
+#  from typing import Union, Callable
+from argparse import Namespace
 from gooey import Gooey, GooeyParser
 
+from .test_config import test_config_parser, test_config
+from .config_samples import (BalloonConfig, CocoConfig,
+                             NucleusConfig, ShapesConfig)
+from .mrcnn.visualize import display_instances
+from matplotlib import pyplot as plt  # type: ignore
 
-try:
-    from . import build
-except ImportError:
-    import build
 
+def test_parser(
+        parser: GooeyParser = GooeyParser(),
+        title="train Setting",
+        description="") -> GooeyParser:
 
-def test_setting_parser(
-        parser: GooeyParser = GooeyParser(description="Test Options"),
-        ) -> GooeyParser:
+    subs = parser.add_subparsers()
 
-    build.build_parser(parser)
+    #  balloon_test_parser = subs.add_parser('test_balloon')
+    #  test_config_parser(balloon_test_parser,
+    #                     BalloonConfig(),)
 
-    text_parser = parser.add_argument_group(
-            'text',
-            'Text Options',
-            gooey_options={'show_border': True, 'columns': 4},
-            )
-    text_parser.add_argument(
-            '--save-excel-result',
-            metavar='Save text result: <True|False>',
-            action='store_true',
-            default=True,
-            )
-    text_parser.add_argument(
-            '--excel-file',
-            metavar='Text file: /path/to/excel.xlsx',
-            help="Path to xlsx file to save output values.",
-            default="logs/Mask_RCNN/result.xlsx",
-            )
+    test_parser = subs.add_parser('test')
+    test_config_parser(test_parser)
 
-    image_parser = parser.add_argument_group(
-            'image',
-            'Image Options',
-            gooey_options={'show_border': True, 'columns': 4},
-            )
-    image_parser.add_argument(
-            '--save-image-result',
-            metavar='Save image result: <True|False>',
-            action='store_true',
-            default=True,
-            )
-    image_parser.add_argument(
-            '--image-directory',
-            metavar='Image directory: /path/to/image/',
-            help="Directory to save result image.",
-            default="logs/Mask_RCNN/",
-            )
+    #  balloon_train_parser = subs.add_parser('train_balloon')
+    #  train_config_parser(balloon_train_parser,
+    #                      BalloonConfig(),)
+
+    #  coco_train_parser = subs.add_parser('test_coco')
+    #  train_config_parser(coco_train_parser,
+    #                      CocoConfig(),)
+
+    #  nucleus_train_parser = subs.add_parser('train_nucleus')
+    #  train_config_parser(nucleus_train_parser,
+    #                      NucleusConfig(),)
+
+    #  shapes_train_parser = subs.add_parser('train_shapes')
+    #  train_config_parser(shapes_train_parser,
+    #                      ShapesConfig(),)
 
     return parser
+    #  model = compile_.compile_(args)
+    #  return (model, args.epochs,
+    #          args.epochs if args.validation_steps is None
+    #          else args.validation_steps,
+    #          get_callbacks(args), args.shuffle)
 
 
-def test_setting(args):
-    return build.build(args)
-
-
-def test(test_setting, dataset_setting):
-    #  print(test_setting)
-    #  print(dataset_setting)
-    mode, ModelConfig, MODEL_DIR, args = test_setting
-    dataset, makeDatasetConfig = dataset_setting
-    #  print('args', args)
-
-    #  class Config(DatasetConfig, ModelConfig):
-    Config = makeDatasetConfig(ModelConfig)
-    config = Config()
-    print(config.display())
-
-    from . import modellib
-
-    model = modellib.MaskRCNN(
-            mode=mode,
-            model_dir=MODEL_DIR,
-            config=config)
-    file_names, images = dataset
-    file_names, images = (list(file_names), list(images))
-    dataset = (file_names, images)
+def test(model,
+         test_args,
+         dataset_test,
+         stream=None):
+    # Pick COCO images from the dataset
+    image_ids = dataset_test.image_ids
 
     results = []
-    for file_name, image in zip(*dataset):
-        try:
-            results += model.detect([image])
-        except ValueError:
-            print("{} is not loaded.".format(file_name))
-            file_names.remove(file_name)
-            images.remove(image)
-            continue
 
-        if args.save_image_result:
-            from . import visualize
-            from matplotlib import pyplot as plt
+    #  now = datetime.datetime.now()
+    #  result_dir = Path("{}{:%Y%m%dT%H%M}".format(
+    #          str(Path(test_args.result_path).parent), now))
+    #  if not result_dir.exists():
+    #      result_dir.mkdir(parents=True)
+    result_path = Path(model.result_dir).joinpath(
+            Path(test_args.result_path).name)
 
-            Path(args.image_directory).mkdir(exist_ok=True, parents=True)
-            result = results[-1]
-            fig, ax = plt.subplots(1, figsize=image.shape[:2])
+    #  image_results = []
+    if stream is not None:
+        stream.put(('Testing...', None, None))
+    total = len(image_ids)
+    for i, image_id in enumerate(image_ids):
+        # Load image
+        image = dataset_test.load_image(image_id)
+        if stream is not None:
+            stream.put(('test', (i, total), None))
+        print('predict {}/{} images...'.format(
+            i+1, total))
+        # Run detection
+        r = model.detect([image], verbose=0)[0]
 
-            visualize.display_instances(image, result['rois'],
-                                        result['masks'], result['class_ids'],
-                                        config.CLASS_NAMES, result['scores'],
-                                        ax=ax)
-            # TODO: savefig segmentatil fault
-            #  fig.savefig(args.image_directory + file_name)
-            #  try:
-            #      fig.savefig(Path(args.image_directory).joinpath(file_name))
-            #  except Exception as e:
-            #      print(e)
-            #      break
+        if test_args.show_image_result or test_args.save_image_result:
+            image_name = dataset_test.image_info[image_id]['id']
+            fig, ax = plt.subplots()
+            display_instances(image, r['rois'],
+                              r['masks'], r['class_ids'],
+                              dataset_test.class_names,
+                              r['scores'],
+                              image_name,
+                              ax=ax)
+            if test_args.show_image_result:
+                plt.show(block=False)
+                plt.pause(1)
+            if test_args.save_image_result:
+                image_save_path = model.result_dir.joinpath(image_name)
+                print('saving image to {}...'.format(image_save_path))
+                plt.savefig(str(image_save_path))
+            plt.close()
 
-        if args.save_excel_result:
-            import pandas as pd
-            df = pd.DataFrame(results)
-            Path(args.excel_file).parent.mkdir(exist_ok=True, parents=True)
-            df.to_excel(args.excel_file, engine='xlsxwriter')
+        results += [{k: v.tolist() for k, v in r.items()}]
+
+        # Image result
+        #  image_results = build_coco_results(dataset, coco_image_ids[i:i + 1],
+        #                                     r["rois"], r["class_ids"],
+        #                                     r["scores"],
+        #                                     r["masks"].astype(np.uint8))
+        #  image_results.extend(image_results)
+    print('saving results to {}...'.format(result_path))
+    with open(str(result_path), 'w') as f:
+        json.dump(results, f, cls=NumpyEncoder)
+    print('test complete')
+    if stream is not None:
+        stream.put('end')
+    return results
 
 
-if __name__ == "__main__":
-    parser = Gooey(test_setting_parser)()
-    import sys
-    print(sys.argv[0])
-    args = parser.parse_args()
-    #  print(test_setting(args))
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)

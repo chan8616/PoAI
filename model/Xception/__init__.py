@@ -1,1 +1,1 @@
-from Xception import build, train, test
+from . import build, run, generator
