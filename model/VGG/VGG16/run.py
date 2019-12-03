@@ -5,7 +5,7 @@ from .model import Model
 from model.keras_applications import run as runlib
 from .config_samples import (VGG16TrainConfig,
                              #  VGG16ImagenetConfig,
-                             #  VGG16CIFAR10Config,
+                             VGG16CIFAR10Config,
                              VGG16OlivettiFacesConfig,
                              )
 
