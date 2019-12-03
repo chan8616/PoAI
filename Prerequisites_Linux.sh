@@ -1,1 +1,0 @@
-apt-get install -y dpkg-dev build-essential libjpeg-dev libtiff-dev libsdl2-dev libgstreamer-plugins-base1.0-dev libnotify-dev freeglut3 freeglut3-dev libsm-dev libgtk-3-dev libwebkit2gtk-4.0-dev libxtst-dev
