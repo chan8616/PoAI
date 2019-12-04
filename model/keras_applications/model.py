@@ -192,7 +192,8 @@ class KerasAppBaseModel():
         # Include placeholders that get filled by Keras.
         self.checkpoint_path = os.path.join(
                 self.log_dir,
-                "mask_rcnn_{}_*epoch*.h5".format(
+                "{}_{}_*epoch*.h5".format(
+                    str(Path(self.build_config.LOG_DIR).name).lower(),
                     self.build_config.NAME.lower()))
         self.checkpoint_path = self.checkpoint_path.replace(
             "*epoch*", "{epoch:04d}")
