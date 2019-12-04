@@ -55,7 +55,7 @@ class KerasAppBaseModel():
             inputs=keras_model.input,
             outputs=x,
             name=build_config.NAME)
-
+        self.model_dir = build_config.LOG_DIR
         self.set_log_dir()
 
     def find_last(self):
@@ -79,7 +79,7 @@ class KerasAppBaseModel():
         dir_name = os.path.join(self.model_dir, dir_names[-1])
         # Find the last checkpoint
         checkpoints = next(os.walk(dir_name))[2]
-        checkpoints = filter(lambda f: f.startswith("mask_rcnn"), checkpoints)
+        checkpoints = filter(lambda f: f.startswith(self.build_config.NAME.lower()), checkpoints)
         checkpoints = sorted(checkpoints)
         if not checkpoints:
             import errno
@@ -171,7 +171,7 @@ class KerasAppBaseModel():
             # \path\to\logs\coco20171029T2315\mask_rcnn_coco_0001.h5 (Windows)
             # /path/to/logs/coco20171029T2315/mask_rcnn_coco_0001.h5 (Linux)
             regex = r".*[/\\][\w-]+(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})" \
-                    r"[/\\]mask\_rcnn\_[\w-]+(\d{4})\.h5"
+                    r"[/\\]*[\w-]+(\d{4})\.h5"
             m = re.match(regex, model_path)
             if m:
                 now = datetime.datetime(
@@ -185,15 +185,14 @@ class KerasAppBaseModel():
                 print('Re-starting from epoch %d' % self.epoch)
 
         # Directory for training logs
-        self.log_dir = os.path.join(self.build_config.LOG_DIR, "{}{:%Y%m%dT%H%M}".format(
+        self.log_dir = os.path.join(self.model_dir, "{}{:%Y%m%dT%H%M}".format(
             self.build_config.NAME.lower(), now))
 
         # Path to save after each epoch.
         # Include placeholders that get filled by Keras.
         self.checkpoint_path = os.path.join(
                 self.log_dir,
-                "{}_{}_*epoch*.h5".format(
-                    str(Path(self.build_config.LOG_DIR).name).lower(),
+                "{}_*epoch*.h5".format(
                     self.build_config.NAME.lower()))
         self.checkpoint_path = self.checkpoint_path.replace(
             "*epoch*", "{epoch:04d}")
