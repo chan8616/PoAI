@@ -115,6 +115,7 @@ class LogisticModel(modellib.KerasAppBaseModel):
             callbacks=callbacks,
             validation_data=val_generator,
             validation_steps=len(val_generator),
+            verbose=0,
             #  max_queue_size=100,
             #  workers=workers,
             #  use_multiprocessing=True,
