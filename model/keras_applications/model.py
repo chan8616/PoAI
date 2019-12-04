@@ -185,7 +185,7 @@ class KerasAppBaseModel():
                 print('Re-starting from epoch %d' % self.epoch)
 
         # Directory for training logs
-        self.log_dir = os.path.join(self.model_dir, "{}{:%Y%m%dT%H%M}".format(
+        self.log_dir = os.path.join(self.build_config.LOG_DIR, "{}{:%Y%m%dT%H%M}".format(
             self.build_config.NAME.lower(), now))
 
         # Path to save after each epoch.
