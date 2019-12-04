@@ -73,12 +73,11 @@ class TrainWindow(wx.Frame):
         self.batch_losses_plot, = self.ax.plot(
                 *(([], []) if not batch_losses else zip(*batch_losses)),
                 'g--', label='Train Batch', alpha=0.3)
-        epochs = range(1, len(epoch_losses) + 1, 1)
         self.epoch_losses_plot, = self.ax.plot(
-                *(([], []) if not epoch_losses else (epochs, epoch_losses)),
+                *(([], []) if not epoch_losses else zip(*epoch_losses)),
                 'c.-', label='Train Epoch')
         self.epoch_val_losses_plot, = self.ax.plot(
-                *(([], []) if not epoch_val_losses else (epochs, epoch_val_losses)),
+                *(([], []) if not epoch_val_losses else zip(*epoch_val_losses)),
                 'b.-', label='Validation Epoch')
         if batch_losses or epoch_losses or epoch_val_losses:
             self.ax.legend()
@@ -138,13 +137,17 @@ class TrainWindowManager(object):
             elif data_head == 'epoch':
                 current_epoch_num, epoch_loss, epoch_acc, epoch_val_loss, epoch_val_acc = data_body
                 current_epoch = current_epoch_num
-                self.epoch_losses.append(epoch_loss)
-                self.epoch_acces.append(epoch_acc)
-                self.epoch_val_losses.append(epoch_val_loss)
-                self.epoch_val_acces.append(epoch_val_acc)
+                self.epoch_losses.append((current_epoch, epoch_loss))
+                self.epoch_acces.append((current_epoch, epoch_acc))
+                self.epoch_val_losses.append((current_epoch, epoch_val_loss))
+                self.epoch_val_acces.append((current_epoch, epoch_val_acc))
             else:
                 print_graph = True
                 self.cur_step_text = data_head
+                if data_head.startswith('Epoch'):
+                    current_epoch_num = data_body
+                    current_epoch = current_epoch_num
+
 
             if data_msg is not None:
                 self.msg_text = data_msg
@@ -153,7 +156,8 @@ class TrainWindowManager(object):
             if print_graph:
                 self.train_window.update_loss_graph(self.batch_losses,
                                                     self.epoch_losses,
-                                                    self.epoch_val_losses,)
+                                                    self.epoch_val_losses,
+                                                    )
 
 
 class TestWindow(wx.Frame):
