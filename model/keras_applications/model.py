@@ -55,7 +55,7 @@ class KerasAppBaseModel():
             inputs=keras_model.input,
             outputs=x,
             name=build_config.NAME)
-
+        self.model_dir = build_config.LOG_DIR
         self.set_log_dir()
 
     def find_last(self):
@@ -79,7 +79,7 @@ class KerasAppBaseModel():
         dir_name = os.path.join(self.model_dir, dir_names[-1])
         # Find the last checkpoint
         checkpoints = next(os.walk(dir_name))[2]
-        checkpoints = filter(lambda f: f.startswith("mask_rcnn"), checkpoints)
+        checkpoints = filter(lambda f: f.startswith(self.build_config.NAME.lower()), checkpoints)
         checkpoints = sorted(checkpoints)
         if not checkpoints:
             import errno
@@ -171,7 +171,7 @@ class KerasAppBaseModel():
             # \path\to\logs\coco20171029T2315\mask_rcnn_coco_0001.h5 (Windows)
             # /path/to/logs/coco20171029T2315/mask_rcnn_coco_0001.h5 (Linux)
             regex = r".*[/\\][\w-]+(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})" \
-                    r"[/\\]mask\_rcnn\_[\w-]+(\d{4})\.h5"
+                    r"[/\\]*[\w-]+(\d{4})\.h5"
             m = re.match(regex, model_path)
             if m:
                 now = datetime.datetime(
@@ -192,7 +192,7 @@ class KerasAppBaseModel():
         # Include placeholders that get filled by Keras.
         self.checkpoint_path = os.path.join(
                 self.log_dir,
-                "mask_rcnn_{}_*epoch*.h5".format(
+                "{}_*epoch*.h5".format(
                     self.build_config.NAME.lower()))
         self.checkpoint_path = self.checkpoint_path.replace(
             "*epoch*", "{epoch:04d}")
@@ -266,20 +266,32 @@ class KerasAppBaseModel():
         #      workers = 0
         #  else:
         #      workers = multiprocessing.cpu_count()
-
-        self.keras_model.fit_generator(
-            train_generator,
-            initial_epoch=self.epoch,
-            epochs=train_config.EPOCHS,
-            steps_per_epoch=len(train_generator),
-            callbacks=callbacks,
-            validation_data=val_generator,
-            validation_steps=len(val_generator),
-            verbose=0,
-            #  max_queue_size=100,
-            #  workers=workers,
-            #  use_multiprocessing=True,
-        )
+        if val_generaotr is not None:
+            self.keras_model.fit_generator(
+                train_generator,
+                initial_epoch=self.epoch,
+                epochs=train_config.EPOCHS,
+                steps_per_epoch=len(train_generator),
+                callbacks=callbacks,
+                validation_data=val_generator,
+                validation_steps=len(val_generator),
+                verbose=0,
+                #  max_queue_size=100,
+                #  workers=workers,
+                #  use_multiprocessing=True,
+            )
+        else:
+            self.keras_model.fit_generator(
+                train_generator,
+                initial_epoch=self.epoch,
+                epochs=train_config.EPOCHS,
+                steps_per_epoch=len(train_generator),
+                callbacks=callbacks,
+                verbose=0,
+                #  max_queue_size=100,
+                #  workers=workers,
+                #  use_multiprocessing=True,
+            )
         self.epoch = max(self.epoch, train_config.EPOCHS)
 
     def test(self, test_generator, result_save_path, stream=None):

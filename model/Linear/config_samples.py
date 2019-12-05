@@ -9,6 +9,7 @@ from .generator_config import LinearGeneratorConfig
 class LinearBostonHousePricesBuildConfig(
         LinearBuildConfig,
         ):
+    NAME = os.path.join(LinearBuildConfig.NAME, 'boston_house_prices')
     BUILD_NAME = os.path.join(LinearBuildConfig.BUILD_NAME, 'boston_house_prices')
 
     FLATTEN_INPUT_SHAPE = [13]  # type: ignore

@@ -20,6 +20,7 @@ POOLINGS = 'flatten avg max'.split()
 
 class BuildConfig(ModelConfig):
     NAME = 'Untitled'
+    LOG_DIR = str(Path(ModelConfig.MODEL_DIR).joinpath('Untitled'))
 
     #  INPUT_SHAPE: Optional[Tuple]
     INPUT_SHAPE = None  # type: ignore
@@ -31,6 +32,7 @@ class BuildConfig(ModelConfig):
 
     def update(self, args: Namespace):
         self.NAME = str(Path(args.log_dir).name)
+        self.LOG_DIR = str(Path(args.log_dir).parent)
 
         self.INPUT_SHAPE = args.input_shape
 
