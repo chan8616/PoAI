@@ -28,7 +28,8 @@ class LinearTrainConfig():
     MONITOR = 'loss'
 
     def update(self, args: Namespace):
-        self.WEIGHT = args.load_pretrained_weights
+        self.WEIGHT = (args.load_pretrained_weights if args.load_pretrained_weights
+                       else args.load_pretrained_file)
         #  self.WEIGHT_PATH = args.load_specific_weights
         self.FREEZE_LAYER = args.freeze_layer
         self.EPOCHS = args.epochs
@@ -53,10 +54,10 @@ class LinearTrainConfig():
         #      '--load_specific_weights',
         #      choices=
         #      )
-        #  load_parser.add_argument(
-        #      '--load_pretrained_weights',
-        #      widget = 'FildChooser'
-        #      )
+        load_parser.add_argument(
+            '--load_pretrained_file',
+            widget='FileChooser'
+        )
 
         layers_parser = parser.add_argument_group()
         layers_parser.add_argument(
@@ -133,12 +134,12 @@ class LinearTrain():
     def train(self, model, train_generator, valid_generator, stream):
         """Train the model."""
         stream.put(('Loading...', None, None))
-        if self.config.WEIGHT in WEIGHTS:
+        if self.config.WEIGHT:
             if self.config.WEIGHT == "last":
                 # find last trained weights
                 weights_path = model.find_last()
-            #  else:
-            #      weights_path = self.config.WEIGHT_PATH
+            else:
+                weights_path = self.config.WEIGHT
 
             model.load_weights(weights_path, by_name=True)
 
