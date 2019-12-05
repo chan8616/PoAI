@@ -80,7 +80,7 @@ def run(config):
         # Start from ImageNet trained weights
         weights_path = model.get_imagenet_weights()
     else:
-        weights_path = run_args.load_pretrained_weights
+        weights_path = run_args.load_pretrained_file
 
     if 'coco' not in run_cmd and \
             run_args.load_pretrained_weights == "coco":

@@ -22,16 +22,16 @@ def train_config_parser(
     load_parser.add_argument(
         '--load_pretrained_weights',
         choices=['coco', 'imagenet', 'last'],
-        default='coco',
+        # default='coco',
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',
     #      choices=
     #      )
-    #  load_parser.add_argument(
-    #      '--load_pretrained_weights',
-    #      widget = 'FildChooser'
-    #      )
+    load_parser.add_argument(
+        '--load_pretrained_file',
+        widget='FileChooser'
+    )
 
     steps_parser = parser.add_argument_group(
         title="Train Steps",
