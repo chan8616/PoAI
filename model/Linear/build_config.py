@@ -23,6 +23,8 @@ class LinearBuildConfig(ModelConfig):
     NAME = 'Linear'
     BUILD_NAME = 'build'
 
+    LOG_DIR = str(Path(ModelConfig.MODEL_DIR).joinpath('Linear'))
+
     FLATTEN_INPUT_SHAPE = [0]
 
     HIDDEN_LAYERS = []
@@ -30,6 +32,7 @@ class LinearBuildConfig(ModelConfig):
 
     def update(self, args: Namespace):
         self.NAME = str(Path(args.log_dir).name)
+        self.LOG_DIR = str(Path(args.log_dir).parent)
 
         self.FLATTEN_INPUT_SHAPE = args.flatten_input_shape
 

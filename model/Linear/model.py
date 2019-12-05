@@ -43,7 +43,7 @@ class LinearModel(modellib.KerasAppBaseModel):
             inputs=inp, 
             outputs=x,
             name=build_config.NAME)
-
+        self.model_dir = build_config.LOG_DIR
         self.set_log_dir()
 
     def train(self, train_config, train_generator, val_generator,
@@ -104,6 +104,7 @@ class LinearModel(modellib.KerasAppBaseModel):
                 callbacks=callbacks,
                 validation_data=val_generator,
                 validation_steps=len(val_generator),
+                verbose=0,
                 #  max_queue_size=100,
                 #  workers=workers,
                 #  use_multiprocessing=True,
@@ -115,6 +116,7 @@ class LinearModel(modellib.KerasAppBaseModel):
                 epochs=train_config.EPOCHS,
                 steps_per_epoch=len(train_generator),
                 callbacks=callbacks,
+                verbose=0,
                 #  max_queue_size=100,
                 #  workers=workers,
                 #  use_multiprocessing=True,
@@ -144,7 +146,6 @@ class LinearModel(modellib.KerasAppBaseModel):
             x, y = test_generator._get_batches_of_samples(idx)
 
             pred = self.keras_model.predict_on_batch(x)
-            print(x.shape, pred.shape)
 
             df = pd.DataFrame(
                     pred,
