@@ -337,7 +337,7 @@ class Frame(wx.Frame):
         self.tool_bar.EnableTool(self.tool_run.GetId(), True)
 
     def OnPageChanged(self, event):
-        if self.notebook.isOnDoublePage():
+        if self.notebook.isOnTriplePage():
             self.tool_bar.EnableTool(self.tool_run.GetId(), True)
         else:
             self.tool_bar.EnableTool(self.tool_run.GetId(), False)
