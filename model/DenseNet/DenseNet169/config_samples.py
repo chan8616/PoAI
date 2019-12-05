@@ -8,6 +8,12 @@ from generator.image_classification.config_samples import (DIR_GEN_CIFAR10,
 from .train_config import DenseNet169TrainConfig
 from .build_config import DenseNet169Config
 
+from model.keras_applications.test_config import TestConfig
+
+
+class DenseNet169TestConfig(TestConfig):
+    NAME = 'DenseNet169'
+
 
 class DenseNet169ImagenetConfig(
         DenseNet169Config, DenseNet169TrainConfig):

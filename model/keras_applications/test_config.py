@@ -48,11 +48,10 @@ def test_config_parser(
     log_parser.add_argument(
         "--result-path", type=str,
         metavar='Result File Path.',
-        default=(Path(test_config.RESULT_DIR).joinpath('untitled/result.csv')
-                 if test_config.NAME is None
-                 else Path(test_config.RESULT_DIR).joinpath(
-                     str(test_config.NAME)).joinpath('result.csv')),
-        help='{}{}TIME{}/result.json'.format(
+        default=(Path(test_config.RESULT_DIR).joinpath('untitled' if test_config.NAME is None
+                                                       else str(test_config.NAME))
+                 ).joinpath('result.csv'),
+        help='{}{}TIME{}/result.csv'.format(
             Path(test_config.RESULT_DIR).joinpath('RESULT_NAME'),
             '{', '}')
         )

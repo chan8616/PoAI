@@ -8,6 +8,12 @@ from generator.image_classification.config_samples import (DIR_GEN_CIFAR10,
 from .train_config import XceptionTrainConfig
 from .build_config import XceptionConfig
 
+from model.keras_applications.test_config import TestConfig
+
+
+class XceptionTestConfig(TestConfig):
+    NAME = 'Xception'
+
 
 class XceptionImagenetConfig(
         XceptionConfig, XceptionTrainConfig):

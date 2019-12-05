@@ -8,6 +8,12 @@ from generator.image_classification.config_samples import (DIR_GEN_CIFAR10,
 from .train_config import ResNet50TrainConfig
 from .build_config import ResNet50Config, POOLINGS
 
+from model.keras_applications.test_config import TestConfig
+
+
+class ResNet50TestConfig(TestConfig):
+    NAME = 'ResNet50'
+
 
 class ResNet50ImagenetConfig(
         ResNet50Config, ResNet50TrainConfig):

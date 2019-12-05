@@ -4,6 +4,7 @@ from gooey import Gooey, GooeyParser
 from .model import Model
 from model.keras_applications import run as runlib
 from .config_samples import (DenseNet169TrainConfig,
+                             DenseNet169TestConfig,
                              DenseNet169ImagenetConfig,
                              DenseNet169OlivettiFacesConfig,
                              DenseNet169CIFAR10Config)
@@ -17,6 +18,7 @@ def run_parser(
     return runlib.run_parser(parser,
                              title,
                              train_config=DenseNet169TrainConfig(),
+                             test_config= DenseNet169TestConfig(),
                              train_configs=OrderedDict([
                                  ('train_olivetti_faces', DenseNet169OlivettiFacesConfig()),
                                  ('train_cifar10', DenseNet169CIFAR10Config()),
