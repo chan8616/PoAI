@@ -266,7 +266,7 @@ class KerasAppBaseModel():
         #      workers = 0
         #  else:
         #      workers = multiprocessing.cpu_count()
-        if val_generaotr is not None:
+        if val_generator is not None:
             self.keras_model.fit_generator(
                 train_generator,
                 initial_epoch=self.epoch,
