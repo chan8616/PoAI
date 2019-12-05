@@ -38,7 +38,7 @@ class RidgeBuildConfig(ModelConfig):
             gooey_options={'show_border': True, 'columns': 2}
             )
         ridge_parser.add_argument(
-            "--alpha",
+            "--alpha", type=float,
             metavar='Alapha',
             default=self.ALPHA,
             help='Regularization strength.',
