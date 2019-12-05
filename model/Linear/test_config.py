@@ -54,7 +54,7 @@ class LinearTestConfig():
             metavar='Result File Path.',
             default=Path(self.RESULT_DIR).joinpath(
                          self.RESULT_NAME).joinpath('result.csv'),
-            help='{}{}TIME{}/result.json'.format(
+            help='{}{}TIME{}/result.csv'.format(
                 Path(self.RESULT_DIR).joinpath('RESULT_NAME'),
                 '{', '}')
             )
