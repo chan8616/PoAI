@@ -49,12 +49,11 @@ class LogisticModel(modellib.KerasAppBaseModel):
                       name='fc{}'.format(i))(x)
         x = Dense(build_config.CLASSES, activation='softmax')(x)
 
-        print(Model)
         self.keras_model = Model(
             inputs=inp, 
             outputs=x,
             name=build_config.NAME)
-
+        self.model_dir = build_config.LOG_DIR
         self.set_log_dir()
 
     def train(self, train_config, train_generator, val_generator,
@@ -107,19 +106,32 @@ class LogisticModel(modellib.KerasAppBaseModel):
         #  else:
         #      workers = multiprocessing.cpu_count()
 
-        self.keras_model.fit_generator(
-            train_generator,
-            initial_epoch=self.epoch,
-            epochs=train_config.EPOCHS,
-            steps_per_epoch=len(train_generator),
-            callbacks=callbacks,
-            validation_data=val_generator,
-            validation_steps=len(val_generator),
-            verbose=0,
-            #  max_queue_size=100,
-            #  workers=workers,
-            #  use_multiprocessing=True,
-        )
+        if val_generator is not None:
+            self.keras_model.fit_generator(
+                train_generator,
+                initial_epoch=self.epoch,
+                epochs=train_config.EPOCHS,
+                steps_per_epoch=len(train_generator),
+                callbacks=callbacks,
+                validation_data=val_generator,
+                validation_steps=len(val_generator),
+                verbose=0,
+                #  max_queue_size=100,
+                #  workers=workers,
+                #  use_multiprocessing=True,
+            )
+        else:
+            self.keras_model.fit_generator(
+                train_generator,
+                initial_epoch=self.epoch,
+                epochs=train_config.EPOCHS,
+                steps_per_epoch=len(train_generator),
+                callbacks=callbacks,
+                verbose=0,
+                #  max_queue_size=100,
+                #  workers=workers,
+                #  use_multiprocessing=True,
+            )
         self.epoch = max(self.epoch, train_config.EPOCHS)
 
     def set_trainable(self, layers):
