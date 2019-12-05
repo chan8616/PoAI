@@ -78,7 +78,9 @@ class LinearBuildConfig(ModelConfig):
             gooey_options={'show_border': True, 'columns': 2}
             )
         log_parser.add_argument(
-            "--print-model-summary", action='store_true',
+            "--print-model-summary",
+            action='store_true',
+            default=True,
             )
         log_parser.add_argument(
             "--log-dir", type=str,

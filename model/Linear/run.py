@@ -71,6 +71,9 @@ class Run():
         #  build_config = LinearBuildConfig()
         #  build_config.update(build_args)
         model = LinearBuild(build_config).build()
+        if build_args.print_model_summary:
+            print(model.keras_model.summary())
+
 
         stream.put(('Generating...', None, None))
         generator_config = LinearGeneratorConfigList().config(

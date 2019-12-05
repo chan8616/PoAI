@@ -37,7 +37,7 @@ class LinearModel(modellib.KerasAppBaseModel):
         for i, nodes in enumerate(build_config.HIDDEN_LAYERS):
             x = Dense(nodes, activation='relu',
                       name='fc{}'.format(i))(x)
-        x = Dense(build_config.TARGET_SIZE)(x)
+        x = Dense(build_config.TARGET_SIZE, name='prediction')(x)
 
         self.keras_model = Model(
             inputs=inp, 
