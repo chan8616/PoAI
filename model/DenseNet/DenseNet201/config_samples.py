@@ -7,6 +7,11 @@ from generator.image_classification.config_samples import (DIR_GEN_CIFAR10,
                                                            COLOR_MODES,)
 from .train_config import DenseNet201TrainConfig
 from .build_config import DenseNet201Config
+from model.keras_applications.test_config import TestConfig
+
+
+class DenseNet201TestConfig(TestConfig):
+    NAME = 'DenseNet201'
 
 
 class DenseNet201ImagenetConfig(

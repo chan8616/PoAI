@@ -10,7 +10,7 @@ from .train_config import WEIGHTS
 
 
 class LinearTestConfig():
-    RESULT_NAME = 'untitled'
+    RESULT_NAME = 'Linear'
     TEST_NAME = 'test'
 
     WEIGHT = 'last'
@@ -39,10 +39,10 @@ class LinearTestConfig():
         #      '--load_specific_weights',
         #      choices=
         #      )
-        #  load_parser.add_argument(
-        #      '--load_pretrained_weights',
-        #      widget = 'FildChooser'
-        #      )
+        load_parser.add_argument(
+            '--load_pretrained_file',
+            widget='FileChooser'
+        )
 
         log_parser = parser.add_argument_group(
             'Log',

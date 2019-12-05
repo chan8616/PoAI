@@ -58,7 +58,7 @@ def run(model: KerasAppBaseModel, config, train_config: TrainConfig = TrainConfi
     build(model, build_args)
 
     stream.put(('Loading...', None, None))
-    if run_args.load_pretrained_weights:
+    if run_args.load_pretrained_weights or run_args.load_pretrained_file:
         if run_args.load_pretrained_weights == "imagenet":
             # Start from ImageNet trained weights
             weights_path = model.get_imagenet_weights()
@@ -66,7 +66,7 @@ def run(model: KerasAppBaseModel, config, train_config: TrainConfig = TrainConfi
             # Find last trained weights
             weights_path = model.find_last()
         else:
-            weights_path = run_args.load_pretrained_weights
+            weights_path = run_args.load_pretrained_file
 
         model.load_weights(weights_path, by_name=True)
 

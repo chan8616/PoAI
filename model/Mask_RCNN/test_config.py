@@ -11,7 +11,7 @@ from .mrcnn.config import Config
 from .fix_validator import fix_validator
 from .get_available_gpus import get_available_gpus
 
-RESULT_DIR = Path("results/Mask_RCNN/")
+RESULT_DIR = Path("results/")
 
 
 def test_config_parser(
@@ -25,16 +25,16 @@ def test_config_parser(
     load_parser.add_argument(
         '--load_pretrained_weights',
         choices=['coco', 'imagenet', 'last'],
-        default='last',
+        # default='last',
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',
     #      choices=
     #      )
-    #  load_parser.add_argument(
-    #      '--load_pretrained_weights',
-    #      widget = 'FildChooser'
-    #      )
+    load_parser.add_argument(
+          '--load_pretrained_file',
+          widget='FileChooser'
+    )
 
     log_parser = parser.add_argument_group(
         'Log',
@@ -56,10 +56,9 @@ def test_config_parser(
     log_parser.add_argument(
         "--result-path", type=str,
         metavar='Result File Path.',
-        default=(RESULT_DIR.joinpath('untitled/result.json')
-                 if config.NAME is None
-                 else RESULT_DIR.joinpath(
-                     str(config.NAME)).joinpath('result.json')),
+        default=(RESULT_DIR.joinpath('MASK_RCNN' if config.NAME is None
+                                     else str(config.NAME))
+                 ).joinpath('result.json'),
         help='{}{}TIME{}/result.json'.format(
             RESULT_DIR.joinpath('RESULT_NAME'),
             '{', '}')

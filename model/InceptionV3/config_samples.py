@@ -9,6 +9,12 @@ from generator.image_classification.config_samples import (DIR_GEN_CIFAR10,
 from .train_config import InceptionV3TrainConfig
 from .build_config import InceptionV3Config
 
+from model.keras_applications.test_config import TestConfig
+
+
+class InceptionV3TestConfig(TestConfig):
+    NAME = 'InceptionV3'
+
 
 class InceptionV3ImagenetConfig(
         InceptionV3Config, InceptionV3TrainConfig):

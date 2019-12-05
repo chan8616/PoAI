@@ -29,16 +29,16 @@ def test_config_parser(
     load_parser.add_argument(
         '--load_pretrained_weights',
         choices=WEIGHTS,
-        default=test_config.WEIGHT,
+        # default=test_config.WEIGHT,
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',
     #      choices=
     #      )
-    #  load_parser.add_argument(
-    #      '--load_pretrained_weights',
-    #      widget = 'FildChooser'
-    #      )
+    load_parser.add_argument(
+        '--load_pretrained_file',
+        widget='FileChooser'
+    )
 
     log_parser = parser.add_argument_group(
         'Log',
@@ -48,11 +48,10 @@ def test_config_parser(
     log_parser.add_argument(
         "--result-path", type=str,
         metavar='Result File Path.',
-        default=(Path(test_config.RESULT_DIR).joinpath('untitled/result.csv')
-                 if test_config.NAME is None
-                 else Path(test_config.RESULT_DIR).joinpath(
-                     str(test_config.NAME)).joinpath('result.csv')),
-        help='{}{}TIME{}/result.json'.format(
+        default=(Path(test_config.RESULT_DIR).joinpath('untitled' if test_config.NAME is None
+                                                       else str(test_config.NAME))
+                 ).joinpath('result.csv'),
+        help='{}{}TIME{}/result.csv'.format(
             Path(test_config.RESULT_DIR).joinpath('RESULT_NAME'),
             '{', '}')
         )

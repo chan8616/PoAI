@@ -10,6 +10,12 @@ from generator.image_classification.config_samples \
 from .train_config import VGG19TrainConfig
 from .build_config import VGG19Config, POOLINGS
 
+from model.keras_applications.test_config import TestConfig
+
+
+class VGG19TestConfig(TestConfig):
+    NAME = 'VGG19'
+
 
 """
 class VGG19ImagenetConfig(

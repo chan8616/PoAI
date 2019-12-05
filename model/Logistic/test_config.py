@@ -29,16 +29,16 @@ def test_config_parser(
     load_parser.add_argument(
         '--load_pretrained_weights',
         choices=WEIGHTS,
-        default=test_config.WEIGHT,
+        # default=test_config.WEIGHT,
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',
     #      choices=
     #      )
-    #  load_parser.add_argument(
-    #      '--load_pretrained_weights',
-    #      widget = 'FildChooser'
-    #      )
+    load_parser.add_argument(
+        '--load_pretrained_file',
+        widget='FileChooser'
+    )
 
     log_parser = parser.add_argument_group(
         'Log',

@@ -50,10 +50,10 @@ def train_config_parser(
     #      '--load_specific_weights',
     #      choices=
     #      )
-    #  load_parser.add_argument(
-    #      '--load_pretrained_weights',
-    #      widget = 'FildChooser'
-    #      )
+    load_parser.add_argument(
+        '--load_pretrained_file',
+        widget='FileChooser'
+    )
 
     layers_parser = parser.add_argument_group()
     layers_parser.add_argument(

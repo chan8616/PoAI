@@ -45,7 +45,6 @@ def run(config):
     model = LogisticModel()
 #  def run(model: KerasAppBaseModel, config):
 
-    print(config)
     (build_cmds, build_args,
      run_cmds, run_args,
      generator_cmds, generator_args,
@@ -54,11 +53,11 @@ def run(config):
 
     #  model = build.build(build_args)
     #  model.build(build_args)
-    print('before build')
+    stream.put(('Building...', None, None))
     build(model, build_args)
 
-    print('before load')
-    if run_args.load_pretrained_weights:
+    stream.put(('Loading...', None, None))
+    if run_args.load_pretrained_weights or run_args.load_pretrained_file:
         if run_args.load_pretrained_weights == "imagenet":
             # Start from ImageNet trained weights
             weights_path = model.get_imagenet_weights()
@@ -66,28 +65,24 @@ def run(config):
             # Find last trained weights
             weights_path = model.find_last()
         else:
-            weights_path = run_args.load_pretrained_weights
+            weights_path = run_args.load_pretrained_file
 
         model.load_weights(weights_path, by_name=True)
-    print('load complete')
 
-    print('before generator')
+    stream.put(('Generating...', None, None))
     generator_cmd = generator_cmds[0]
 
     train_generator, val_generator = generator(generator_cmd, generator_args)
-    print('generator complete')
 
     if 'train' in run_cmd:
-        print('before train')
+        stream.put(('Train', None, None))
         train_args = run_args
         #  model.train(train_args, train_generator, val_generator)
         train(model, train_args, train_generator, val_generator, stream)
-        print('train complete')
     elif 'test' == run_cmd:
-        print('before test')
+        stream.put(('Test', None, None))
         test_args = run_args
         test_generator = val_generator
 
         test(model, test_args, test_generator, stream)
-        print('test complete')
     K.clear_session()

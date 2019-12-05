@@ -5,6 +5,7 @@ from .model import Model
 from model.keras_applications import run as runlib
 #  from ..keras_applications.run import run
 from .config_samples import (ResNet50TrainConfig,
+                             ResNet50TestConfig,
                              ResNet50OlivettiFacesConfig,
                              ResNet50ImagenetConfig,
                              ResNet50CIFAR10Config)
@@ -18,6 +19,7 @@ def run_parser(
     return runlib.run_parser(parser,
                              title,
                              train_config=ResNet50TrainConfig(),
+                             test_config=ResNet50TestConfig(),
                              train_configs=OrderedDict([
                                  ('train_olivetti_faces', ResNet50OlivettiFacesConfig()),
                                  ('train_cifar10', ResNet50CIFAR10Config()),

@@ -8,6 +8,12 @@ from generator.image_classification.config_samples import (DIR_GEN_CIFAR10,
 from .train_config import MobileNetTrainConfig
 from .build_config import MobileNetConfig
 
+from model.keras_applications.test_config import TestConfig
+
+
+class MobileNetTestConfig(TestConfig):
+    NAME = 'MobileNet'
+
 
 class MobileNetImagenetConfig(
         MobileNetConfig, MobileNetTrainConfig):
