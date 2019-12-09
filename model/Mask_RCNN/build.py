@@ -28,14 +28,14 @@ def build_parser(
     #  balloon_build_parser = subs.add_parser('build_balloon')
     #  build_config_parser(balloon_build_parser, BalloonConfig())
 
-    coco_build_parser = subs.add_parser('build_coco')
-    build_config_parser(coco_build_parser, CocoConfig())
+    #  coco_build_parser = subs.add_parser('build_coco')
+    #  build_config_parser(coco_build_parser, CocoConfig())
 
-    nucleus_build_parser = subs.add_parser('build_nucleus')
-    build_config_parser(nucleus_build_parser, NucleusConfig())
+    #  nucleus_build_parser = subs.add_parser('build_nucleus')
+    #  build_config_parser(nucleus_build_parser, NucleusConfig())
 
-    shapes_build_parser = subs.add_parser('build_shapes')
-    build_config_parser(shapes_build_parser, ShapesConfig())
+    #  shapes_build_parser = subs.add_parser('build_shapes')
+    #  build_config_parser(shapes_build_parser, ShapesConfig())
 
     return parser
 
