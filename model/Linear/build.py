@@ -41,14 +41,6 @@ class LinearBuild():
     def __init__(self, linear_build_config=LinearBuildConfig()):
         self.config = linear_build_config
 
-    def update(self, args):
-        self.config(args)
-        if args.print_model_summary:
-            K.clear_session()
-            model = self.build()
-            print(model.summary())
-            K.clear_session()
-
     def build(self):
         model = LinearModel()
         model.build(self.config)
