@@ -71,6 +71,8 @@ class Run():
         #  build_config = SVCBuildConfig()
         #  build_config.update(build_args)
         model = SVCBuild(build_config).build()
+        if build_args.print_model:
+            print(model)
 
         stream.put(('Generating...', None, None))
         generator_config = SVCGeneratorConfigList().config(

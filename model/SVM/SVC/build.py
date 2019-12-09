@@ -42,12 +42,6 @@ class SVCBuild():
     def __init__(self, svc_build_config=SVCBuildConfig()):
         self.config = svc_build_config
 
-    def update(self, args):
-        self.config(args)
-        if args.print_model:
-            model = self.build()
-            print(model)
-
     def build(self):
         model = SVC(
                 kernel=self.config.KERNEL,

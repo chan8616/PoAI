@@ -8,6 +8,7 @@ from .generator_config import SVCGeneratorConfig
 class SVCIRISBuildConfig(
         SVCBuildConfig,
         ):
+    NAME = os.path.join(SVCBuildConfig.NAME, 'iris')
     BUILD_NAME = os.path.join(SVCBuildConfig.BUILD_NAME, 'iris')
 
     def __init__(self):

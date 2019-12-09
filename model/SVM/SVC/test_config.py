@@ -1,3 +1,4 @@
+import os
 from argparse import Namespace
 from gooey import GooeyParser
 from pathlib import Path
@@ -12,13 +13,13 @@ import tensorflow as tf  # type: ignore
 
 
 class SVCTestConfig():
-    RESULT_NAME = 'untitled'
+    RESULT_NAME = os.path.join('svm', 'svc')
     TEST_NAME = 'test'
 
     WEIGHT_PATH = None
 
     RESULT_DIR = "results/"
-    RESLUT_PATH = ""
+    RESULT_PATH = ""
 
     def update(self, args: Namespace):
         self.WEIGHT_PATH = args.load_pretrained_weights
@@ -85,6 +86,8 @@ class SVCTest():
         stream.put(('Testing', None, None))
         X, Y = test_generator
         result = model.predict(X.values)
+        if not Path(self.config.RESULT_PATH).parent.exists():
+            Path(self.config.RESULT_PATH).parent.mkdir(parents=True, exist_ok=True)
         pd.DataFrame({'prediction': result}).to_csv(
                 self.config.RESULT_PATH, index=False)
         stream.put(('end', None, None))
