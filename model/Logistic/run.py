@@ -1,11 +1,13 @@
 from collections import OrderedDict
 from gooey import Gooey, GooeyParser
 
-from model.keras_applications import run as runlib
-from model.keras_applications.build import build
-from model.keras_applications.test import test
+#  from model.keras_applications import run as runlib
+#  from model.keras_applications.build import build
+#  from model.keras_applications.test import test
 from .model import LogisticModel
+from .build import build
 from .train import train
+#  from .test import test
 from .generator import generator
 
 from .config_samples import (LogisticTrainConfig,
@@ -27,15 +29,15 @@ def run_parser(
         ) -> GooeyParser:
     subs = parser.add_subparsers()
 
-    test_parser = subs.add_parser('test')
-    test_config_parser(test_parser, test_config=test_config)
-
     for k, v in train_configs.items():
         train_parser = subs.add_parser(k)
         train_config_parser(train_parser, train_config=v)
 
     train_parser = subs.add_parser('train')
     train_config_parser(train_parser, train_config=train_config)
+
+    test_parser = subs.add_parser('test')
+    test_config_parser(test_parser, test_config=test_config)
 
     return parser
 
