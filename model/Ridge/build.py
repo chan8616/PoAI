@@ -42,12 +42,6 @@ class RidgeBuild():
     def __init__(self, ridge_build_config=RidgeBuildConfig()):
         self.config = ridge_build_config
 
-    def update(self, args):
-        self.config(args)
-        if args.print_model:
-            model = self.build()
-            print(model)
-
     def build(self):
         model = Ridge(self.config.ALPHA)
         return model

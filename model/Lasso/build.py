@@ -42,12 +42,6 @@ class LassoBuild():
     def __init__(self, lasso_build_config=LassoBuildConfig()):
         self.config = lasso_build_config
 
-    def update(self, args):
-        self.config(args)
-        if args.print_model:
-            model = self.build()
-            print(model)
-
     def build(self):
         model = Lasso(self.config.ALPHA)
         return model

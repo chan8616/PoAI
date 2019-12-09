@@ -76,6 +76,8 @@ class Run():
             "{}{:%Y%m%dT%H%M}".format(
                 build_config.NAME.lower(), now)))
         model = LassoBuild(build_config).build()
+        if build_args.print_model:
+            print(model)
 
         stream.put(('Generating...', None, None))
         generator_config = LassoGeneratorConfigList().config(

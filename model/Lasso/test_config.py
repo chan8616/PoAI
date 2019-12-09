@@ -12,13 +12,13 @@ import tensorflow as tf  # type: ignore
 
 
 class LassoTestConfig():
-    RESULT_NAME = 'untitled'
+    RESULT_NAME = 'lasso'
     TEST_NAME = 'test'
 
     WEIGHT_PATH = None
 
     RESULT_DIR = "results/"
-    RESLUT_PATH = ""
+    RESULT_PATH = ""
 
     def update(self, args: Namespace):
         self.WEIGHT_PATH = args.load_pretrained_weights
@@ -64,8 +64,8 @@ class LassoTestConfig():
 
 
 class LassoTest():
-    def __init__(self, svc_test_config=LassoTestConfig()):
-        self.config = svc_test_config
+    def __init__(self, lasso_test_config=LassoTestConfig()):
+        self.config = lasso_test_config
 
     def test(self, model, test_generator, stream):
         """Test the model."""
