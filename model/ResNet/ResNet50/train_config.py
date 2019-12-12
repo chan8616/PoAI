@@ -56,7 +56,7 @@ def train_config_parser(
     load_parser.add_argument(
         '--load_pretrained_weights',
         choices=WEIGHTS,
-        default=train_config.WEIGHT,
+        # default=train_config.WEIGHT,
         )
     #  load_parser.add_argument(
     #      '--load_specific_weights',

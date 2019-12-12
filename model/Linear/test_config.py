@@ -33,7 +33,7 @@ class LinearTestConfig():
         load_parser.add_argument(
             '--load_pretrained_weights',
             choices=WEIGHTS,
-            default=self.WEIGHT,
+            # default=self.WEIGHT,
             )
         #  load_parser.add_argument(
         #      '--load_specific_weights',

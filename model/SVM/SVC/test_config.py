@@ -43,7 +43,7 @@ class SVCTestConfig():
         #      )
         load_parser.add_argument(
             '--load_pretrained_weights',
-            widget = 'FileChooser',
+            widget='FileChooser',
             )
 
         log_parser = parser.add_argument_group(
