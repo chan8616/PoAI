@@ -3,7 +3,7 @@ from gooey import Gooey, GooeyParser
 
 #  from model.keras_applications import run as runlib
 #  from model.keras_applications.build import build
-#  from model.keras_applications.test import test
+from model.keras_applications.test import test
 from .model import LogisticModel
 from .build import build
 from .train import train
