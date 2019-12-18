@@ -48,7 +48,7 @@ def test(model,
         examples=eval_examples,
         tokenizer=tokenizer,
         max_seq_length=model_config.MAX_SEQ_LENGTH,
-        doc_stride=model_config.DOC_STRING,
+        doc_stride=model_config.DOC_STRIDE,
         max_query_length=model_config.MAX_QUERY_LENGTH,
         is_training=False,
         output_fn=append_feature)
@@ -80,9 +80,9 @@ def test(model,
                 start_logits=start_logits,
                 end_logits=end_logits))
 
-    output_prediction_file = os.path.join(model_config.OUPTUT_DIR, "predictions.json")
-    output_nbest_file = os.path.join(model_config.OUPTUT_DIR, "nbest_predictions.json")
-    output_null_log_odds_file = os.path.join(model_config.OUPTUT_DIR, "null_odds.json")
+    output_prediction_file = os.path.join(model_config.OUTPUT_DIR, "predictions.json")
+    output_nbest_file = os.path.join(model_config.OUTPUT_DIR, "nbest_predictions.json")
+    output_null_log_odds_file = os.path.join(model_config.OUTPUT_DIR, "null_odds.json")
 
     write_predictions(eval_examples, eval_features, all_results,
                       model_config.N_BEST_SIZE, model_config.MAX_ANSWER_LENGTH,

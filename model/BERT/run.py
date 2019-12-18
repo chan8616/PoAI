@@ -50,7 +50,7 @@ def run(config):
     elif 'test' == run_cmd:
         model_config = model_config_builder('test',
                                             build_config.build_config(build_args),
-                                            train_config.train_config(run_args),
+                                            test_config.test_config(run_args),
                                             generator_config.generator_config(generator_args))
         model = build.build(model_config)
     else:
@@ -64,12 +64,12 @@ def run(config):
     if 'train' in run_cmd:
         print('before train')
         stream.put(('Training...', None, None))
-        return train.train((model, model_config, dataset, dataset_val, stream))
+        train.train((model, model_config, dataset, dataset_val, stream))
     elif 'test' == run_cmd:
         print('before test')
         stream.put(('Testing...', None, None))
-        return test.test(model, model_config, dataset)
-    stream.put(('End', None, None))
+        test.test(model, model_config, dataset)
+    stream.put(('end', None, None))
 
 
 def model_config_builder(mode, build_config_: Config, run_config: Config, gen_config: Config):
@@ -83,11 +83,11 @@ def model_config_builder(mode, build_config_: Config, run_config: Config, gen_co
         if mode == 'train':
             DO_TRAIN = True
             DO_PREDICT = False
+            TRAIN_BATCH_SIZE = run_config.TRAIN_BATCH_SIZE
         elif mode == 'test':
             DO_TRAIN = False
             DO_PREDICT = True
-        TRAIN_BATCH_SIZE = run_config.TRAIN_BATCH_SIZE
-        PREDICT_BATCH_SIZE = run_config.PREDICT_BATCH_SIZE
+            PREDICT_BATCH_SIZE = run_config.PREDICT_BATCH_SIZE
         NUM_TRAIN_EPOCHS = run_config.NUM_TRAIN_EPOCHS
         LEARNING_RATE = run_config.LEARNING_RATE
         WARMUP_PROPORTION = run_config.WARMUP_PROPORTION

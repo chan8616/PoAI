@@ -68,3 +68,4 @@ def train(t_config):
 
     model.train(input_fn=train_input_fn, max_steps=num_train_steps)
 
+    stream.put(('end...', None, None))
