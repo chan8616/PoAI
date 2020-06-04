@@ -4,10 +4,11 @@ import os
 from subprocess import Popen, PIPE
 
 REGRESSOR = ["Linear", "Ridge", "Lasso"]
-CLASSIFIER = ["Decision Tree", "Ridge", "Lasso"]
+CLASSIFIER = ["Decision_Tree", "Ridge", "Lasso"]      # Decision Tree -> Decision_Tree
 CLUSTERING = ["K-means", "Label_Propagation"]
+IMG_CLASSIFIER = ["Decision_Tree", "Ridge", "Lasso"]      # Decision Tree -> Decision_Tree
 
-@Gooey(program_name="Tensorflow GUI")
+@Gooey(program_name="ML GUI")       # Tensorflow GUI --> ML GUI
 def main():
     desc = "Choose your model"
     main_parser = GooeyParser(description=desc)
@@ -41,7 +42,6 @@ def main():
     # print(error)
 
     print("[End]\t{}".format(model_name))
-
 
 if __name__ == '__main__':
     main()

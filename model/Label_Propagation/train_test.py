@@ -1,46 +1,41 @@
 from sklearn.semi_supervised import LabelSpreading
-import pandas as pd
 import pickle
 import time
 import os
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+import seaborn as sns
+import pandas as pd
 
+time_stamp = time.strftime("%Y%m%d_%H%M%S", time.localtime((time.time())))[2:]
 
-def train(config):
-
-    alpha = config.alpha
-    gamma = config.gamma
-    kernel = config.kernel
-    max_iter = config.max_iter
-    n_neighbors = config.n_neighbors
-
-    data_path = config.data_path
-    save_directory = config.save_directory
-    save_figure = config.save_figure
-    data = pd.read_csv(data_path)
-    X = data.iloc[:,:-1].values
-    Y = data.iloc[:,-1].values.reshape(-1)
-
+def train(config, X, Y, save_dir):
     print("Model build")
-    model = LabelSpreading(alpha=alpha,
-                           gamma= gamma,
-                           kernel=kernel,
-                           max_iter=max_iter,
-                           n_neighbors=n_neighbors)
+    model = LabelSpreading(alpha=config.alpha,
+                           gamma= config.gamma,
+                           kernel=config.kernel,
+                           max_iter=config.max_iter,
+                           n_neighbors=config.n_neighbors)
     print("Model fit")
     model.fit(X,Y)
 
-    time_stamp = time.strftime("%Y%m%d_%H%M%S", time.localtime((time.time())))[2:]
     file_name = 'lp_model_' + time_stamp + '.sav'
-    pickle.dump(model, open(os.path.join(save_directory, file_name), 'wb'))
+    pickle.dump(model, open(os.path.join(save_dir, file_name), 'wb'))
 
-    if save_figure is True:
-        import matplotlib.pyplot as plt
-        from sklearn.decomposition import PCA
-        import seaborn as sns
+    if config.save_figure or config.save_predict:
+        test(config, X, Y, save_dir, model)
 
+def test(config, X, Y, save_dir, model):
+
+    Y_predict = model.predict(X)
+
+    if config.save_predict:
+        df_predict = pd.DataFrame({"predict": Y_predict})
+        df_predict.to_csv(save_dir+'lp_model_' + time_stamp + '_predict.csv')
+
+    if config.save_figure:
         pca = PCA(n_components=2)
-        X_r = pca.fit(X).transform(X)
-        Y_predict = model.predict(X)
+        X_r = pca.fit_transform(X)
 
         hue_order = sorted(set(Y), reverse=True)
         markers = {i: 's' for i in hue_order}
@@ -64,7 +59,5 @@ def train(config):
         plt.suptitle("Unlabeled points are marked 'X'")
 
         file_name = 'lp_model_' + time_stamp + '.png'
-        plt.savefig(os.path.join(save_directory, file_name))
-
-
+        plt.savefig(os.path.join(save_dir, file_name))
 

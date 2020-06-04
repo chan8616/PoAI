@@ -8,7 +8,7 @@ import sys
 import args_data, args_param, args_save, args_load
 from train_test import train, test
 
-save_dir = "./save_dir/Label_Propagation/"
+save_dir = "./save_dir/Decision_Tree/"
 
 def make_savedir():
     if not os.path.exists(save_dir):
@@ -21,12 +21,12 @@ def model_savefiles():
 
 def load_data(data_path):
     data = pd.read_csv(data_path)
-    X = data.iloc[:,:-1].values
+    X = data.iloc[:,:-1]
     Y = data.iloc[:,-1].values.reshape(-1)
     return X, Y
 
 @Gooey(optional_cols=2,
-       program_name="Label Propagation",
+       program_name="Decision Tree",
        default_size=(600,800 ),
        poll_external_updates = True)
 def run():
@@ -59,7 +59,6 @@ def run():
         with open(save_dir + args.load_model, 'rb') as f:
             model = pickle.load(f)
         test(args, X, Y, save_dir, model)
-
 
 make_savedir()
 if 'gooey-seed-ui' in sys.argv:

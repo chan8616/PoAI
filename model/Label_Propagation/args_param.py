@@ -1,6 +1,6 @@
 from gooey import GooeyParser
 
-def add(parser: GooeyParser = GooeyParser()) -> GooeyParser:
+def add(parser: GooeyParser = GooeyParser()):
 
     parser.add_argument(
         "--kernel", type=str,
@@ -49,5 +49,3 @@ def add(parser: GooeyParser = GooeyParser()) -> GooeyParser:
         default=30,
         help="Maximum number of iterations allowed",
     )
-
-    return parser

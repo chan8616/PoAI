@@ -21,6 +21,7 @@ checkpoint/
 ### result ###
 *.pickle
 log/
+save_dir/
 
 
 ### dataset ###
