@@ -1,6 +1,6 @@
-# TensorflowGUI
+# PoAI
 
-TensorflowGUI 는 기계학습딥러닝의 도구 중 하나인 Tensorflow를 GUI 환경에서 실습해 볼 수 있도록 구현한 프로그램 입니다. 자체적으로 간단한 데이터 셋과 기본적인 모델을 탑재하고 있어 Window 환경 및 Linux 환경에서 TensorflowGUI 를 실행 및 실습해 볼 수 있습니다
+PoAI 는 기계학습, 딥러닝을 GUI 환경에서 실습해 볼 수 있도록 구현한 프로그램 입니다. 자체적으로 간단한 데이터 셋과 기본적인 모델을 탑재하고 있어 Window 환경 및 Linux 환경에서 PoAI 를 실행 및 실습해 볼 수 있습니다
 
 
 
