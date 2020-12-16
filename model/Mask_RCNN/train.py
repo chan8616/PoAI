@@ -1,72 +1,62 @@
-#  from typing import Union, Callable
-from argparse import Namespace
-from gooey import Gooey, GooeyParser
-
-from .train_config import train_config_parser, train_config
-from .config_samples import (BalloonConfig, CocoConfig,
-                             NucleusConfig, ShapesConfig)
-from ..utils.stream_callbacks import KerasQueueLogger
-
-
-def train_parser(
-        parser: GooeyParser = GooeyParser(),
-        title="train Setting",
-        description="") -> GooeyParser:
-
-    subs = parser.add_subparsers()
-
-    balloon_train_parser = subs.add_parser('train_balloon')
-    train_config_parser(balloon_train_parser,
-                        BalloonConfig(),)
-
-    train_parser = subs.add_parser('train')
-    train_config_parser(train_parser)
-
-    #  balloon_train_parser = subs.add_parser('train_balloon')
-    #  train_config_parser(balloon_train_parser,
-    #                      BalloonConfig(),)
-
-    #  coco_train_parser = subs.add_parser('train_coco')
-    #  train_config_parser(coco_train_parser,
-    #                      CocoConfig(),)
-
-    #  nucleus_train_parser = subs.add_parser('train_nucleus')
-    #  train_config_parser(nucleus_train_parser,
-    #                      NucleusConfig(),)
-
-    #  shapes_train_parser = subs.add_parser('train_shapes')
-    #  train_config_parser(shapes_train_parser,
-    #                      ShapesConfig(),)
-
-    return parser
-    #  model = compile_.compile_(args)
-    #  return (model, args.epochs,
-    #          args.epochs if args.validation_steps is None
-    #          else args.validation_steps,
-    #          get_callbacks(args), args.shuffle)
+from references.engine import train_one_epoch, evaluate
+from datasets import *
+from references import *
+import torch
+from build import *
+from references import utils
+import os
 
 
-def train(t_config):
-    """Train the model."""
-    # Training dataset.
-    #  dataset_train = BalloonDataset()
-    #  dataset_train.load_balloon(args.dataset, "train")
-    #  dataset_train.prepare()
+def do(config):
+    # use our dataset and defined transformations
+    if config.data_type == 'PennFudanPed':
+        dataset = PennFudanDataset(config.root, get_transform(train=True))
+        dataset_test = PennFudanDataset(config.root, get_transform(train=False))
+    else:
+        dataset = UserDataset(config.root, get_transform(train=True))
+        dataset_test = UserDataset(config.root, get_transform(train=False))
 
-    # Validation dataset
-    #  dataset_val = BalloonDataset()
-    #  dataset_val.load_balloon(args.dataset, "val")
-    #  dataset_val.prepare()
-    model, train_args, dataset_train, dataset_val, stream = t_config
-    # *** This training schedule is an example. Update to your needs ***
-    # Since we're using a very small dataset, and starting from
-    # COCO trained weights, we don't need to train too long. Also,
-    # no need to train all layers, just the heads should do it.
-    callback = KerasQueueLogger(stream)
-    print("Training network heads")
-    print('stream', stream)
-    model.train(dataset_train, dataset_val,
-                learning_rate=train_args.learning_rate,
-                epochs=train_args.epochs,
-                layers='heads',
-                custom_callbacks=[callback])
+    # split the dataset in train and test set
+    torch.manual_seed(1)
+    indices = torch.randperm(len(dataset)).tolist()
+    dataset = torch.utils.data.Subset(dataset, indices[:-50])
+    dataset_test = torch.utils.data.Subset(dataset_test, indices[-50:])
+
+    # define training and validation data loaders
+    data_loader = torch.utils.data.DataLoader(
+        dataset, batch_size=config.batch_size,
+        shuffle=True, collate_fn=utils.collate_fn)
+
+    data_loader_test = torch.utils.data.DataLoader(
+        dataset_test, batch_size=config.batch_size,
+        shuffle=False, collate_fn=utils.collate_fn)
+
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+    # our dataset has two classes only - background and person
+
+    # get the model using our helper function
+    model = get_instance_segmentation_model(config.num_classes)
+    # move model to the right device
+    model.to(device)
+
+    # construct an optimizer
+    params = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.SGD(params, lr=config.lr,
+                                momentum=config.momentum, weight_decay=config.weight_decay)
+
+    # and a learning rate scheduler which decreases the learning rate by
+    # 10x every 3 epochs
+    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                   step_size=config.step_size,
+                                                   gamma=config.gamma)
+
+    for epoch in range(config.num_epochs):
+        # train for one epoch, printing every 10 iterations
+        train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
+        # update the learning rate
+        lr_scheduler.step()
+        # evaluate on the test dataset
+        evaluate(model, data_loader_test, device=device)
+
+    torch.save(model, os.path.join(config.save_directory, config.ckpt_name))

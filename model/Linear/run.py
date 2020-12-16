@@ -1,101 +1,33 @@
-from collections import OrderedDict
 from gooey import Gooey, GooeyParser
+import args_data, args_param, args_save, args_pre, train, test
 
-from model.Linear.build import (
-        LinearBuildConfig,
-        LinearBuildConfigList,
-        LinearBuild,
-        )
-from model.Linear.generator import (
-        LinearGeneratorConfig,
-        LinearGeneratorConfigList, 
-        LinearGenerator,
-        )
-from model.Linear.train_config import (
-        LinearTrainConfig,
-        LinearTrain
-        )
-from model.Linear.test_config import LinearTestConfig, LinearTest
+@Gooey(image_dir='image/ml', optional_cols=2, program_name="Linear regression", default_size=(800,600 ))
+def run():
+    parser = GooeyParser()
+    subs = parser.add_subparsers(help='commands', dest='commands')
 
-from model.Linear.config_samples \
-        import (
-                #  LinearTrainConfig,
-                LinearBostonHousePricesTrainConfig)
-
-from keras import backend as K
+    train_parser = subs.add_parser('train', help='Configurate model training')
+    # param_group = train_parser.add_argument_group("Model parameter option", gooey_options={'show_border': True, 'columns': 2})
+    # param_group = args_param.add(param_group)
+    data_group = train_parser.add_argument_group("Data Options", gooey_options={'show_border': True,'columns': 1} )
+    data_group = args_data.add(data_group)
+    save_group = train_parser.add_argument_group("Save option", gooey_options={'show_border': True, 'columns': 1})
+    save_group = args_save.add(save_group)
 
 
-class Run():
-    def __init__(self,
-                 train_config_list=[
-                     LinearBostonHousePricesTrainConfig(),
-                     LinearTrainConfig(),
-                     ],
-                 test_config_list=[LinearTestConfig(),
-                                   ],
-                 ):
-        self.train_config_list = train_config_list
-        self.test_config_list = test_config_list
+    test_parser = subs.add_parser('test', help='Configurate model testing')
+    data_group = test_parser.add_argument_group("Data Options", gooey_options={'show_border': True,'columns': 1} )
+    data_group = args_data.add(data_group)
+    pretrained_group = test_parser.add_argument_group("Pretrained file Options", gooey_options={'show_border': True}, )
+    pretrained_group = args_pre.add(pretrained_group)
+    save_group = test_parser.add_argument_group("Save option", gooey_options={'show_border': True, 'columns': 1})
+    save_parser = args_save.add(save_group)
 
-    def _parser(self,
-                parser=GooeyParser()
-                ):
-        subs = parser.add_subparsers()
-        self._sub_parser(subs)
-        return parser
+    args = parser.parse_args()
 
-    def _sub_parser(self,
-                    subs=GooeyParser().add_subparsers()
-                    ):
-        for config in (self.train_config_list):
-            parser = subs.add_parser(config.TRAIN_NAME)
-            config._parser(parser)
+    if args.commands =='train':
+        train.train(args)
+    else:
+        test.test(args)
 
-        for config in (self.test_config_list):
-            parser = subs.add_parser(config.TEST_NAME)
-            config._parser(parser)
-
-
-    def run(self, config):
-        (build_cmds, build_args,
-         run_cmds, run_args,
-         generator_cmds, generator_args,
-         stream) = config
-        K.clear_session()
-        build_cmd = build_cmds[0]
-        run_cmd = run_cmds[0]
-        generator_cmd = generator_cmds[0]
-
-        #  stream.put(('Building...', None, None))
-        build_config = LinearBuildConfigList().config(build_cmd, build_args)
-        #  build_config = LinearBuildConfig()
-        #  build_config.update(build_args)
-        model = LinearBuild(build_config).build()
-        if build_args.print_model_summary:
-            print(model.keras_model.summary())
-
-
-        stream.put(('Generating...', None, None))
-        generator_config = LinearGeneratorConfigList().config(
-                generator_cmd, generator_args)
-        #  generator_config = LinearGeneratorConfig()
-        #  generator_config.update(generator_args)
-        train_generator, valid_generator = \
-            LinearGenerator(generator_config).train_valid_generator()
-
-        for run_config in self.train_config_list:
-            if run_config.TRAIN_NAME == run_cmd:
-                run_config.update(run_args)
-                return LinearTrain(run_config).train(
-                        model, train_generator, valid_generator, stream)
-
-        for run_config in self.test_config_list:
-            if run_config.TEST_NAME == run_cmd:
-                run_config.update(run_args)
-                return LinearTest(run_config).test(
-                        model, valid_generator, stream)
-
-
-run_parser = Run()._parser
-
-run = Run().run
+run()

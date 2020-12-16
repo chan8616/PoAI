@@ -1,69 +1,81 @@
-import wx
-from treelib import Tree
-import gettext
+from gooey import Gooey, GooeyParser
+import sys
+import os
+from subprocess import Popen, PIPE
 
-# from model import MODELDICT
-import model
-from model import *
-"""
-from model import (SVM_TREE,
-                   #  VGG_TREE,
-                   LOGISTIC_TREE,
-                   Xception_TREE,
-                   )
-"""
-# from checkpoint import CHECKPOINTDICT
-# from generator import DATASETDICT
-import generator
-"""
-from generator import (IMAGE_CLASSIFICATION_TREE,
-                       IMAGE_ANNOTATION_TREE,
-                       #  IRIS_TREE
-                       )
-"""
-# from generator.image_classification import data_generator
-#  from generator.image_classification import image_generator
-from gui.frame import Frame
-
-MODEL_TREE = Tree()
-# MODEL_TREE.create_node('model', data=build)
-# MODEL_TREE.create_node('model', data=train)
-MODEL_TREE.create_node('model', data=model)
-"""
-MODEL_TREE.paste(MODEL_TREE.root, SVM_TREE)
-#  MODEL_TREE.paste(MODEL_TREE.root, VGG_TREE)
-MODEL_TREE.paste(MODEL_TREE.root, LOGISTIC_TREE)
-MODEL_TREE.paste(MODEL_TREE.root, Xception_TREE)
+REGRESSOR = ["Linear", "Ridge", "Lasso"]
+CLASSIFIER = ["Decision_Tree", "Random_Forest", "SVM"]
+CLUSTERING = ["K_Means", "Label_Propagation"]
+IMAGE = ["Image_Classification","Mask_RCNN"]
+NLP = ["Bert", "Sentiment_Analysis", "Word2Vec"]
 
 
-"""
-DATASET_TREE = Tree()
-DATASET_TREE.create_node('generator', data=generator)
-"""
-DATASET_TREE.paste(DATASET_TREE.root, IMAGE_CLASSIFICATION_TREE)
-DATASET_TREE.paste(DATASET_TREE.root, IMAGE_ANNOTATION_TREE)
-#  DATASET_TREE.paste(DATASET_TREE.root, IRIS_TREE)
-"""
 
-
-class MyApp(wx.App):
-    def OnInit(self):
-        #  self.frame = Frame(DATASET_TREE, MODEL_TREE,
-        self.frame = Frame(generator, model,
-                           None, wx.ID_ANY, "")
-        self.SetTopWindow(self.frame)
-        self.frame.Show()
-        self.frame.Maximize(True)
-        return True
-
+@Gooey(program_name="PoAI",image_dir='image',
+        menu = [{'name': 'File','items' : [{
+            'type': 'AboutDialog',
+            'menuTitle': 'About',
+            'name': 'PoAI',
+            'description': 'POSTECH AI',
+            'copyright': '2020',
+            'website': 'https://github.com/chan8616/PoAI',
+            'developer': '영현, 찬양, 현지'},
+            {'type': 'Link',
+            'menuTitle': 'Visit Our Site',
+            'url': 'http://piai.postech.ac.kr/'}
+        ]
+                },{
+            'name' : 'Help',
+            'items' : [{
+                'type' : 'Link',
+                'menuTitle' : 'GUI information',
+                'url' : 'https://github.com/chriskiehl/Gooey'
+            }]
+        }]
+        )
 
 def main():
-    gettext.install("app")
+    desc = "Choose your model"
+    main_parser = GooeyParser(description=desc)
+    model_sel_parser = main_parser.add_argument_group("Model Select", gooey_options={'show_border': True, 'columns': 1})
 
-    app = MyApp(0)
-    app.MainLoop()
+    model_kind = model_sel_parser.add_mutually_exclusive_group()
+    model_kind.add_argument('--Regression',
+                            choices=REGRESSOR,
+                            dest = "Regression Model")
+
+    model_kind.add_argument('--Classification',
+                            choices=CLASSIFIER,
+                            dest="Classification Model")
+
+    model_kind.add_argument('--Clustering',
+                            choices=CLUSTERING,
+                            dest="Clustering Model")
+
+    model_kind.add_argument('--Image',
+                            choices=IMAGE,
+                            dest="Image Processing Model")
+
+    model_kind.add_argument('--Nlp',
+                            choices=NLP,
+                            dest="Natural Language Processing Model")
+
+    args = main_parser.parse_args()
+    for val in vars(args).values():
+        if val is not None:
+            model_name = val
+            break;
+
+    print("[Start]\t{}".format(model_name))
+    PYTHON_PATH = sys.executable
+    process = Popen([PYTHON_PATH, os.path.join('Model', model_name, 'run.py')], stdout=PIPE, stderr=PIPE)
+    output, error = process.communicate()
+
+    # print(output)
+    # print(error)
+
+    print("[End]\t{}".format(model_name))
 
 
 if __name__ == '__main__':
     main()
-
