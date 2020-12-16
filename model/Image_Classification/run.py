@@ -10,7 +10,7 @@ from predict import predict
 from train import train_model
 from utils import model_savefiles, tensorboard_savefiles, dataset_files, load_tfboard
 
-save_dir = "./save_dir/"
+save_dir = "./save_dir/image_classification"
 
 @Gooey(image_dir='image/cv', optional_cols=2, program_name="Image Classification", default_size=(800,800), poll_external_updates = True)
 def run():

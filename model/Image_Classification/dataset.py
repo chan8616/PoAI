@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import time
 import glob
 
-data_dir = "./Data/"
+data_dir = "./Datasets/"
 time_stamp = time.strftime("%Y%m%d_%H%M%S", time.localtime((time.time())))[2:]
 
 def make(config, save_dir):
